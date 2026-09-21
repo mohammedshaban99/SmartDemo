@@ -1,0 +1,564 @@
+﻿@page "/AddCustomer"
+@rendermode InteractiveServer
+
+<div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <div class="main-canvas" @onclick:stopPropagation>
+
+        <!-- Top Header Area -->
+        <div class="header-master-grid">
+
+            <!-- 1. Far Right: Avatar/Image Box & Active Status with Orange Bar -->
+            <div class="image-right-block">
+                <div class="image-square avatar-square">
+                    <span class="user-avatar-icon">👤</span>
+                </div>
+                <div class="active-check-group">
+                    <input type="checkbox" id="chkActive" class="chk-box" @bind="customerData.IsActive" />
+                    <label for="chkActive" class="small-chk-label">نشط</label>
+                </div>
+                <div class="orange-divider-line"></div>
+            </div>
+
+            <!-- 2. Section Labels -->
+            <div class="labels-column">
+                <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
+                <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
+                <div class="label-row-cell"><span class="hdr-lbl">الرصيد الإفتتاحي</span></div>
+            </div>
+
+            <!-- 3. Form Input Controls -->
+            <div class="controls-column customer-controls-width">
+                <!-- Row 1: Number & Verification Check -->
+                <div class="form-row-compact">
+                    <input type="text" class="clean-input barcode-main-input text-center" @bind="customerData.CustomerCode" />
+                    <span class="req-star me-1">*</span>
+                    <span class="text-success fs-5 ms-2" title="رقم صحيح">✓</span>
+                </div>
+
+                <!-- Row 2: Name Input -->
+                <div class="form-row-compact name-field-relative">
+                    <div class="w-100">
+                        <input type="text" class="clean-input w-100" @bind="customerData.Name" placeholder="أدخل اسم العميل أو المورد..." />
+                    </div>
+                    <span class="req-star me-1 ms-1">*</span>
+                </div>
+
+                <!-- Row 3: Opening Balance Date & Value -->
+                <div class="form-row-compact">
+                    <span class="small text-muted ms-1">في</span>
+                    <input type="text" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" placeholder="2026-09-21" />
+                    <span class="small text-muted ms-1 me-2">المبلغ</span>
+                    <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
+                </div>
+            </div>
+
+            <!-- 4. Save Button on Far Left -->
+            <div class="save-cell">
+                <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+            </div>
+
+        </div>
+
+        <!-- Navigation Tabs Bar -->
+        <div class="tab-strip-bar">
+            <button class="strip-tab-btn @(activeTab == 1 ? "active" : "")" @onclick="() => activeTab = 1" type="button">بيانات الحساب</button>
+            <button class="strip-tab-btn @(activeTab == 2 ? "active" : "")" @onclick="() => activeTab = 2" type="button">الضرائب</button>
+            <button class="strip-tab-btn @(activeTab == 3 ? "active" : "")" @onclick="() => activeTab = 3" type="button">بيانات الإتصال</button>
+            <button class="strip-tab-btn @(activeTab == 4 ? "active" : "")" @onclick="() => activeTab = 4" type="button">بيانات إضافية</button>
+            <button class="strip-tab-btn @(activeTab == 5 ? "active" : "")" @onclick="() => activeTab = 5" type="button">الانترنت</button>
+        </div>
+
+        <!-- Tab 1: بيانات الحساب -->
+        @if (activeTab == 1)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-title-header mb-3">
+                    <span class="fw-bold fs-6 text-dark">التصنيف</span>
+                </div>
+
+                <div class="section-with-blue-line mb-4">
+                    <div class="two-column-form-grid">
+                        <div class="form-side-column">
+                            <!-- اسم الفرع -->
+                            <div class="field-entry-line">
+                                <span class="field-title">اسم الفرع</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
+                                        <span class="combo-display-text">@customerData.Branch</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isBranchPopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var branch in mockBranches)
+                                                {
+                                                    <div class="panel-checkbox-row" @onclick="() => SelectBranch(branch)">@branch</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- يوجد بداخل -->
+                            <div class="field-entry-line">
+                                <span class="field-title">يوجد بداخل</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger">
+                                        <span class="combo-display-text">@customerData.NestedWithin</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- العملة الافتراضية -->
+                            <div class="field-entry-line">
+                                <span class="field-title">العملة الافتراضية</span>
+                                <div class="d-flex align-items-center gap-2 flex-1">
+                                    <input type="number" class="clean-input text-center" style="width: 80px;" @bind="customerData.ExchangeRate" />
+                                    <select class="clean-input flex-1" @bind="customerData.Currency">
+                                        @foreach (var cur in mockCurrencies)
+                                        {
+                                            <option value="@cur">@cur</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- حساب الاستاذ -->
+                            <div class="field-entry-line">
+                                <span class="field-title">حساب الاستاذ</span>
+                                <select class="clean-input flex-1" @bind="customerData.LedgerAccount">
+                                    @foreach (var acc in mockLedgerAccounts)
+                                    {
+                                        <option value="@acc">@acc</option>
+                                    }
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+
+                        <div class="form-side-column">
+                            <div class="section-title-header mb-1 text-muted small fw-bold">سياسة التعامل</div>
+
+                            <!-- التعامل الافتراضي -->
+                            <div class="field-entry-line">
+                                <span class="field-title">التعامل الافتراضي</span>
+                                <select class="clean-input flex-1" @bind="customerData.DefaultDealType">
+                                    <option value="قسط">قسط</option>
+                                    <option value="نقدي">نقدي</option>
+                                    <option value="آجل">آجل</option>
+                                </select>
+                                <select class="clean-input" style="width: 120px;"><option>الدخل الشهري</option></select>
+                            </div>
+
+                            <!-- حد الإئتمان -->
+                            <div class="field-entry-line">
+                                <span class="field-title">حد الإئتمان</span>
+                                <input type="number" class="clean-input flex-1" @bind="customerData.CreditLimit" />
+                            </div>
+
+                            <!-- جهة التعامل -->
+                            <div class="field-entry-line">
+                                <span class="field-title">جهة التعامل</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger">
+                                        <span class="combo-display-text">@customerData.DealSide</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- الحساب المكمل -->
+                            <div class="field-entry-line">
+                                <span class="field-title">الحساب المكمل</span>
+                                <select class="clean-input flex-1" @bind="customerData.ComplementaryAccount">
+                                    <option value="الأرصدة الإفتتاحية">الأرصدة الإفتتاحية</option>
+                                    <option value="حساب الأرباح والخسائر">حساب الأرباح والخسائر</option>
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الاضافات -->
+                <div class="section-title-header mb-3">
+                    <span class="fw-bold fs-6 text-dark">الاضافات</span>
+                </div>
+                <div class="section-with-blue-line">
+                    <div class="two-column-form-grid">
+                        <div class="form-side-column">
+                            <div class="field-entry-line">
+                                <span class="field-title">شريحة الاسعار</span>
+                                <select class="clean-input flex-1" @bind="customerData.PriceTier">
+                                    @foreach (var tier in mockPriceTiers)
+                                    {
+                                        <option value="@tier">@tier</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">شروط الدفع</span>
+                                <select class="clean-input flex-1" @bind="customerData.PaymentTerms">
+                                    @foreach (var term in mockPaymentTerms)
+                                    {
+                                        <option value="@term">@term</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">شرائح الخصم</span>
+                                <select class="clean-input flex-1"><option>خصم عملاء الفئة أ (5%)</option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">مندوب المبيعات</span>
+                                <select class="clean-input flex-1" @bind="customerData.SalesRepresentative">
+                                    @foreach (var rep in mockSalesReps)
+                                    {
+                                        <option value="@rep">@rep</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">مركز التكلفة</span>
+                                <select class="clean-input flex-1"><option>الفرع الرئيسي - الإدارة العامة</option></select>
+                            </div>
+                        </div>
+
+                        <div class="form-side-column justify-content-center">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-white border rounded">
+                                <span class="fw-bold text-dark">شركات التأمين مؤمن عليه ؟</span>
+                                <label class="switch-toggle-label">
+                                    <input type="checkbox" class="switch-input" @bind="customerData.IsInsured" />
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="text-muted small">@(customerData.IsInsured ? "نعم" : "لا")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 2: الضرائب -->
+        @if (activeTab == 2)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">الضرائب</span></div>
+                <div class="section-with-blue-line" style="max-width: 600px;">
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">يتعامل بالضريبة</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="customerData.TaxEnabled" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="small text-muted fw-bold">@(customerData.TaxEnabled ? "نعم" : "لا")</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">نوع الحساب</span>
+                        <select class="clean-input flex-1" @bind="customerData.TaxAccountType">
+                            <option value="شركة محلية">شركة محلية</option>
+                            <option value="شركة أجنبية">شركة أجنبية</option>
+                            <option value="شخص طبيعي">شخص طبيعي</option>
+                        </select>
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">الضريبة</span>
+                        <select class="clean-input flex-1" @bind="customerData.TaxType">
+                            <option value="ضريبة القيمة المضافة 15 %">ضريبة القيمة المضافة 15 %</option>
+                            <option value="معفي من الضريبة">معفي من الضريبة</option>
+                        </select>
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">رقم التسجيل</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxRegistrationNumber" />
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">البطاقة الضريبية</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxCard" />
+                    </div>
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title-wide">مأمورية الضرائب</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxAuthorityOffice" />
+                    </div>
+                    <div class="field-entry-line">
+                        <span class="field-title-wide">السجل التجاري</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.CommercialRegister" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 3: بيانات الإتصال -->
+        @if (activeTab == 3)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">بيانات الاتصال</span></div>
+                <div class="section-with-blue-line mb-4">
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title">التليفون</span>
+                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Phone1" placeholder="رقم رئيسي" />
+                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Phone2" placeholder="رقم إضافي" />
+                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Mobile" placeholder="الهاتف المحمول" />
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line">
+                        <span class="field-title">البريد الإلكتروني</span>
+                        <input type="email" class="clean-input flex-1" @bind="customerData.Email" placeholder="info@domain.com" />
+                    </div>
+                </div>
+
+                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
+                <div class="section-with-blue-line" style="max-width: 650px;">
+                    <div class="field-entry-line mb-2"><span class="field-title">البلد</span><select class="clean-input flex-1"><option>مصر</option><option>المملكة العربية السعودية</option></select><span class="req-star me-1">*</span></div>
+                    <div class="field-entry-line mb-2">
+                        <span class="field-title">المنطقة</span>
+                        <select class="clean-input flex-1"><option>القاهرة الكبرى</option><option>الدلتا</option></select>
+                        <button class="btn-addon-square" type="button">+</button>
+                    </div>
+                    <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="customerData.Governorate" /></div>
+                    <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="customerData.City" /></div>
+                    <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
+                    <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="customerData.Landmark" /></div>
+                    <div class="field-entry-line mb-2">
+                        <span class="field-title">رقم المبنى</span>
+                        <input type="text" class="clean-input" style="width: 100px;" @bind="customerData.BuildingNo" />
+                        <span class="small text-muted ms-2">الدور</span>
+                        <input type="text" class="clean-input" style="width: 80px;" @bind="customerData.FloorNo" />
+                        <span class="small text-muted ms-2">الشقة</span>
+                        <input type="text" class="clean-input" style="width: 80px;" @bind="customerData.ApartmentNo" />
+                    </div>
+                    <div class="field-entry-line mb-2"><span class="field-title">العنوان</span><input type="text" class="clean-input flex-1" @bind="customerData.FullAddress" /></div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 4: بيانات إضافية -->
+        @if (activeTab == 4)
+        {
+            <div class="tab-content-seamless">
+                <div class="d-flex gap-4 mb-4">
+                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
+                        <span>له مسلسل</span>
+                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.HasSerial" /><span class="switch-slider"></span></label>
+                        <span class="text-muted small">@(customerData.HasSerial ? "نعم" : "لا")</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
+                        <span>يتعامل ك عميل و</span>
+                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.IsDualRole" /><span class="switch-slider"></span></label>
+                        <span class="text-muted small">@(customerData.IsDualRole ? "نعم" : "لا")</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
+                        <span>يتعامل بنقاط</span>
+                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.UsesPoints" /><span class="switch-slider"></span></label>
+                        <span class="text-muted small">@(customerData.UsesPoints ? "نعم" : "لا")</span>
+                    </div>
+                </div>
+
+                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">اخري</span></div>
+                <div class="section-with-blue-line">
+                    <div class="two-column-form-grid">
+                        <div class="form-side-column">
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">رقم الهوية</span><input type="text" class="clean-input flex-1" @bind="customerData.NationalId" /></div>
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">جهة العمل</span><input type="text" class="clean-input flex-1" @bind="customerData.Employer" /></div>
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">الضامن الأول</span><input type="text" class="clean-input flex-1" @bind="customerData.Guarantor1" /></div>
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">الضامن الثاني</span><input type="text" class="clean-input flex-1" @bind="customerData.Guarantor2" /></div>
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">رقم الحساب البنكي</span><input type="text" class="clean-input flex-1" @bind="customerData.BankAccountNo" /></div>
+                            <div class="field-entry-line mb-2"><span class="field-title-wide">اسم البنك</span><input type="text" class="clean-input flex-1" @bind="customerData.BankName" /></div>
+                            <div class="field-entry-line"><span class="field-title-wide">الملاحظات</span><textarea class="clean-input flex-1" rows="3" @bind="customerData.Notes"></textarea></div>
+                        </div>
+
+                        <div class="form-side-column">
+                            <div class="section-block-title text-center mb-2">حقول اضافية</div>
+                            @for (int i = 1; i <= 8; i++)
+                            {
+                                <div class="field-entry-line mb-2">
+                                    <span class="small text-muted" style="width: 50px;">الحقل @i</span>
+                                    <select class="clean-input flex-1"><option>قيمة افتراضية @i</option></select>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 5: الانترنت -->
+        @if (activeTab == 5)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">خدمة الانترنت</span></div>
+                <div class="section-with-blue-line" style="max-width: 600px;">
+                    <div class="field-entry-line mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.EnableInternetAccess" />
+                            <span class="fw-bold text-dark">تفعيل الدخول عبر الانترنت</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <span class="field-title">اسم المستخدم</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.InternetUsername" disabled="@(!customerData.EnableInternetAccess)" />
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <span class="field-title">الرقم السري</span>
+                        <input type="password" class="clean-input flex-1" @bind="customerData.InternetPassword" disabled="@(!customerData.EnableInternetAccess)" />
+                        <span class="req-star me-1">*</span>
+                    </div>
+                    <div class="field-entry-line mb-4">
+                        <span class="field-title">اسم العميل</span>
+                        <input type="text" class="clean-input flex-1" @bind="customerData.InternetDisplayName" disabled="@(!customerData.EnableInternetAccess)" />
+                        <span class="req-star me-1">*</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+@code {
+    private int activeTab = 1;
+    private bool isBranchPopupOpen = false;
+    private void ToggleBranchPopup() => isBranchPopupOpen = !isBranchPopupOpen;
+    private void CloseAllPopups() => isBranchPopupOpen = false;
+    private void SaveData() { }
+
+    private List<string> mockBranches = new() { "الفرع الرئيسي", "فرع قويسنا", "فرع القاهرة", "فرع الإسكندرية" };
+    private List<string> mockCurrencies = new() { "EGP", "USD", "SAR", "AED", "EUR" };
+    private List<string> mockLedgerAccounts = new() { "موردون", "عملاء", "أوراق قبض", "أوراق دفع" };
+    private List<string> mockPriceTiers = new() { "سعر البيع", "سعر الجملة", "سعر نصف الجملة" };
+    private List<string> mockPaymentTerms = new() { "نقدي فوراً", "أجل 30 يوم", "أجل 60 يوم" };
+    private List<string> mockSalesReps = new() { "أحمد محمد", "محمود إبراهيم", "عمرو دياب" };
+
+    private void SelectBranch(string branch)
+    {
+        customerData.Branch = branch;
+        isBranchPopupOpen = false;
+    }
+
+    private CustomerModel customerData = new()
+    {
+        CustomerCode = "10109",
+        Name = "شركة التكنولوجيا المتقدمة للتجارة",
+        IsActive = true,
+        OpeningBalanceDate = "2026-09-21",
+        OpeningBalanceAmount = 15400.00m,
+        Branch = "الفرع الرئيسي",
+        NestedWithin = "القسم التجاري الأول",
+        Currency = "EGP",
+        ExchangeRate = 1,
+        LedgerAccount = "موردون",
+        DefaultDealType = "قسط",
+        CreditLimit = 80000.00m,
+        DealSide = "موردين بصريّة",
+        ComplementaryAccount = "الأرصدة الإفتتاحية",
+        PriceTier = "سعر البيع",
+        PaymentTerms = "أجل 30 يوم",
+        SalesRepresentative = "أحمد محمد",
+        IsInsured = false,
+        TaxEnabled = true,
+        TaxAccountType = "شركة محلية",
+        TaxType = "ضريبة القيمة المضافة 15 %",
+        TaxRegistrationNumber = "99887766-5",
+        TaxCard = "554433-2",
+        TaxAuthorityOffice = "مأمورية ضرائب الاستثمار",
+        CommercialRegister = "123456 تجاري عام",
+        Phone1 = "01012345678",
+        Phone2 = "0482345678",
+        Mobile = "01198765432",
+        Email = "info@advancedtech.eg",
+        Governorate = "المنوفية",
+        City = "قويسنا",
+        Street = "شارع الجيش الرئيسي",
+        Landmark = "بجوار البنك الأهلي",
+        BuildingNo = "14",
+        FloorNo = "الثالث",
+        ApartmentNo = "302",
+        FullAddress = "شارع الجيش، برج الأمل، الدور الثالث",
+        HasSerial = false,
+        IsDualRole = true,
+        UsesPoints = false,
+        NationalId = "29501011234567",
+        Employer = "القطاع الخاص",
+        Guarantor1 = "إبراهيم حسن",
+        Guarantor2 = "خالد عبد الله",
+        BankAccountNo = "EG1000030000000123456789",
+        BankName = "بنك مصر - فرع قويسنا",
+        Notes = "عميل مميز ومنتظم في السداد",
+        EnableInternetAccess = true,
+        InternetUsername = "adv_tech_user",
+        InternetPassword = "securePassword123",
+        InternetDisplayName = "مجموعة التقنية المتقدمة"
+    };
+
+    public class CustomerModel
+    {
+        public string CustomerCode { get; set; } = "";
+        public string Name { get; set; } = "";
+        public bool IsActive { get; set; }
+        public string OpeningBalanceDate { get; set; } = "";
+        public decimal OpeningBalanceAmount { get; set; }
+        public string Branch { get; set; } = "";
+        public string NestedWithin { get; set; } = "";
+        public string Currency { get; set; } = "";
+        public decimal ExchangeRate { get; set; }
+        public string LedgerAccount { get; set; } = "";
+        public string DefaultDealType { get; set; } = "";
+        public decimal CreditLimit { get; set; }
+        public string DealSide { get; set; } = "";
+        public string ComplementaryAccount { get; set; } = "";
+        public string PriceTier { get; set; } = "";
+        public string PaymentTerms { get; set; } = "";
+        public string SalesRepresentative { get; set; } = "";
+        public bool IsInsured { get; set; }
+        public bool TaxEnabled { get; set; }
+        public string TaxAccountType { get; set; } = "";
+        public string TaxType { get; set; } = "";
+        public string TaxRegistrationNumber { get; set; } = "";
+        public string TaxCard { get; set; } = "";
+        public string TaxAuthorityOffice { get; set; } = "";
+        public string CommercialRegister { get; set; } = "";
+        public string Phone1 { get; set; } = "";
+        public string Phone2 { get; set; } = "";
+        public string Mobile { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Governorate { get; set; } = "";
+        public string City { get; set; } = "";
+        public string Street { get; set; } = "";
+        public string Landmark { get; set; } = "";
+        public string BuildingNo { get; set; } = "";
+        public string FloorNo { get; set; } = "";
+        public string ApartmentNo { get; set; } = "";
+        public string FullAddress { get; set; } = "";
+        public bool HasSerial { get; set; }
+        public bool IsDualRole { get; set; }
+        public bool UsesPoints { get; set; }
+        public string NationalId { get; set; } = "";
+        public string Employer { get; set; } = "";
+        public string Guarantor1 { get; set; } = "";
+        public string Guarantor2 { get; set; } = "";
+        public string BankAccountNo { get; set; } = "";
+        public string BankName { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public bool EnableInternetAccess { get; set; }
+        public string InternetUsername { get; set; } = "";
+        public string InternetPassword { get; set; } = "";
+        public string InternetDisplayName { get; set; } = "";
+    }
+}

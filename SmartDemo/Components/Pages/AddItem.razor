@@ -1,0 +1,1629 @@
+﻿@page "/AddItem"
+@rendermode InteractiveServer
+
+<div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <div class="main-canvas" @onclick:stopPropagation>
+
+        <!-- Top Header Area -->
+        <div class="header-master-grid">
+
+            <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
+            <div class="image-right-block">
+                <div class="image-square">
+                    <span class="image-placeholder-text">الصورة</span>
+                </div>
+                <div class="active-check-group">
+                    <input type="checkbox" id="chkActive" class="chk-box" @bind="itemData.IsActive" />
+                    <label for="chkActive" class="small-chk-label">نشط</label>
+                </div>
+                <div class="orange-divider-line"></div>
+            </div>
+
+            <!-- 2. Section Labels -->
+            <div class="labels-column">
+                <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
+                <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
+                <div class="label-row-cell"><span class="hdr-lbl">نوع الصنف</span></div>
+            </div>
+
+            <!-- 3. Form Input Controls -->
+            <div class="controls-column">
+                <!-- Row 1: Number & QR -->
+                <div class="form-row-compact">
+                    <input type="text" class="clean-input barcode-main-input" @bind="itemData.BarcodeNumber" />
+
+                    <div class="qr-dropdown-combo">
+                        <select class="clean-select-mini" value="@selectedQrOption" @onchange="OnQrTypeChanged">
+                            @foreach (var opt in qrOptionList)
+                            {
+                                <option value="@opt.Name">@opt.Name</option>
+                            }
+                        </select>
+                        <span class="ico-folder">@GetSelectedQrIcon()</span>
+                        <span class="ico-arrow">▼</span>
+                    </div>
+
+                    <span class="req-star me-2 ms-1">*</span>
+                    <button type="button" class="btn-qr-hover" @onclick="OpenQrModal">QR</button>
+                </div>
+
+                <!-- Row 2: Name Input with Translation Icon on Left -->
+                <div class="form-row-compact name-field-relative">
+                    <div class="w-100">
+                        <input type="text" class="clean-input w-100" @bind="itemData.Name" />
+                    </div>
+
+                    <span class="req-star me-1 ms-1">*</span>
+
+                    <button type="button" class="btn-trans-trigger" @onclick="ToggleTranslationPopup" title="ترجمة الأسماء">
+                        <span class="ico-trans-char">🌐</span>
+                    </button>
+
+                    @if (isTranslationPopupOpen)
+                    {
+                        <div class="trans-popup-box">
+                            <div class="trans-input-wrap">
+                                <input type="text" class="trans-input text-end" @bind="itemData.EnglishName" placeholder="الاسم انجليزي" />
+                            </div>
+                            <div class="trans-popup-actions">
+                                <button type="button" class="btn-popup-icon" @onclick="OpenLanguagesModal" title="إعدادات اللغات">⚙</button>
+                                <button type="button" class="btn-popup-icon" @onclick="CloseTranslationPopup" title="إغلاق">✕</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Row 3: Item Type (Tree Dropdown Hierarchy) -->
+                <div class="form-row-compact pos-relative">
+                    <div class="dropdown-anchor" style="width: 220px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTreeTypePopup">
+                            <span class="combo-display-text">@itemData.ItemType</span>
+                            <div class="combo-icons-inside">
+                                <span class="combo-arrow">▼</span>
+                            </div>
+                        </div>
+
+                        @if (isTreeTypePopupOpen)
+                        {
+                            <div class="tree-dropdown-panel" @onclick:stopPropagation>
+                                <div class="tree-scroll-container">
+                                    @foreach (var node in itemTypeTreeNodes)
+                                    {
+                                        <div class="tree-node-item @(node.IsExpanded ? "node-open" : "")" style="padding-right: @(node.Level * 18 + 8)px;">
+                                            @if (node.Children.Any())
+                                            {
+                                                <span class="tree-toggle-ico" @onclick="() => node.IsExpanded = !node.IsExpanded">
+                                                    @(node.IsExpanded ? "▼" : "◀")
+                                                </span>
+                                                <span class="tree-folder-ico">📁</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tree-leaf-spacer"></span>
+                                                <span class="tree-file-ico">📄</span>
+                                            }
+                                            <span class="tree-node-label @(itemData.ItemType == node.Name ? "active-tree-node" : "")"
+                                                  @onclick="() => SelectTreeNode(node.Name)">
+                                                @node.Name
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <span class="req-star me-2 ms-1">*</span>
+                    <span class="type-description-hint">@itemData.ItemTypeNote</span>
+                </div>
+            </div>
+
+            <!-- 4. Save Button on Far Left -->
+            <div class="save-cell">
+                <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+            </div>
+
+        </div>
+
+        <!-- Navigation Tabs Bar -->
+        <div class="tab-strip-bar">
+            <button class="strip-tab-btn @(activeTab == 1 ? "active" : "")" @onclick="() => activeTab = 1" type="button">بيانات الصنف</button>
+            <button class="strip-tab-btn @(activeTab == 2 ? "active" : "")" @onclick="() => activeTab = 2" type="button">الحسابات</button>
+            <button class="strip-tab-btn @(activeTab == 3 ? "active" : "")" @onclick="() => activeTab = 3" type="button">الخصائص</button>
+            <button class="strip-tab-btn @(activeTab == 4 ? "active" : "")" @onclick="() => activeTab = 4" type="button">الحقول الإضافية</button>
+            <button class="strip-tab-btn @(activeTab == 5 ? "active" : "")" @onclick="() => activeTab = 5" type="button">المعادلة</button>
+        </div>
+
+        <!-- Tab 1: بيانات الصنف -->
+        @if (activeTab == 1)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-title-header mb-3">
+                    <span class="fw-bold fs-6 text-dark">التصنيف</span>
+                </div>
+
+                <div class="section-with-blue-line mb-4">
+                    <div class="two-column-form-grid">
+                        <div class="form-side-column">
+                            <!-- 1. الفرع -->
+                            <div class="field-entry-line">
+                                <span class="field-title">الفرع</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
+                                        <span class="combo-display-text">@GetSelectedBranchesSummary()</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isBranchPopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                <div class="panel-checkbox-row select-all-row" @onclick="ToggleAllBranches">
+                                                    <input type="checkbox" class="chk-box" checked="@IsAllBranchesSelected" />
+                                                    <span class="checkbox-label">(Select All)</span>
+                                                </div>
+                                                @foreach (var b in branchList)
+                                                {
+                                                    <div class="panel-checkbox-row" @onclick="() => b.IsSelected = !b.IsSelected">
+                                                        <input type="checkbox" class="chk-box" @bind="b.IsSelected" @onclick:stopPropagation />
+                                                        <span class="checkbox-label">@b.Name</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="panel-footer-actions">
+                                                <button type="button" class="btn-panel-cancel" @onclick="() => isBranchPopupOpen = false">إلغاء</button>
+                                                <button type="button" class="btn-panel-ok" @onclick="() => isBranchPopupOpen = false">موافق</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- 2. المخازن -->
+                            <div class="field-entry-line">
+                                <span class="field-title">المخازن</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleWarehousePopup">
+                                        <span class="combo-display-text">@GetSelectedWarehousesSummary()</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isWarehousePopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                <div class="panel-checkbox-row select-all-row" @onclick="ToggleAllWarehouses">
+                                                    <input type="checkbox" class="chk-box" checked="@IsAllWarehousesSelected" />
+                                                    <span class="checkbox-label">(كل المخازن)</span>
+                                                </div>
+                                                @foreach (var w in warehouseList)
+                                                {
+                                                    <div class="panel-checkbox-row" @onclick="() => w.IsSelected = !w.IsSelected">
+                                                        <input type="checkbox" class="chk-box" @bind="w.IsSelected" @onclick:stopPropagation />
+                                                        <span class="checkbox-label">@w.Name</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="panel-footer-actions">
+                                                <button type="button" class="btn-panel-cancel" @onclick="() => isWarehousePopupOpen = false">إلغاء</button>
+                                                <button type="button" class="btn-panel-ok" @onclick="() => isWarehousePopupOpen = false">موافق</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- 3. المجموعة -->
+                            <div class="field-entry-line">
+                                <span class="field-title">المجموعة</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleGroupPopup">
+                                        <span class="combo-display-text">@itemData.GroupCategory</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenGroupModal" title="إضافة مجموعة">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isGroupPopupOpen)
+                                    {
+                                        <div class="custom-table-popup" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var g in groupList)
+                                                {
+                                                    <div class="table-popup-row @(itemData.GroupCategory == g ? "active-row" : "")"
+                                                         @onclick="() => SelectGroup(g)">
+                                                        @g
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isGroupPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- 4. الباركود العالمي -->
+                            <div class="field-entry-line">
+                                <span class="field-title">الباركود العالمي</span>
+                                <div class="barcode-control flex-1">
+                                    <select class="mini-prefix-select" @bind="itemData.GlobalBarcodeType">
+                                        <option value="GS1">GS1</option>
+                                        <option value="EAN">EAN</option>
+                                    </select>
+                                    <input type="text" class="clean-input flex-1 border-0" @bind="itemData.GlobalBarcodeValue" />
+                                </div>
+                            </div>
+
+                            <!-- 5. وحدات القياس -->
+                            <div class="field-entry-line">
+                                <span class="field-title">وحدات القياس</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleUnitPopup">
+                                        <span class="combo-display-text">@itemData.MeasurementUnit</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenUnitsModal" title="إضافة وحدة">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isUnitPopupOpen)
+                                    {
+                                        <div class="custom-table-popup" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-search-box">
+                                                <input type="text" class="clean-input w-100" @bind="unitSearchTerm" @bind:event="oninput" placeholder="" />
+                                            </div>
+                                            <div class="table-popup-list">
+                                                @foreach (var u in FilteredUnitList)
+                                                {
+                                                    <div class="table-popup-row @(itemData.MeasurementUnit == u ? "active-row" : "")"
+                                                         @onclick="() => SelectUnit(u)">
+                                                        @u
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isUnitPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-side-column">
+                            <!-- 6. اسم المورد -->
+                            <div class="field-entry-line">
+                                <span class="field-title">اسم المورد</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleSupplierPopup">
+                                        <span class="combo-display-text">@itemData.SupplierName</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isSupplierPopupOpen)
+                                    {
+                                        <div class="custom-supplier-grid-panel" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                                <div class="col-code">الكود</div>
+                                            </div>
+                                            <div class="supplier-grid-subbar">
+                                                <div class="col-name text-center text-muted small">🔤</div>
+                                                <div class="col-code text-center text-muted small">🔤</div>
+                                            </div>
+                                            <div class="supplier-grid-rows">
+                                                @foreach (var sup in supplierList)
+                                                {
+                                                    <div class="supplier-row @(itemData.SupplierName == sup.Name ? "active-row" : "")"
+                                                         @onclick="() => SelectSupplier(sup.Name)">
+                                                        <div class="col-name">@sup.Name</div>
+                                                        <div class="col-code">@sup.Code</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- 7. سياسة التوزيع -->
+                            <div class="field-entry-line">
+                                <span class="field-title">سياسة التوزيع</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePolicyPopup">
+                                        <span class="combo-display-text">@itemData.DistributionPolicy</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isPolicyPopupOpen)
+                                    {
+                                        <div class="custom-table-popup" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var p in policyList)
+                                                {
+                                                    <div class="table-popup-row @(itemData.DistributionPolicy == p ? "active-row" : "")"
+                                                         @onclick="() => SelectPolicy(p)">
+                                                        @p
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isPolicyPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- 8. حساب الاستاذ -->
+                            <div class="field-entry-line">
+                                <span class="field-title">حساب الاستاذ</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger">
+                                        <select class="clean-select-overlay" @bind="itemData.GeneralLedgerAccount">
+                                            <option value=""></option>
+                                            @foreach (var a in ledgerAccounts)
+                                            {
+                                                <option value="@a">@a</option>
+                                            }
+                                        </select>
+                                        <span class="combo-display-text">@itemData.GeneralLedgerAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button" title="إضافة حساب">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-entry-line spacer-line"></div>
+
+                            <!-- 9. طريقة تقييم المخزون -->
+                            <div class="field-entry-line">
+                                <span class="field-title">طريقة تقييم المخزون</span>
+                                <select class="clean-input flex-1" @bind="itemData.ValuationMethod">
+                                    @foreach (var vm in valuationMethods)
+                                    {
+                                        <option value="@vm">@vm</option>
+                                    }
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="section-with-blue-line mb-4">
+                    <div class="table-scroll-wrapper">
+                        <table class="item-details-table">
+                            <thead>
+                                <tr>
+                                    <th>الباركود</th>
+                                    <th>عدد القطع</th>
+                                    <th>الوحدة</th>
+                                    <th>سعر الشراء</th>
+                                    <th>سعر البيع</th>
+                                    <th>أفتراضي للشراء</th>
+                                    <th>أفتراضي للبيع</th>
+                                    <th>نشط</th>
+                                    <th style="width: 32px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in itemData.UnitsTableRows)
+                                {
+                                    <tr>
+                                        <td>@row.Barcode</td>
+                                        <td>@row.PiecesCount</td>
+                                        <td>@row.Unit</td>
+                                        <td>@row.PurchasePrice</td>
+                                        <td>@row.SalePrice</td>
+                                        <td><input type="checkbox" @bind="row.IsDefaultPurchase" /></td>
+                                        <td><input type="checkbox" @bind="row.IsDefaultSale" /></td>
+                                        <td><input type="checkbox" @bind="row.IsActive" /></td>
+                                        <td><button class="delete-icon-btn" type="button">✖</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Opening Balance Section -->
+                <div class="section-with-blue-line">
+                    <div class="opening-balance-section">
+                        <span class="opening-balance-lbl">الرصيد الإفتتاحي</span>
+                        <select class="clean-input" style="width: 170px;" @bind="itemData.OpeningBalance">
+                            <option value=""></option>
+                            <option value="رصيد أولي 1">رصيد أولي 1</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 2: الحسابات -->
+        @if (activeTab == 2)
+        {
+            <div class="tab-content-seamless">
+                <div class="accounts-tab-grid">
+                    <div class="accounts-column-block">
+                        <div class="section-block-title">الضرائب</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">يخضع القيمة المضافة ؟</span>
+                                <select class="clean-input flex-1" @bind="itemData.VatApplicable">
+                                    <option value="نعم">كما بالفاتورة</option>
+                                    <option value="لا">لا</option>
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">حساب الضريبة</span>
+                                <select class="clean-input flex-1" @bind="itemData.TaxAccount">
+                                    <option></option>
+                                    @foreach (var t in taxAccounts)
+                                    {
+                                        <option value="@t">@t</option>
+                                    }
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">نسبة الضريبة</span>
+                                <div class="d-flex align-items-center gap-2 flex-1">
+                                    <input type="number" class="clean-input text-center" style="width: 70px;" value="0" />
+                                    <span class="small text-muted">المبيعات</span>
+                                    <input type="number" class="clean-input text-center" style="width: 70px;" value="0" />
+                                    <span class="small text-muted">المشتريات</span>
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">سعر الصنف يشمل الضريبة ؟</span>
+                                <div class="d-flex align-items-center gap-2 flex-1">
+                                    <input type="checkbox" class="form-check-input m-0" />
+                                    <span class="small text-muted">لا</span>
+                                </div>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">يخضع لضريبة الخصم</span>
+                                <select class="clean-input flex-1"><option>كما بالفاتورة</option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">حساب ضريبة الخصم</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">نسبة الضريبة</span>
+                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">التنبيهات</div>
+                        <div class="section-with-blue-line">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">الحد الادنى</span>
+                                <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MinLimit" />
+                                <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">الحد الأقصى</span>
+                                <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MaxLimit" />
+                                <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">فترة الركود</span>
+                                <input type="number" class="clean-input" style="width: 90px;" value="10" />
+                                <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accounts-column-block">
+                        <div class="section-block-title">الحسابات</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">حساب المبيعات</span>
+                                <select class="clean-input flex-1" @bind="itemData.SalesAccount">
+                                    @foreach (var a in ledgerAccounts)
+                                    {
+                                        <option value="@a">@a</option>
+                                    }
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">مرتجع المبيعات</span>
+                                <select class="clean-input flex-1" @bind="itemData.SalesReturnAccount">
+                                    @foreach (var a in ledgerAccounts)
+                                    {
+                                        <option value="@a">@a</option>
+                                    }
+                                </select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">الخصومات</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">يخضع للخصم النقدي</span>
+                                <div class="d-flex align-items-center gap-2 flex-1">
+                                    <input type="checkbox" class="form-check-input m-0" />
+                                    <span class="small text-muted">نعم</span>
+                                </div>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">طريقة الخصم</span>
+                                <select class="clean-input flex-1"><option>بالنسبة</option></select>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">خصم المشتريات</span>
+                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <span class="small text-muted">%</span>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">خصم المبيعات</span>
+                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <span class="small text-muted">%</span>
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">اخرى</div>
+                        <div class="section-with-blue-line">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">مركز التكلفة</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">تكلفة إضافية</span>
+                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">رقم المسلسل</span>
+                                <input type="text" class="clean-input" style="width: 120px;" value="24040" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 3: الخصائص -->
+        @if (activeTab == 3)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-block-title">الوصف</div>
+                <textarea class="clean-input w-100 mb-4" rows="3" @bind="itemData.Description"></textarea>
+
+                <div class="d-flex justify-content-between gap-4">
+                    <div class="flex-grow-1">
+                        <div class="section-block-title">شاشة اللمس</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="field-entry-line">
+                                <span class="field-title">الحجم</span>
+                                <select class="clean-input flex-1" style="max-width: 260px;"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">اللون</span>
+                                <div class="d-flex align-items-center gap-1" style="width: 260px;">
+                                    <select class="clean-input flex-1"><option></option></select>
+                                    <div style="width: 28px; height: 26px; border: 1px solid #ced4da; background: #fff; border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">إخفاء من شاشة اللمس</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="checkbox" class="form-check-input m-0" />
+                                    <span class="small text-muted">لا</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">التجانس بين الواحدات</div>
+                        <div class="section-with-blue-line">
+                            <div class="d-flex align-items-start gap-3">
+                                <select class="clean-input" style="width: 180px;"><option></option></select>
+                                <span class="text-muted small" style="max-width: 230px; line-height: 1.4;">
+                                    مثلاً في حالة التعامل مع (الأقمشة) فيتم القياس بوحدتين مختلفتين وهما عدد الأمتار كوحدة رئيسة والوحدة الثانية هي عدد الأثواب ..
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="width: 380px;">
+                        <div class="section-block-title">أماكن التخزين</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">المكان الأول</span>
+                                <input type="text" class="clean-input flex-1" @bind="itemData.LocationOne" />
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">المكان الثاني</span>
+                                <input type="text" class="clean-input flex-1" @bind="itemData.LocationTwo" />
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">المكان الثالث</span>
+                                <input type="text" class="clean-input flex-1" />
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">الكلمات الدلالية</div>
+                        <div class="section-with-blue-line mb-4">
+                            <div class="d-flex align-items-start gap-2">
+                                <button class="btn-addon-square" type="button">+</button>
+                                <div style="flex: 1; height: 75px; background: #fff; border: 1px solid #ced4da; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="section-block-title">الوصف</div>
+                        <div class="section-with-blue-line">
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">GPC</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">الشركة المنتجة</span>
+                                <div class="combo-with-btn flex-1">
+                                    <button class="btn-addon-square" type="button">+</button>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">المادة الفعالة</span>
+                                <div class="combo-with-btn flex-1">
+                                    <button class="btn-addon-square" type="button">+</button>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title-wide">نشط من</span>
+                                <select class="clean-input" style="width: 140px;"><option></option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 4: الحقول الإضافية -->
+        @if (activeTab == 4)
+        {
+            <div class="tab-content-seamless">
+                <div class="section-block-title">الحقول الإضافية</div>
+                <div class="section-with-blue-line">
+                    <div style="max-width: 500px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; padding: 18px 24px;">
+                        <div class="text-end fw-bold mb-3 pb-2 border-bottom" style="font-size: 0.85rem; color: #555;">DEXEF</div>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="field-entry-line">
+                                <span class="field-title">الطلول</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">العرض</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">الارتفاع</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">عدد الالواح</span>
+                                <select class="clean-input flex-1"><option></option></select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">تاريخ المصروف</span>
+                                <div class="d-flex align-items-center flex-1 gap-1">
+                                    <select class="clean-input" style="width: 40px;"><option></option></select>
+                                    <input type="text" class="clean-input flex-1 text-center" value="2026-09-20" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 5: المعادلة -->
+        @if (activeTab == 5)
+        {
+            <div class="tab-content-seamless">
+                <div class="table-scroll-wrapper">
+                    <table class="item-details-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>المعادلة</th>
+                                <th style="width: 220px;">الحقل</th>
+                                <th style="width: 220px;">الاسم</th>
+                                <th style="width: 40px; color: #f39c12;">☼</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var eq in itemData.EquationRows)
+                            {
+                                <tr>
+                                    <td><button class="delete-icon-btn" type="button">✖</button></td>
+                                    <td><input type="text" class="clean-input w-100" @bind="eq.Equation" /></td>
+                                    <td>
+                                        <select class="clean-input w-100" @bind="eq.Field">
+                                            <option value="سعر البيع الافتراضي">سعر البيع الافتراضي</option>
+                                            <option value="سعر الشراء">سعر الشراء</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="clean-input w-100" value="" /></td>
+                                    <td></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<!-- ================= MODALS SECTION ================= -->
+
+<!-- 1. QR Barcode Modal Dialog -->
+@if (isQrModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="qr-modal-dialog" dir="ltr">
+            <div class="qr-modal-header">
+                <span class="qr-modal-title">QR Barcode</span>
+                <button type="button" class="btn-modal-close" @onclick="CloseQrModal">✕</button>
+            </div>
+            <div class="qr-modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="qr-modal-subtext">Please scan your barcode ?</span>
+                    <button type="button" class="btn-generate-blue" @onclick="GenerateRandomBarcode">Generate</button>
+                </div>
+                <input type="text" class="modal-barcode-input" @bind="modalBarcodeValue" placeholder="" />
+            </div>
+            <div class="qr-modal-footer">
+                <button type="button" class="btn-modal-ok" @onclick="ApplyModalBarcode">OK</button>
+                <button type="button" class="btn-modal-cancel" @onclick="CloseQrModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 2. Languages Configuration Dialog Modal -->
+@if (isLanguagesModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="languages-modal-dialog">
+            <div class="languages-modal-header">
+                <button type="button" class="btn-modal-close" @onclick="CloseLanguagesModal">✕</button>
+                <span class="languages-modal-title">اللغات المستخدمة</span>
+            </div>
+
+            <div class="languages-modal-body">
+                <p class="languages-prompt-text">من فضلك حدد اللغات التي تستخدمها في التعامل مع البرنامج</p>
+
+                <div class="languages-frame-box">
+                    <div class="languages-items-column">
+                        @foreach (var lang in availableLanguages)
+                        {
+                            <div class="language-item-row">
+                                <span class="lang-title">@lang.Name</span>
+                                <input type="checkbox" class="chk-box" @bind="lang.IsSelected" />
+                                <span class="lang-flag">@lang.FlagEmoji</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="lang-sidebar-banner">
+                        <span>اللغات المستخدمة</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="languages-modal-footer">
+                <button type="button" class="btn-lang-cancel" @onclick="CloseLanguagesModal">إغلاق</button>
+                <button type="button" class="btn-lang-submit" @onclick="SaveLanguages">موافق</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 3. Modal: مجموعات الاصناف -->
+@if (isGroupModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="group-master-modal-dialog" dir="rtl">
+            <!-- Modal Top Bar -->
+            <div class="master-modal-topbar">
+                <span class="modal-top-title">مجموعات الاصناف</span>
+
+                <div class="topbar-controls-left">
+                    <label class="switch-toggle-label">
+                        <input type="checkbox" class="switch-input" checked @onchange="ToggleActiveState" />
+                        <span class="switch-slider"></span>
+                    </label>
+                    <span class="small text-muted fw-bold">نشط</span>
+                    <span class="ico-info-circle">ⓘ</span>
+                    <button type="button" class="btn-topbar-close-flat" @onclick="() => isGroupModalOpen = false">✕</button>
+                </div>
+            </div>
+
+            <!-- Modal Content Area -->
+            <div class="master-modal-body">
+                
+                <!-- Master Header Grid -->
+                <div class="group-modal-header-grid mb-3">
+                    <!-- 1. Books Icon on Far Right -->
+                    <div class="group-modal-icon-col">
+                        <div class="books-icon-box">
+                            <span class="fs-2">📑</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Labels with Orange Bars in Middle -->
+                    <div class="group-modal-labels-col">
+                        <div class="group-lbl-row">
+                            <span class="orange-bar-vert"></span>
+                            <span class="hdr-lbl">الرقم</span>
+                        </div>
+                        <div class="group-lbl-row">
+                            <span class="orange-bar-vert"></span>
+                            <span class="hdr-lbl">الاسم</span>
+                        </div>
+                        <div class="group-lbl-row">
+                            <span class="orange-bar-vert"></span>
+                            <span class="hdr-lbl">النوع</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Input Controls Extending Left -->
+                    <div class="group-modal-inputs-col">
+                        <!-- Row 1: Number code with attached [ ▼ 🔀 ] on the right side, * on far left -->
+                        <div class="group-input-line pos-relative">
+                            <div class="modal-code-combo-wrapper">
+                               
+                                <input type="text" class="clean-input group-code-input" value="513" />
+                                <div class="group-prefix-combo" @onclick="ToggleModalCodePopup" @onclick:stopPropagation>
+                                    <span class="combo-arrow">▼</span>
+                                    <span class="ico-swap">@modalCodeIcon</span>
+                                </div>
+                                <span class="req-star me-2 ms-1">*</span>
+
+                                @if (isModalCodePopupOpen)
+                                {
+                                    <div class="modal-code-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("تلقائي", "⚙️")'>
+                                            <span>⚙️</span>
+                                            <span>تلقائي</span>
+                                        </div>
+                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("بالمجموعة", "📁")'>
+                                            <span>📁</span>
+                                            <span>بالمجموعة</span>
+                                        </div>
+                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("يدوي", "✋")'>
+                                            <span>✋</span>
+                                            <span>يدوي</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Name Input with Translation Icon on Left edge next to Asterisk * -->
+                        <div class="group-input-line pos-relative">                      
+                            <input type="text" class="clean-input flex-1" />
+                            <span class="req-star me-1 ms-1">*</span>
+                            <button type="button" class="btn-trans-trigger" @onclick="ToggleModalTransPopup" title="ترجمة الأسماء" @onclick:stopPropagation>
+                                <span class="ico-trans-char">🌐</span>
+                            </button>
+
+                            @if (isModalTransPopupOpen)
+                            {
+                                <div class="trans-popup-box modal-trans-popup-pos">
+                                    <div class="trans-input-wrap">
+                                        <input type="text" class="trans-input text-end" placeholder="الاسم انجليزي" />
+                                    </div>
+                                    <div class="trans-popup-actions">
+                                        <button type="button" class="btn-popup-icon" title="إعدادات اللغات" @onclick="OpenLanguagesModal">⚙</button>
+                                        <button type="button" class="btn-popup-icon" @onclick="() => isModalTransPopupOpen = false" title="إغلاق">✕</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Row 3: Type Dropdown -->
+                        <div class="group-input-line">
+                            <select class="clean-input w-100">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Strip Aligned Right -->
+                <div class="d-flex justify-content-start gap-2 mb-3 border-bottom pb-2">
+                    <button type="button" class="strip-tab-btn @(groupModalTab == 1 ? "active" : "")" @onclick="() => groupModalTab = 1">عام</button>
+                    <button type="button" class="strip-tab-btn @(groupModalTab == 2 ? "active" : "")" @onclick="() => groupModalTab = 2">الحسابات</button>
+                    <button type="button" class="strip-tab-btn @(groupModalTab == 3 ? "active" : "")" @onclick="() => groupModalTab = 3">المعادلة</button>
+                </div>
+
+                <!-- Tab 1: عام -->
+                @if (groupModalTab == 1)
+                {
+                    <div class="group-tab-columns">
+                        <!-- Right Column: Form Sections -->
+                        <div class="group-fields-side">
+                            <div class="section-block-title">الخصائص</div>
+                            <div class="section-with-blue-line mb-3">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">تندرج من</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">نوع الصنف</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">طريقة التقييم</span>
+                                    <select class="clean-input flex-1"><option>الوارد أولاً صادر أولاً</option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">مكان التخزين</span>
+                                    <div class="d-flex gap-2 flex-1">
+                                        <input type="text" class="clean-input flex-1" />
+                                        <input type="text" class="clean-input flex-1" />
+                                        <input type="text" class="clean-input flex-1" />
+                                    </div>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">التجانس بين الوحدات</span>
+                                    <select class="clean-input flex-1"><option>جميع وحدات الصنف متجانسة</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">اسم المورد</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                            </div>
+
+                            <div class="section-block-title">الوصف</div>
+                            <div class="section-with-blue-line mb-3">
+                                <textarea class="clean-input w-100" rows="3"></textarea>
+                            </div>
+
+                            <div class="section-block-title">شاشة اللمس</div>
+                            <div class="section-with-blue-line">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="checkbox" class="form-check-input m-0" />
+                                        <span class="small text-muted">اخفاء من شاشة اللمس</span>
+                                    </div>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">ترتيب الظهور في شاشة</span>
+                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="1" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Column: Large Image Box -->
+                        <div class="group-image-side">
+                            <div class="modal-large-img-box">
+                                <button type="button" class="btn-box-x">✕</button>
+                            </div>
+                            <span class="small text-muted mt-2">الصورة</span>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tab 2: الحسابات -->
+                @if (groupModalTab == 2)
+                {
+                    <div class="group-tab-accounts-layout">
+                        <!-- Right Column: الضرائب والتنبيهات -->
+                        <div class="modal-accounts-col">
+                            <div class="section-block-title">الضرائب</div>
+                            <div class="section-with-blue-line mb-3">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">يخضع للضريبة</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب الضريبة</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">نسبة الضريبة المبيعات</span>
+                                    <div class="d-flex align-items-center gap-1 flex-1">
+                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="small text-muted">%</span>
+                                    </div>
+                                    <span class="req-star me-1">*</span>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">نسبة الضريبة المشتريات</span>
+                                    <div class="d-flex align-items-center gap-1 flex-1">
+                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="small text-muted">%</span>
+                                    </div>
+                                    <span class="req-star me-1">*</span>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">هل السعر يشمل الضريبة ؟</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">يخضع لضريبة الخصم والإضافة</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب ضريبة الخصم</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">نسبة الضريبة</span>
+                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="0" />
+                                </div>
+                            </div>
+
+                            <div class="section-block-title">التنبيهات</div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">الحد الادنى</span>
+                                    <div class="d-flex gap-1 flex-1">
+                                        <input type="number" class="clean-input flex-1" />
+                                        <select class="clean-input" style="width: 85px;"><option>قطعة</option></select>
+                                    </div>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">الحد الأقصى</span>
+                                    <div class="d-flex gap-1 flex-1">
+                                        <input type="number" class="clean-input flex-1" />
+                                        <select class="clean-input" style="width: 85px;"><option>قطعة</option></select>
+                                    </div>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">فترة الركود</span>
+                                    <div class="d-flex gap-1 flex-1">
+                                        <input type="number" class="clean-input flex-1" />
+                                        <select class="clean-input" style="width: 85px;"><option>يوم</option></select>
+                                    </div>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
+                                    <div class="d-flex gap-1 flex-1">
+                                        <input type="number" class="clean-input flex-1" />
+                                        <select class="clean-input" style="width: 85px;"><option>يوم</option></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Column: الحسابات والخصومات -->
+                        <div class="modal-accounts-col">
+                            <div class="section-block-title">الحسابات</div>
+                            <div class="section-with-blue-line mb-3">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب المخزون</span>
+                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب المبيعات</span>
+                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب تكلفة المبيعات</span>
+                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">حساب مرتجع المبيعات</span>
+                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب تحت التشغيل</span>
+                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                </div>
+                            </div>
+
+                            <div class="section-block-title">الخصم</div>
+                            <div class="section-with-blue-line mb-3">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">طريقة الخصم</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">يخضع خصم التعجيل</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">خصم المشتريات</span>
+                                    <div class="d-flex align-items-center gap-1 flex-1">
+                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="small text-muted">%</span>
+                                    </div>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">خصم المبيعات</span>
+                                    <div class="d-flex align-items-center gap-1 flex-1">
+                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="small text-muted">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-block-title">الخصم</div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">مصنعية التركيب</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tab 3: المعادلة -->
+                @if (groupModalTab == 3)
+                {
+                    <div class="table-scroll-wrapper">
+                        <table class="item-details-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; color: red;">✕</th>
+                                    <th>المعادلة</th>
+                                    <th style="width: 200px;">الحقل</th>
+                                    <th style="width: 250px;">الاسم</th>
+                                    <th style="width: 40px; color: #f39c12;">☼</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="delete-icon-btn">✖</button></td>
+                                    <td><input type="text" class="clean-input w-100" /></td>
+                                    <td><select class="clean-input w-100"><option></option></select></td>
+                                    <td><input type="text" class="clean-input w-100" /></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+            </div>
+
+            <!-- Modal Footer Controls -->
+            <div class="master-modal-footer">
+                <div class="modal-footer-actions-right">
+                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">حفظ</button>
+                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">إغلاق</button>
+                </div>
+                <div class="modal-footer-nav-left">
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-right fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 4. Modal: الوحدات -->
+@if (isUnitsModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="units-master-modal-dialog" dir="rtl">
+            <div class="master-modal-topbar">
+                <span class="modal-top-title">الوحدات</span>
+                <div class="topbar-controls-left">
+                    <button type="button" class="btn-topbar-close-flat" @onclick="() => isUnitsModalOpen = false">✕</button>
+                </div>
+            </div>
+
+            <div class="master-modal-body">
+                <div class="d-flex align-items-center justify-content-start gap-3 mb-4">
+                    <span class="fs-4">📄</span>
+                    <div class="orange-bar-vert"></div>
+                    <span class="fw-bold">الاسم</span>
+                    <input type="text" class="clean-input" style="width: 420px;" @bind="newUnitNameInput" />
+                    <span class="req-star me-1">*</span>
+                </div>
+
+                <div class="section-with-blue-line mb-4">
+                    <div class="table-scroll-wrapper">
+                        <table class="item-details-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; color: red;">✕</th>
+                                    <th>إفتراضي البيع</th>
+                                    <th>إفتراضي الشراء</th>
+                                    <th>العملة</th>
+                                    <th>عدد القطع</th>
+                                    <th>الاسم</th>
+                                    <th>الكود</th>
+                                    <th style="width: 30px;">◀</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="delete-icon-btn">✖</button></td>
+                                    <td><span class="badge bg-primary">▬</span></td>
+                                    <td><span class="badge bg-primary">▬</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>@newUnitNameInput</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="master-modal-footer">
+                <div class="modal-footer-actions-right">
+                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isUnitsModalOpen = false">حفظ</button>
+                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isUnitsModalOpen = false">إغلاق</button>
+                </div>
+                <div class="modal-footer-nav-left"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private int activeTab = 1;
+
+    public class QrOption { public string Name { get; set; } = ""; public string Icon { get; set; } = ""; }
+    private List<QrOption> qrOptionList = new()
+    {
+        new() { Name = "يدوي", Icon = "✋" },
+        new() { Name = "تلقائي", Icon = "⚙️" },
+        new() { Name = "بالمجموعة", Icon = "📁" }
+    };
+    private string selectedQrOption = "يدوي";
+    private string GetSelectedQrIcon() => qrOptionList.FirstOrDefault(q => q.Name == selectedQrOption)?.Icon ?? "✋";
+    private void OnQrTypeChanged(ChangeEventArgs e)
+    {
+        selectedQrOption = e.Value?.ToString() ?? "يدوي";
+        itemData.QrType = selectedQrOption;
+    }
+
+    private bool isQrModalOpen = false;
+    private string modalBarcodeValue = "";
+    private void OpenQrModal() { modalBarcodeValue = itemData.BarcodeNumber; isQrModalOpen = true; }
+    private void CloseQrModal() => isQrModalOpen = false;
+    private void GenerateRandomBarcode() => modalBarcodeValue = new Random().NextInt64(1000000000000, 9999999999999).ToString();
+    private void ApplyModalBarcode() { itemData.BarcodeNumber = modalBarcodeValue; isQrModalOpen = false; }
+
+    private bool isTranslationPopupOpen = false;
+    private bool isLanguagesModalOpen = false;
+    public class LanguageItem { public string Name { get; set; } = ""; public string FlagEmoji { get; set; } = ""; public bool IsSelected { get; set; } }
+    private List<LanguageItem> availableLanguages = new()
+    {
+        new() { Name = "عربي", FlagEmoji = "🇪🇬", IsSelected = true },
+        new() { Name = "English", FlagEmoji = "🇺🇸", IsSelected = true },
+        new() { Name = "Français", FlagEmoji = "🇫🇷", IsSelected = false },
+        new() { Name = "اردو", FlagEmoji = "🇮🇷", IsSelected = false },
+        new() { Name = "Türk", FlagEmoji = "🇹🇷", IsSelected = false },
+        new() { Name = "Românesc", FlagEmoji = "🇷🇴", IsSelected = false },
+        new() { Name = "中國", FlagEmoji = "🇨🇳", IsSelected = false },
+        new() { Name = "русский", FlagEmoji = "🇷🇺", IsSelected = false }
+    };
+    private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
+    private void CloseTranslationPopup() => isTranslationPopupOpen = false;
+    private void OpenLanguagesModal() { isTranslationPopupOpen = false; isLanguagesModalOpen = true; }
+    private void CloseLanguagesModal() => isLanguagesModalOpen = false;
+    private void SaveLanguages() => isLanguagesModalOpen = false;
+
+    public class TreeNode
+    {
+        public string Name { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public bool IsExpanded { get; set; } = true;
+        public List<TreeNode> Children { get; set; } = new();
+    }
+
+    private bool isTreeTypePopupOpen = false;
+    private List<TreeNode> itemTypeTreeNodes = new()
+    {
+        new() {
+            Name = "خدمة",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "خدمات نقل وتوصيل", Level = 1 },
+                new() { Name = "خدمات تركيب وصيانة", Level = 1 }
+            }
+        },
+        new() {
+            Name = "مخزون",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "بضاعة جاهزة للبيع", Level = 1 },
+                new() { Name = "مواد أولية وخام", Level = 1 }
+            }
+        },
+        new() {
+            Name = "مجموعة",
+            Level = 0,
+            IsExpanded = false,
+            Children = new() {
+                new() { Name = "مجموعة تصنيعية", Level = 1 }
+            }
+        }
+    };
+
+    private void ToggleTreeTypePopup()
+    {
+        bool wasOpen = isTreeTypePopupOpen;
+        CloseAllPopups();
+        isTreeTypePopupOpen = !wasOpen;
+    }
+
+    private void SelectTreeNode(string nodeName)
+    {
+        itemData.ItemType = nodeName;
+        if (nodeName.Contains("خدمة"))
+            itemData.ItemTypeNote = "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا";
+        else if (nodeName.Contains("مخزون"))
+            itemData.ItemTypeNote = "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية";
+        else
+            itemData.ItemTypeNote = "صنف مجمع يتكون من مجموعة أصناف متعددة";
+
+        isTreeTypePopupOpen = false;
+    }
+
+    public class CheckableItem { public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
+    private bool isBranchPopupOpen = false;
+    private List<CheckableItem> branchList = new()
+    {
+        new() { Name = "الفرع الرئيسي", IsSelected = true },
+        new() { Name = "فرع قويسنا", IsSelected = true },
+        new() { Name = "DEXEF", IsSelected = true },
+        new() { Name = "Woo Branch", IsSelected = true },
+        new() { Name = "فرع القاهرة الرئيسي", IsSelected = true },
+        new() { Name = "فرع الإسكندرية", IsSelected = true },
+        new() { Name = "فرع الجيزة", IsSelected = true },
+        new() { Name = "فرع الرياض", IsSelected = true },
+        new() { Name = "فرع جدة", IsSelected = true },
+        new() { Name = "فرع الدمام", IsSelected = true },
+        new() { Name = "فرع دبي الرئيسي", IsSelected = true },
+        new() { Name = "فرع أبوظبي", IsSelected = true }
+    };
+    private bool IsAllBranchesSelected => branchList.All(b => b.IsSelected);
+    private void ToggleBranchPopup() { CloseAllPopups(); isBranchPopupOpen = !isBranchPopupOpen; }
+    private void ToggleAllBranches()
+    {
+        bool targetState = !IsAllBranchesSelected;
+        branchList.ForEach(b => b.IsSelected = targetState);
+    }
+    private string GetSelectedBranchesSummary()
+    {
+        var sel = branchList.Where(b => b.IsSelected).Select(b => b.Name).ToList();
+        return sel.Any() ? string.Join(", ", sel) : "اختر الفروع...";
+    }
+
+    private bool isWarehousePopupOpen = false;
+    private List<CheckableItem> warehouseList = new()
+    {
+        new() { Name = "المخزن الرئيسي 1", IsSelected = false },
+        new() { Name = "المخزن الفرعي", IsSelected = false },
+        new() { Name = "خدمات السيارات", IsSelected = false },
+        new() { Name = "مخزن 3", IsSelected = false },
+        new() { Name = "مخزن منتج تام ومواد خام", IsSelected = false },
+        new() { Name = "مخزن قويسنا", IsSelected = false },
+        new() { Name = "مخزن جديد", IsSelected = false },
+        new() { Name = "مخزن 75", IsSelected = false },
+        new() { Name = "الشيخ", IsSelected = false },
+        new() { Name = "new store", IsSelected = false },
+        new() { Name = "مخزن تجربة الاستراد", IsSelected = false },
+        new() { Name = "Woo Store", IsSelected = false }
+    };
+    private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
+    private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
+    private void ToggleAllWarehouses()
+    {
+        bool targetState = !IsAllWarehousesSelected;
+        warehouseList.ForEach(w => w.IsSelected = targetState);
+    }
+    private string GetSelectedWarehousesSummary()
+    {
+        var sel = warehouseList.Where(w => w.IsSelected).Select(w => w.Name).ToList();
+        return sel.Any() ? string.Join(", ", sel) : "";
+    }
+
+    private bool isGroupPopupOpen = false;
+    private bool isGroupModalOpen = false;
+    private int groupModalTab = 1;
+    private List<string> groupList = new() { "DX", "السجائر", "معسل", "البوادي", "الرشيدي", "السلام", "عسل" };
+    private void ToggleGroupPopup() { CloseAllPopups(); isGroupPopupOpen = !isGroupPopupOpen; }
+    private void SelectGroup(string groupName) { itemData.GroupCategory = groupName; isGroupPopupOpen = false; }
+    private void OpenGroupModal() { CloseAllPopups(); isGroupModalOpen = true; }
+
+    private bool isModalCodePopupOpen = false;
+    private string modalCodeIcon = "🔀";
+    private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
+    private void SelectModalCodeOption(string opt, string icon) { modalCodeIcon = icon; isModalCodePopupOpen = false; }
+
+    private bool isModalTransPopupOpen = false;
+    private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
+
+    private void ToggleActiveState(ChangeEventArgs e)
+    {
+        if (e.Value is bool val) itemData.IsActive = val;
+    }
+
+    private bool isUnitPopupOpen = false;
+    private bool isUnitsModalOpen = false;
+    private string unitSearchTerm = "";
+    private string newUnitNameInput = "";
+    private List<string> unitList = new() { "كيس 1", "كيلو", "زجاجة", "شكارة", "لفة ومتر", "قطعه", "ربطة", "كرتونه" };
+    private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm)
+        ? unitList
+        : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
+    private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
+    private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
+    private void OpenUnitsModal() { CloseAllPopups(); newUnitNameInput = itemData.MeasurementUnit; isUnitsModalOpen = true; }
+
+    public class SupplierGridItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; }
+    private bool isSupplierPopupOpen = false;
+    private List<SupplierGridItem> supplierList = new()
+    {
+        new() { Code = "V10075", Name = "Cust and vend" },
+        new() { Code = "2014", Name = "1" },
+        new() { Code = "2013", Name = "تعامل نقدي" },
+        new() { Code = "V10031", Name = "تهامي" },
+        new() { Code = "V10022", Name = "حسن حسن" },
+        new() { Code = "V10032", Name = "عميل جديد قسط" },
+        new() { Code = "2015", Name = "مشتريات ابو انس" }
+    };
+    private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
+    private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
+
+    private bool isPolicyPopupOpen = false;
+    private List<string> policyList = new() { "النسبه ع التحصيل", "توزيع عملاء كبار", "توزيع مباشر فئة أ" };
+    private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
+    private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
+
+    private void CloseAllPopups()
+    {
+        isBranchPopupOpen = false;
+        isWarehousePopupOpen = false;
+        isGroupPopupOpen = false;
+        isUnitPopupOpen = false;
+        isSupplierPopupOpen = false;
+        isPolicyPopupOpen = false;
+        isTranslationPopupOpen = false;
+        isTreeTypePopupOpen = false;
+        isModalCodePopupOpen = false;
+        isModalTransPopupOpen = false;
+    }
+
+    private List<string> suppliers = new() { "شركة التكنولوجيا الحديثة للتجارة" };
+    private List<string> warehouses = new() { "المخزن الرئيسي 1, المخزن الفرعي" };
+    private List<string> distributionPolicies = new() { "توزيع مباشر - الفئة أ" };
+    private List<string> groups = new() { "مخزون البضاعة" };
+    private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة", "تكلفة البضاعة المباعة" };
+    private List<string> measurementUnits = new() { "قطعه", "كرتونة" };
+    private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة المرجح" };
+    private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "معفي من الضريبة" };
+
+    private ItemModel itemData = new()
+    {
+        Id = "92-1",
+        Name = "",
+        EnglishName = "",
+        ItemType = "خدمة",
+        ItemTypeNote = "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا",
+        QrType = "يدوي",
+        BarcodeNumber = "92-1",
+        IsActive = true,
+        Branch = "EXEF, Woo Branch ,الفرع الرئيسي, فرع قويسنا",
+        Warehouse = "",
+        GroupCategory = "مخزون البضاعة",
+        GlobalBarcodeType = "GS1",
+        GlobalBarcodeValue = "92-1",
+        MeasurementUnit = "قطعه",
+        ValuationMethod = "الوارد أولاً صادر أولاً",
+        SalesAccount = "مبيعات بضائع مشتراة",
+        CostOfGoodsSold = "تكلفة البضاعة المباعة",
+        SalesReturnAccount = "مرتجعات مبيعات (مدين)",
+        VatApplicable = "نعم",
+        TaxAccount = "",
+        MinLimit = 10,
+        MaxLimit = 50,
+        UnitsTableRows = new List<UnitRowModel>
+        {
+            new() { Barcode = "92-1", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true },
+            new() { Barcode = "", PiecesCount = 0, Unit = "", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = false, IsDefaultSale = false, IsActive = false }
+        },
+        EquationRows = new List<EquationRowModel>
+        {
+            new() { Field = "سعر البيع الافتراضي", Equation = "" }
+        }
+    };
+
+    private void SaveData() { }
+
+    public class ItemModel
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string EnglishName { get; set; } = "";
+        public string ItemType { get; set; } = "";
+        public string ItemTypeNote { get; set; } = "";
+        public string QrType { get; set; } = "";
+        public string BarcodeNumber { get; set; } = "";
+        public bool IsActive { get; set; }
+        public string Branch { get; set; } = "";
+        public string SupplierName { get; set; } = "";
+        public string Warehouse { get; set; } = "";
+        public string DistributionPolicy { get; set; } = "";
+        public string GroupCategory { get; set; } = "";
+        public string GeneralLedgerAccount { get; set; } = "";
+        public string GlobalBarcodeType { get; set; } = "";
+        public string GlobalBarcodeValue { get; set; } = "";
+        public string MeasurementUnit { get; set; } = "";
+        public string ValuationMethod { get; set; } = "";
+        public string OpeningBalance { get; set; } = "";
+        public string SalesAccount { get; set; } = "";
+        public string CostOfGoodsSold { get; set; } = "";
+        public string SalesReturnAccount { get; set; } = "";
+        public string VatApplicable { get; set; } = "";
+        public string TaxAccount { get; set; } = "";
+        public int MinLimit { get; set; }
+        public int MaxLimit { get; set; }
+        public string Description { get; set; } = "";
+        public string LocationOne { get; set; } = "";
+        public string LocationTwo { get; set; } = "";
+        public List<UnitRowModel> UnitsTableRows { get; set; } = new();
+        public List<EquationRowModel> EquationRows { get; set; } = new();
+    }
+
+    public class UnitRowModel
+    {
+        public string Barcode { get; set; } = "";
+        public int PiecesCount { get; set; }
+        public string Unit { get; set; } = "";
+        public decimal PurchasePrice { get; set; }
+        public decimal SalePrice { get; set; }
+        public bool IsDefaultPurchase { get; set; }
+        public bool IsDefaultSale { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class EquationRowModel
+    {
+        public string Field { get; set; } = "";
+        public string Equation { get; set; } = "";
+    }
+}

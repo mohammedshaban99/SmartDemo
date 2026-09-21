@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+@using SmartDemo.Services
+@inject NavigationManager NavigationManager
+@inject DxThemesService ThemesService
+
+<div class="page">
+    <div class="w-100">
+        @Body
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = UrlGenerator.ToggleSidebarName)]
+    public bool ToggledSidebar { get; set; }
+}

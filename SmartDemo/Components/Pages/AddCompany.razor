@@ -1,0 +1,384 @@
+﻿@page "/AddCompany"
+@rendermode InteractiveServer
+
+<div class="company-desktop-viewport" dir="rtl" @onclick="CloseAllPopups">
+
+    <!-- Top Window Toolbar / Header -->
+    <div class="company-window-topbar">
+        <div class="topbar-right-actions">
+            <button type="button" class="btn-topbar-action" @onclick="SaveCompany">
+                <span class="ico">💾</span>
+                <span>حفظ</span>
+            </button>
+            <button type="button" class="btn-topbar-action btn-delete-action" @onclick="DeleteCompany">
+                <span class="ico text-danger">🗑️</span>
+                <span class="text-danger">حذف</span>
+            </button>
+
+            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+        </div>
+
+        <div class="topbar-left-actions">
+            <button type="button" class="btn-topbar-close-red" @onclick="CloseForm" title="إغلاق">✕</button>
+        </div>
+    </div>
+
+    <!-- Main Form Workspace Canvas -->
+    <div class="company-canvas-sheet" @onclick:stopPropagation>
+
+        <!-- ================= SECTION 1: BASIC INFO & LOGO ================= -->
+        <div class="section-master-row">
+
+            <!-- 1. Far Right: Illustration & Status -->
+            <div class="entity-illustration-block">
+                <div class="illustration-graphic-box">
+                    <span class="fs-1">🏢</span>
+                </div>
+                <div class="active-toggle-group">
+                    <label class="switch-toggle-label">
+                        <input type="checkbox" class="switch-input" @bind="companyData.IsActive" />
+                        <span class="switch-slider"></span>
+                    </label>
+                    <span class="small text-muted fw-bold">نشط</span>
+                </div>
+                <div class="orange-indicator-line"></div>
+            </div>
+
+            <!-- 2. Middle-Right: Field Labels -->
+            <div class="entity-labels-column">
+                <div class="label-cell"><span class="form-lbl">إسم الشركة</span></div>
+                <div class="label-cell"><span class="form-lbl">النشاط</span></div>
+                <div class="label-cell"><span class="form-lbl">الشعار</span></div>
+            </div>
+
+            <!-- 3. Middle: Input Fields -->
+            <div class="entity-inputs-column">
+                <!-- Row 1: Company Name -->
+                <div class="input-row-entry">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.CompanyName" />
+                    <span class="req-star">*</span>
+                </div>
+
+                <!-- Row 2: Business Activity Dropdown -->
+                <div class="input-row-entry pos-relative">
+                    <div class="dropdown-anchor flex-1">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleActivityPopup">
+                            <span class="combo-display-text">@companyData.Activity</span>
+                            <div class="combo-icons-inside">
+                                <span class="combo-arrow">▼</span>
+                            </div>
+                        </div>
+
+                        @if (isActivityPopupOpen)
+                        {
+                            <div class="custom-table-popup activity-popup-size" @onclick:stopPropagation>
+                                <div class="table-popup-header">
+                                    <div class="col-name">الاسم</div>
+                                    <div class="col-code">الكود</div>
+                                </div>
+                                <div class="table-popup-filter-bar">
+                                    <div class="col-name text-center text-muted small">🔤</div>
+                                    <div class="col-code text-center text-muted small">🔤</div>
+                                </div>
+                                <div class="table-popup-list">
+                                    @foreach (var act in mockActivities)
+                                    {
+                                        <div class="table-popup-row @(companyData.Activity == act.Name ? "active-row" : "")"
+                                             @onclick="() => SelectActivity(act.Name)">
+                                            <div class="col-name">@act.Name</div>
+                                            <div class="col-code">@act.Code</div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isActivityPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span class="req-star">*</span>
+                </div>
+
+                <!-- Row 3: Slogan -->
+                <div class="input-row-entry">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.Slogan" />
+                </div>
+            </div>
+
+            <!-- 4. Far Left: Company Logo Box -->
+            <div class="company-logo-upload-block">
+                <div class="logo-square-preview">
+                    <span class="logo-msg-text">No image data</span>
+                </div>
+                <span class="logo-caption-text">شعار الشركة</span>
+            </div>
+
+        </div>
+
+        <div style="height: 18px;"></div>
+
+        <!-- ================= UNIFIED FORM GRID: CONTINUOUS ROWS & CONTINUOUS BLUE LINE ================= -->
+        <div class="section-form-grid">
+            <div class="form-grid-labels-col">
+                <div class="label-cell"><span class="form-lbl">البلد</span></div>
+                <div class="label-cell"><span class="form-lbl">العملة</span></div>
+                <div class="label-cell"><span class="form-lbl">الرقم الضريبي</span></div>
+                <div class="label-cell"><span class="form-lbl">السجل التجاري</span></div>
+                <div class="label-cell"><span class="form-lbl">أرضي - محمول</span></div>
+                <div class="label-cell"><span class="form-lbl">الفاكس</span></div>
+                <div class="label-cell"><span class="form-lbl">البريد الإلكتروني</span></div>
+                <div class="label-cell"><span class="form-lbl">المحافظة</span></div>
+                <div class="label-cell"><span class="form-lbl">المدينة</span></div>
+                <div class="label-cell"><span class="form-lbl">الحي</span></div>
+                <div class="label-cell"><span class="form-lbl">الشارع</span></div>
+                <div class="label-cell"><span class="form-lbl">رقم المبنى</span></div>
+                <div class="label-cell"><span class="form-lbl">الرقم البريدي</span></div>
+                <div class="label-cell"><span class="form-lbl">المعالم الرئيسية</span></div>
+            </div>
+
+            <div class="form-grid-inputs-col">
+                <!-- Country -->
+                <div class="input-row-entry pos-relative">
+                    <div class="dropdown-anchor flex-1">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCountryPopup">
+                            <span class="combo-display-text">@companyData.Country</span>
+                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                        </div>
+
+                        @if (isCountryPopupOpen)
+                        {
+                            <div class="custom-table-popup country-popup-size" @onclick:stopPropagation>
+                                <div class="table-popup-header">
+                                    <div class="col-name">الاسم</div>
+                                </div>
+                                <div class="table-popup-list">
+                                    @foreach (var c in mockCountries)
+                                    {
+                                        <div class="table-popup-row @(companyData.Country == c ? "active-row" : "")"
+                                             @onclick="() => SelectCountry(c)">
+                                            <div class="col-name">@c</div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isCountryPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span class="req-star">*</span>
+                </div>
+
+                <!-- Currency Dual Combo -->
+                <div class="input-row-entry pos-relative">
+                    <div class="dual-currency-wrapper flex-1">
+                        <div class="dropdown-anchor flex-1">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                <span class="combo-display-text">@companyData.Currency</span>
+                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                            </div>
+
+                            @if (isCurrencyPopupOpen)
+                            {
+                                <div class="custom-table-popup currency-popup-size" @onclick:stopPropagation>
+                                    <div class="table-popup-header">
+                                        <div class="col-name">الاسم</div>
+                                        <div class="col-code">الكود</div>
+                                    </div>
+                                    <div class="table-popup-list">
+                                        @foreach (var cur in mockCurrencies)
+                                        {
+                                            <div class="table-popup-row @(companyData.Currency == cur.Name ? "active-row" : "")"
+                                                 @onclick="() => SelectCurrency(cur.Name, cur.SubCurrency)">
+                                                <div class="col-name">@cur.Name</div>
+                                                <div class="col-code">@cur.Code</div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="dropdown-anchor sub-currency-anchor">
+                            <div class="custom-combo-trigger">
+                                <span class="combo-display-text">@companyData.SubCurrency</span>
+                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="req-star">*</span>
+                </div>
+
+                <!-- Tax Number -->
+                <div class="input-row-entry">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.TaxNumber" />
+                </div>
+
+                <!-- Commercial Register -->
+                <div class="input-row-entry">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.CommercialRegister" />
+                </div>
+
+                <!-- Phones -->
+                <div class="input-row-entry d-flex gap-2">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.Landline" placeholder="أرضي" />
+                    <input type="text" class="clean-input flex-1" @bind="companyData.Mobile" placeholder="محمول" />
+                </div>
+
+                <!-- Fax -->
+                <div class="input-row-entry">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.Fax" />
+                </div>
+
+                <!-- Email -->
+                <div class="input-row-entry">
+                    <input type="email" class="clean-input flex-1" @bind="companyData.Email" />
+                </div>
+
+                <!-- Address Fields -->
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.Governorate" /></div>
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.City" /></div>
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.District" /></div>
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.Street" /></div>
+
+                <div class="input-row-entry d-flex align-items-center gap-2">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.BuildingNo" />
+                    <span class="small text-muted ms-1">رقم الشقة</span>
+                    <input type="text" class="clean-input flex-1" @bind="companyData.ApartmentNo" />
+                </div>
+
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.PostalCode" /></div>
+                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.Landmarks" /></div>
+            </div>
+            <div class="blue-indicator-line"></div>
+        </div>
+
+        <!-- Bottom Action Buttons -->
+        <div class="form-bottom-actions-bar">
+            <button type="button" class="btn-primary-custom px-5" @onclick="SaveCompany">حفظ</button>
+            <button type="button" class="btn-primary-custom px-5" @onclick="CloseForm">إغلاق</button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private bool isActivityPopupOpen = false;
+    private bool isCountryPopupOpen = false;
+    private bool isCurrencyPopupOpen = false;
+
+    public class ActivityItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; }
+    public class CurrencyItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string SubCurrency { get; set; } = ""; }
+
+    private List<ActivityItem> mockActivities = new()
+    {
+        new() { Code = "0111", Name = "زراعة الحبوب والمحاصيل ( فيما عدا الارز ) والبقوليات والـ..." },
+        new() { Code = "0112", Name = "زراعة الارز" },
+        new() { Code = "0113", Name = "زراعة الخضر والبطيخ والجذور والدرنات" },
+        new() { Code = "0114", Name = "زراعة قصب السكر" },
+        new() { Code = "0115", Name = "زراعة التبغ" },
+        new() { Code = "0116", Name = "زراعة المحاصيل ذات الالياف" }
+    };
+
+    private List<string> mockCountries = new() { "مدغشقر", "أفغانستان", "موريتانيا", "تايلاند", "تايوان", "السودان", "المغرب", "فيجي", "مصر", "المملكة العربية السعودية" };
+
+    private List<CurrencyItem> mockCurrencies = new()
+    {
+        new() { Code = "EGP", Name = "جنيه مصري", SubCurrency = "قرش" },
+        new() { Code = "AFN", Name = "أفغاني", SubCurrency = "بول" },
+        new() { Code = "SAR", Name = "ريال سعودي", SubCurrency = "هللة" },
+        new() { Code = "USD", Name = "دولار أمريكي", SubCurrency = "سنت" },
+        new() { Code = "MGA", Name = "أرياري مدغشقري", SubCurrency = "إيرايمبيلانجا" },
+        new() { Code = "MRU", Name = "أوقية موريتانية", SubCurrency = "خمس" },
+        new() { Code = "THB", Name = "البات التايلندي", SubCurrency = "ساتانغ" },
+        new() { Code = "TWD", Name = "الجديد في تايوان الدولار", SubCurrency = "سنت" },
+        new() { Code = "SDG", Name = "الجنيه السوداني", SubCurrency = "قرش" },
+        new() { Code = "MAD", Name = "الدرهم المغربي", SubCurrency = "سنتيم" }
+    };
+
+    private CompanyModel companyData = new()
+    {
+        CompanyName = "مجموعة الاستثمار الذكي",
+        Activity = "زراعة الحبوب والمحاصيل ( فيما عدا الارز ) والبقوليات والـ...",
+        Slogan = "نبني مستقبل التجارة الحديثة",
+        Country = "مصر",
+        Currency = "أرياري مدغشقري",
+        SubCurrency = "إيرايمبيلانجا",
+        TaxNumber = "100293847",
+        CommercialRegister = "EG-554433",
+        Landline = "0223456789",
+        Mobile = "01098765432",
+        Fax = "0223456780",
+        Email = "contact@smartinvest.com",
+        Governorate = "القاهرة",
+        City = "التجمع الخامس",
+        District = "المنطقة التجارية",
+        Street = "شارع التسعين الشمالي",
+        BuildingNo = "برج الماس 4",
+        ApartmentNo = "مكتب 502",
+        PostalCode = "11835",
+        Landmarks = "بجوار الجامعة الأمريكية",
+        IsActive = true
+    };
+
+    private void ToggleActivityPopup() { CloseAllPopups(); isActivityPopupOpen = !isActivityPopupOpen; }
+    private void ToggleCountryPopup() { CloseAllPopups(); isCountryPopupOpen = !isCountryPopupOpen; }
+    private void ToggleCurrencyPopup() { CloseAllPopups(); isCurrencyPopupOpen = !isCurrencyPopupOpen; }
+
+    private void SelectActivity(string name) { companyData.Activity = name; isActivityPopupOpen = false; }
+    private void SelectCountry(string name) { companyData.Country = name; isCountryPopupOpen = false; }
+    private void SelectCurrency(string name, string subCur)
+    {
+        companyData.Currency = name;
+        companyData.SubCurrency = subCur;
+        isCurrencyPopupOpen = false;
+    }
+
+    private void CloseAllPopups()
+    {
+        isActivityPopupOpen = false;
+        isCountryPopupOpen = false;
+        isCurrencyPopupOpen = false;
+    }
+
+    private void SaveCompany() { }
+    private void DeleteCompany() { }
+    private void CloseForm() { }
+
+    public class CompanyModel
+    {
+        public string CompanyName { get; set; } = "";
+        public string Activity { get; set; } = "";
+        public string Slogan { get; set; } = "";
+        public string Country { get; set; } = "";
+        public string Currency { get; set; } = "";
+        public string SubCurrency { get; set; } = "";
+        public string TaxNumber { get; set; } = "";
+        public string CommercialRegister { get; set; } = "";
+        public string Landline { get; set; } = "";
+        public string Mobile { get; set; } = "";
+        public string Fax { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Governorate { get; set; } = "";
+        public string City { get; set; } = "";
+        public string District { get; set; } = "";
+        public string Street { get; set; } = "";
+        public string BuildingNo { get; set; } = "";
+        public string ApartmentNo { get; set; } = "";
+        public string PostalCode { get; set; } = "";
+        public string Landmarks { get; set; } = "";
+        public bool IsActive { get; set; } = true;
+    }
+}
