@@ -1163,9 +1163,6 @@ select.clean-input:focus {
 .books-icon-box {
     width: 70px;
     height: 70px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1344,7 +1341,8 @@ select.clean-input:focus {
     justify-content: space-between;
     background-color: #ffffff;
     padding: 12px 20px;
-    border-top: 1px solid #e9ecef;
+    margin: 20px;
+    border-radius: 20px;
 }
 
 .modal-footer-actions-right {
