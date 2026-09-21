@@ -318,7 +318,7 @@
                         </div>
 
                         <div class="form-side-column">
-                            <!-- 6. اسم المورد (Updated to advanced Table View matching Image 49) -->
+                            <!-- 6. اسم المورد -->
                             <div class="field-entry-line">
                                 <span class="field-title">اسم المورد</span>
                                 <div class="dropdown-anchor flex-1 field-fixed-width">
@@ -490,7 +490,7 @@
             <div class="tab-content-seamless">
                 <div class="accounts-tab-grid">
                     <div class="accounts-column-block">
-                        <div class="section-block-title">الضرائب</div>
+                        <div class="section-block-title text-primary">الضرائب</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">يخضع القيمة المضافة ؟</span>
@@ -541,7 +541,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">التنبيهات</div>
+                        <div class="section-block-title text-primary">التنبيهات</div>
                         <div class="section-with-blue-line">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">الحد الادنى</span>
@@ -562,7 +562,7 @@
                     </div>
 
                     <div class="accounts-column-block">
-                        <div class="section-block-title">الحسابات</div>
+                        <div class="section-block-title text-primary">الحسابات</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">حساب المبيعات</span>
@@ -586,7 +586,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">الخصومات</div>
+                        <div class="section-block-title text-primary">الخصومات</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">يخضع للخصم النقدي</span>
@@ -612,7 +612,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">اخرى</div>
+                        <div class="section-block-title text-primary">اخرى</div>
                         <div class="section-with-blue-line">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">مركز التكلفة</span>
@@ -636,12 +636,12 @@
         @if (activeTab == 3)
         {
             <div class="tab-content-seamless">
-                <div class="section-block-title">الوصف</div>
+                <div class="section-block-title text-primary">الوصف</div>
                 <textarea class="clean-input w-100 mb-4" rows="3" @bind="itemData.Description"></textarea>
 
                 <div class="d-flex justify-content-between gap-4">
                     <div class="flex-grow-1">
-                        <div class="section-block-title">شاشة اللمس</div>
+                        <div class="section-block-title text-primary">شاشة اللمس</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="field-entry-line">
                                 <span class="field-title">الحجم</span>
@@ -663,7 +663,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">التجانس بين الواحدات</div>
+                        <div class="section-block-title text-primary">التجانس بين الواحدات</div>
                         <div class="section-with-blue-line">
                             <div class="d-flex align-items-start gap-3">
                                 <select class="clean-input" style="width: 180px;"><option></option></select>
@@ -675,7 +675,7 @@
                     </div>
 
                     <div style="width: 380px;">
-                        <div class="section-block-title">أماكن التخزين</div>
+                        <div class="section-block-title text-primary">أماكن التخزين</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">المكان الأول</span>
@@ -691,7 +691,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">الكلمات الدلالية</div>
+                        <div class="section-block-title text-primary">الكلمات الدلالية</div>
                         <div class="section-with-blue-line mb-4">
                             <div class="d-flex align-items-start gap-2">
                                 <button class="btn-addon-square" type="button">+</button>
@@ -699,7 +699,7 @@
                             </div>
                         </div>
 
-                        <div class="section-block-title">الوصف</div>
+                        <div class="section-block-title text-primary">الوصف</div>
                         <div class="section-with-blue-line">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">GPC</span>
@@ -733,7 +733,7 @@
         @if (activeTab == 4)
         {
             <div class="tab-content-seamless">
-                <div class="section-block-title">الحقول الإضافية</div>
+                <div class="section-block-title text-primary">الحقول الإضافية</div>
                 <div class="section-with-blue-line">
                     <div style="max-width: 500px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; padding: 18px 24px;">
                         <div class="text-end fw-bold mb-3 pb-2 border-bottom" style="font-size: 0.85rem; color: #555;">DEXEF</div>
@@ -808,6 +808,7 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
+<!-- 1. QR Modal -->
 @if (isQrModalOpen)
 {
     <div class="modal-backdrop-blur">
@@ -831,6 +832,7 @@
     </div>
 }
 
+<!-- 2. Languages Modal -->
 @if (isLanguagesModalOpen)
 {
     <div class="modal-backdrop-blur">
@@ -885,7 +887,7 @@
 
             <div class="master-modal-body">
 
-                <!-- Master Header Grid with ONE single continuous vertical orange line covering all three rows -->
+                <!-- Master Header Grid with ONE continuous vertical orange line -->
                 <div class="group-modal-header-grid mb-3">
                     <div class="group-modal-icon-col">
                         <div class="books-icon-box">
@@ -959,7 +961,7 @@
                             }
                         </div>
 
-                        <!-- Type field with Tree Table Dropdown (Code on Right, Name on Left matching Image 38/49) -->
+                        <!-- Type field with Tree Table Dropdown -->
                         <div class="group-input-line pos-relative">
                             <div class="dropdown-anchor flex-1">
                                 <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleGroupTypeDropdown">
@@ -971,22 +973,24 @@
                                 {
                                     <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
                                         <div class="table-popup-header d-flex justify-content-between">
-                                            <span class="col-code text-right">الرقم</span>
-                                            <span class="col-name text-left">الاسم</span>
+                                            <span class="col-name text-right">الاسم</span>
+                                            <span class="col-code text-left">الرقم</span>
                                         </div>
                                         <div class="table-popup-list">
                                             @foreach (var node in groupTypeTreeNodes)
                                             {
                                                 <div class="tree-grid-row @(selectedGroupType == node.Name ? "active-row" : "")"
                                                      @onclick="() => SelectGroupTypeNode(node)">
-                                                    <span class="tree-node-code col-code text-right" style="padding-right: @(node.Level * 16)px;">
+                                                    <span class="tree-node-name col-name text-right" style="padding-right: @(node.Level * 16)px;">
+                                                        @node.Name
+                                                    </span>
+                                                    <span class="tree-node-code col-code text-left text-muted">
                                                         @if (node.Children.Any())
                                                         {
-                                                            <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") ms-1 small"></i>
+                                                            <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") me-1 small"></i>
                                                         }
                                                         @node.Code
                                                     </span>
-                                                    <span class="tree-node-name col-name text-left text-muted">@node.Name</span>
                                                 </div>
 
                                                 @if (node.IsExpanded && node.Children.Any())
@@ -995,8 +999,8 @@
                                                     {
                                                         <div class="tree-grid-row tree-child-row @(selectedGroupType == child.Name ? "active-row" : "")"
                                                              @onclick="() => SelectGroupTypeNode(child)">
-                                                            <span class="tree-node-code col-code text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Code</span>
-                                                            <span class="tree-node-name col-name text-left text-muted">@child.Name</span>
+                                                            <span class="tree-node-name col-name text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Name</span>
+                                                            <span class="tree-node-code col-code text-left text-muted">@child.Code</span>
                                                         </div>
                                                     }
                                                 }
@@ -1013,7 +1017,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-start gap-2 mb-3 border-bottom pb-2">
+                <div class="d-flex justify-content-start gap-2 mb-3  pb-2">
                     <button type="button" class="strip-tab-btn @(groupModalTab == 1 ? "active" : "")" @onclick="() => groupModalTab = 1">عام</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 2 ? "active" : "")" @onclick="() => groupModalTab = 2">الحسابات</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 3 ? "active" : "")" @onclick="() => groupModalTab = 3">المعادلة</button>
@@ -1025,7 +1029,7 @@
                         <div class="group-fields-side">
                             <div class="section-block-title text-primary">الخصائص</div>
                             <div class="section-with-blue-line mb-3">
-                                <!-- 'تندرج من' Field with Tree Table Dropdown matching Image 49 -->
+                                <!-- 'تندرج من' Field with Tree Table Dropdown -->
                                 <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">تندرج من</span>
                                     <div class="dropdown-anchor flex-1">
@@ -1038,22 +1042,24 @@
                                         {
                                             <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
                                                 <div class="table-popup-header d-flex justify-content-between">
-                                                    <span class="col-code text-right">الرقم</span>
-                                                    <span class="col-name text-left">الاسم</span>
+                                                    <span class="col-name text-right">الاسم</span>
+                                                    <span class="col-code text-left">الرقم</span>
                                                 </div>
                                                 <div class="table-popup-list">
                                                     @foreach (var node in parentGroupTreeNodes)
                                                     {
                                                         <div class="tree-grid-row @(selectedParentGroup == node.Name ? "active-row" : "")"
                                                              @onclick="() => SelectParentGroupNode(node)">
-                                                            <span class="tree-node-code col-code text-right" style="padding-right: @(node.Level * 16)px;">
+                                                            <span class="tree-node-name col-name text-right" style="padding-right: @(node.Level * 16)px;">
+                                                                @node.Name
+                                                            </span>
+                                                            <span class="tree-node-code col-code text-left text-muted">
                                                                 @if (node.Children.Any())
                                                                 {
-                                                                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") ms-1 small"></i>
+                                                                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") me-1 small"></i>
                                                                 }
                                                                 @node.Code
                                                             </span>
-                                                            <span class="tree-node-name col-name text-left text-muted">@node.Name</span>
                                                         </div>
 
                                                         @if (node.IsExpanded && node.Children.Any())
@@ -1062,8 +1068,8 @@
                                                             {
                                                                 <div class="tree-grid-row tree-child-row @(selectedParentGroup == child.Name ? "active-row" : "")"
                                                                      @onclick="() => SelectParentGroupNode(child)">
-                                                                    <span class="tree-node-code col-code text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Code</span>
-                                                                    <span class="tree-node-name col-name text-left text-muted">@child.Name</span>
+                                                                    <span class="tree-node-name col-name text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Name</span>
+                                                                    <span class="tree-node-code col-code text-left text-muted">@child.Code</span>
                                                                 </div>
                                                             }
                                                         }
@@ -1080,33 +1086,47 @@
 
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">نوع الصنف</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="مخزون">مخزون</option>
+                                        <option value="خدمة">خدمة</option>
+                                        <option value="منتج تام">منتج تام</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">طريقة التقييم</span>
-                                    <select class="clean-input flex-1"><option>الوارد أولاً صادر أولاً</option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="الوارد أولاً صادر أولاً">الوارد أولاً صادر أولاً</option>
+                                        <option value="متوسط التكلفة">متوسط التكلفة</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">مكان التخزين</span>
                                     <div class="d-flex gap-2 flex-1">
-                                        <input type="text" class="clean-input flex-1" />
-                                        <input type="text" class="clean-input flex-1" />
-                                        <input type="text" class="clean-input flex-1" />
+                                        <input type="text" class="clean-input flex-1" value="مخزن A" />
+                                        <input type="text" class="clean-input flex-1" value="مخزن B" />
+                                        <input type="text" class="clean-input flex-1" value="مخزن C" />
                                     </div>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">التجانس بين الوحدات</span>
-                                    <select class="clean-input flex-1"><option>جميع وحدات الصنف متجانسة</option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="جميع وحدات الصنف متجانسة">جميع وحدات الصنف متجانسة</option>
+                                        <option value="غير متجانسة">غير متجانسة</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">اسم المورد</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="Cust and vend">Cust and vend</option>
+                                        <option value="تهامي">تهامي</option>
+                                        <option value="حسن حسن">حسن حسن</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="section-block-title text-primary">الوصف</div>
                             <div class="section-with-blue-line mb-3">
-                                <textarea class="clean-input w-100" rows="3"></textarea>
+                                <textarea class="clean-input w-100" rows="3" placeholder="أدخل وصف المجموعة هنا..."></textarea>
                             </div>
 
                             <div class="section-block-title text-primary">شاشة اللمس</div>
@@ -1136,21 +1156,28 @@
                 @if (groupModalTab == 2)
                 {
                     <div class="group-tab-accounts-layout">
+                        <!-- Right Column: الضرائب والتنبيهات -->
                         <div class="modal-accounts-col">
                             <div class="section-block-title text-primary">الضرائب</div>
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">يخضع للضريبة</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="نعم">نعم</option>
+                                        <option value="لا">لا</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب الضريبة</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="ضريبة المبيعات 14%">ضريبة المبيعات 14%</option>
+                                        <option value="ضريبة القيمة المضافة 15%">ضريبة القيمة المضافة 15%</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">نسبة الضريبة المبيعات</span>
                                     <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <input type="number" class="clean-input text-center flex-1" value="14" />
                                         <span class="small text-muted">%</span>
                                     </div>
                                     <span class="req-star me-1">*</span>
@@ -1158,84 +1185,293 @@
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">نسبة الضريبة المشتريات</span>
                                     <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <input type="number" class="clean-input text-center flex-1" value="14" />
                                         <span class="small text-muted">%</span>
                                     </div>
                                     <span class="req-star me-1">*</span>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">هل السعر يشمل الضريبة ؟</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="لا">لا</option>
+                                        <option value="نعم">نعم</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">يخضع لضريبة الخصم والإضافة</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="لا">لا</option>
+                                        <option value="نعم">نعم</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب ضريبة الخصم</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="ضريبة أ.ت.ص">ضريبة أ.ت.ص</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">نسبة الضريبة</span>
-                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="0" />
+                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="1" />
                                 </div>
                             </div>
 
                             <div class="section-block-title text-primary">التنبيهات</div>
                             <div class="section-with-blue-line">
-                                <div class="field-entry-line mb-2">
+
+                                <!-- الحد الادنى -->
+                                <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">الحد الادنى</span>
-                                    <div class="d-flex gap-1 flex-1">
-                                        <input type="number" class="clean-input flex-1" />
-                                        <select class="clean-input" style="width: 85px;"><option>قطعة</option></select>
+                                    <div class="calc-field-outer flex-1">
+                                        <div class="calc-input-wrapper flex-1">
+                                            <input type="text" class="clean-input calc-num-input" value="@alertMinLimit"
+                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("minLimit")' />
+                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("minLimit")'>▼</span>
+                                        </div>
+                                        <span class="calc-unit-text-outside">قطعة</span>
+
+                                        @if (activeCalcField == "minLimit")
+                                        {
+                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
+                                                <div class="calc-grid">
+                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
+                                                    <button type="button" class="btn-calc">MC</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
+                                                    <button type="button" class="btn-calc">MR</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
+                                                    <button type="button" class="btn-calc">MS</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
+                                                    <button type="button" class="btn-calc">+M</button>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                                <div class="field-entry-line mb-2">
+
+                                <!-- الحد الأقصى -->
+                                <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">الحد الأقصى</span>
-                                    <div class="d-flex gap-1 flex-1">
-                                        <input type="number" class="clean-input flex-1" />
-                                        <select class="clean-input" style="width: 85px;"><option>قطعة</option></select>
+                                    <div class="calc-field-outer flex-1">
+                                        <div class="calc-input-wrapper flex-1">
+                                            <input type="text" class="clean-input calc-num-input" value="@alertMaxLimit"
+                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("maxLimit")' />
+                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("maxLimit")'>▼</span>
+                                        </div>
+                                        <span class="calc-unit-text-outside">قطعة</span>
+
+                                        @if (activeCalcField == "maxLimit")
+                                        {
+                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
+                                                <div class="calc-grid">
+                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
+                                                    <button type="button" class="btn-calc">MC</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
+                                                    <button type="button" class="btn-calc">MR</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
+                                                    <button type="button" class="btn-calc">MS</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
+                                                    <button type="button" class="btn-calc">+M</button>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                                <div class="field-entry-line mb-2">
+
+                                <!-- فترة الركود -->
+                                <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">فترة الركود</span>
-                                    <div class="d-flex gap-1 flex-1">
-                                        <input type="number" class="clean-input flex-1" />
-                                        <select class="clean-input" style="width: 85px;"><option>يوم</option></select>
+                                    <div class="calc-field-outer flex-1">
+                                        <div class="calc-input-wrapper flex-1">
+                                            <input type="text" class="clean-input calc-num-input" value="@alertStagnantPeriod"
+                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("stagnant")' />
+                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("stagnant")'>▼</span>
+                                        </div>
+                                        <span class="calc-unit-text-outside">يوم</span>
+
+                                        @if (activeCalcField == "stagnant")
+                                        {
+                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
+                                                <div class="calc-grid">
+                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
+                                                    <button type="button" class="btn-calc">MC</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
+                                                    <button type="button" class="btn-calc">MR</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
+                                                    <button type="button" class="btn-calc">MS</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
+                                                    <button type="button" class="btn-calc">+M</button>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                                <div class="field-entry-line">
+
+                                <!-- التنبيه قبل انتهاء الصلاحية بـ -->
+                                <div class="field-entry-line pos-relative">
                                     <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
-                                    <div class="d-flex gap-1 flex-1">
-                                        <input type="number" class="clean-input flex-1" />
-                                        <select class="clean-input" style="width: 85px;"><option>يوم</option></select>
+                                    <div class="calc-field-outer flex-1">
+                                        <div class="calc-input-wrapper flex-1">
+                                            <input type="text" class="clean-input calc-num-input" value="@alertExpiryAlert"
+                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("expiry")' />
+                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("expiry")'>▼</span>
+                                        </div>
+                                        <span class="calc-unit-text-outside">يوم</span>
+
+                                        @if (activeCalcField == "expiry")
+                                        {
+                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
+                                                <div class="calc-grid">
+                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
+                                                    <button type="button" class="btn-calc">MC</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
+                                                    <button type="button" class="btn-calc">MR</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
+                                                    <button type="button" class="btn-calc">MS</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
+                                                    <button type="button" class="btn-calc">+M</button>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Left Column: الحسابات مع زر النقاط (مع مصنعية التركيب المدعومة بالآلة الحاسبة تماماً مثل الصورة 36) -->
                         <div class="modal-accounts-col">
                             <div class="section-block-title text-primary">الحسابات</div>
                             <div class="section-with-blue-line mb-3">
+
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب المخزون</span>
-                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                    <div class="input-inline-btn-wrapper flex-1">
+                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.InventoryAccount" readonly />
+                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("inventory")'>...</button>
+                                    </div>
                                 </div>
+
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب المبيعات</span>
-                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                    <div class="input-inline-btn-wrapper flex-1">
+                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.SalesAccount" readonly />
+                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("sales")'>...</button>
+                                    </div>
                                 </div>
+
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب تكلفة المبيعات</span>
-                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                    <div class="input-inline-btn-wrapper flex-1">
+                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.CogsAccount" readonly />
+                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("cogs")'>...</button>
+                                    </div>
                                 </div>
+
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب مرتجع المبيعات</span>
-                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                    <div class="input-inline-btn-wrapper flex-1">
+                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.SalesReturnAccount" readonly />
+                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("salesReturn")'>...</button>
+                                    </div>
                                 </div>
+
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">حساب تحت التشغيل</span>
-                                    <input type="text" class="clean-input flex-1 text-center" placeholder="..." />
+                                    <div class="input-inline-btn-wrapper flex-1">
+                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.WipAccount" readonly />
+                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("wip")'>...</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1243,11 +1479,17 @@
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">طريقة الخصم</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="بالنسبة">بالنسبة</option>
+                                        <option value="مبلغ ثابت">مبلغ ثابت</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">يخضع خصم التعجيل</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <select class="clean-input flex-1">
+                                        <option value="نعم">نعم</option>
+                                        <option value="لا">لا</option>
+                                    </select>
                                 </div>
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">خصم المشتريات</span>
@@ -1267,9 +1509,55 @@
 
                             <div class="section-block-title text-primary">الخصم</div>
                             <div class="section-with-blue-line">
-                                <div class="field-entry-line">
+                                <!-- مصنعية التركيب (مفعلة مع الآلة الحاسبة مثل صورة 36) -->
+                                <div class="field-entry-line pos-relative">
                                     <span class="field-title-wide">مصنعية التركيب</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <div class="calc-field-outer flex-1">
+                                        <div class="calc-input-wrapper flex-1">
+                                            <input type="text" class="clean-input calc-num-input" value="@alertInstallationFee"
+                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("installation")' />
+                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("installation")'>▼</span>
+                                        </div>
+
+                                        @if (activeCalcField == "installation")
+                                        {
+                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
+                                                <div class="calc-grid">
+                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
+                                                    <button type="button" class="btn-calc">MC</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
+                                                    <button type="button" class="btn-calc">MR</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
+                                                    <button type="button" class="btn-calc">MS</button>
+
+                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
+                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
+                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
+                                                    <button type="button" class="btn-calc">+M</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1292,9 +1580,14 @@
                             <tbody>
                                 <tr>
                                     <td><button class="delete-icon-btn">✖</button></td>
-                                    <td><input type="text" class="clean-input w-100" /></td>
-                                    <td><select class="clean-input w-100"><option></option></select></td>
-                                    <td><input type="text" class="clean-input w-100" /></td>
+                                    <td><input type="text" class="clean-input w-100" value="سعر التكلفة * 1.2" /></td>
+                                    <td>
+                                        <select class="clean-input w-100">
+                                            <option value="سعر البيع الافتراضي">سعر البيع الافتراضي</option>
+                                            <option value="سعر الشراء">سعر الشراء</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="clean-input w-100" value="معادلة الأرباح" /></td>
                                     <td></td>
                                 </tr>
                             </tbody>
@@ -1318,6 +1611,97 @@
     </div>
 }
 
+<!-- 4. Modal: شجرة الحسابات المنبثقة التفاعلية -->
+@if (isAccountsModalOpen)
+{
+    <div class="modal-backdrop-blur accounts-tree-modal-layer">
+        <div class="accounts-tree-dialog" dir="rtl" @onclick:stopPropagation>
+            <div class="accounts-tree-topbar">
+                <span class="accounts-tree-title">الحسابات</span>
+                <div class="accounts-topbar-actions">
+                    <button type="button" class="btn-acc-win" title="تصغير">_</button>
+                    <button type="button" class="btn-acc-win" title="تكبير">□</button>
+                    <button type="button" class="btn-acc-win btn-acc-close" @onclick="() => isAccountsModalOpen = false">✕</button>
+                </div>
+            </div>
+
+            <div class="accounts-search-bar">
+                <span class="acc-search-lbl">بحث</span>
+                <input type="text" class="clean-input flex-1 acc-search-input" placeholder="...Enter text to search" @bind="accountSearchTerm" @bind:event="oninput" />
+            </div>
+
+            <div class="accounts-tree-table-header">
+                <div class="acc-col-name">الاسم</div>
+                <div class="acc-col-code">رقم الحساب</div>
+            </div>
+
+            <div class="accounts-tree-body">
+                @foreach (var acc in FilteredAccountNodes)
+                {
+                    <div class="acc-row @(selectedAccountId == acc.Code ? "acc-selected-row" : "") @(acc.Level > 0 ? "acc-child-color" : "acc-parent-color")"
+                         style="padding-right: @(acc.Level * 18 + 8)px;"
+                         @onclick="() => SelectAccountNode(acc)"
+                         @ondblclick="() => ApplySelectedAccount(acc)">
+                        <div class="acc-col-name">
+                            @if (acc.Children.Any())
+                            {
+                                <span class="acc-arrow-toggle" @onclick:stopPropagation @onclick="() => acc.IsExpanded = !acc.IsExpanded">
+                                    <i class="bi @(acc.IsExpanded ? "bi-caret-down-fill" : "bi-caret-left-fill")"></i>
+                                </span>
+                            }
+                            <span>@acc.Name</span>
+                        </div>
+                        <div class="acc-col-code">@acc.Code</div>
+                    </div>
+
+                    @if (acc.IsExpanded && acc.Children.Any())
+                    {
+                        @foreach (var child in acc.Children)
+                        {
+                            <div class="acc-row @(selectedAccountId == child.Code ? "acc-selected-row" : "") acc-child-color"
+                                 style="padding-right: @(child.Level * 18 + 8)px;"
+                                 @onclick="() => SelectAccountNode(child)"
+                                 @ondblclick="() => ApplySelectedAccount(child)">
+                                <div class="acc-col-name">
+                                    @if (child.Children.Any())
+                                    {
+                                        <span class="acc-arrow-toggle" @onclick:stopPropagation @onclick="() => child.IsExpanded = !child.IsExpanded">
+                                            <i class="bi @(child.IsExpanded ? "bi-caret-down-fill" : "bi-caret-left-fill")"></i>
+                                        </span>
+                                    }
+                                    <span>@child.Name</span>
+                                </div>
+                                <div class="acc-col-code">@child.Code</div>
+                            </div>
+
+                            @if (child.IsExpanded && child.Children.Any())
+                            {
+                                @foreach (var grandChild in child.Children)
+                                {
+                                    <div class="acc-row @(selectedAccountId == grandChild.Code ? "acc-selected-row" : "") acc-child-color"
+                                         style="padding-right: @(grandChild.Level * 18 + 8)px;"
+                                         @onclick="() => SelectAccountNode(grandChild)"
+                                         @ondblclick="() => ApplySelectedAccount(grandChild)">
+                                        <div class="acc-col-name">
+                                            <span>@grandChild.Name</span>
+                                        </div>
+                                        <div class="acc-col-code">@grandChild.Code</div>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                }
+            </div>
+
+            <div class="accounts-tree-footer">
+                <span class="acc-hint-green">أضغط مرتين على الحساب المطلوب حتى يتم اختياره</span>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 5. Modal: الوحدات -->
 @if (isUnitsModalOpen)
 {
     <div class="modal-backdrop-blur">
@@ -1443,7 +1827,7 @@
         isItemTypePopupOpen = !wasOpen;
     }
 
-    private void SelectItemType(string typeName)
+    private void SelectSelectItemType(string typeName)
     {
         itemData.ItemType = typeName;
         itemData.ItemTypeNote = typeName switch
@@ -1455,6 +1839,8 @@
         };
         isItemTypePopupOpen = false;
     }
+
+    private void SelectItemType(string typeName) => SelectSelectItemType(typeName);
 
     public class TreeTypeNode
     {
@@ -1497,14 +1883,18 @@
     }
 
     private bool isParentGroupDropdownOpen = false;
-    private string selectedParentGroup = "المجموعة الرئيسية";
+    private string selectedParentGroup = "مجموعة منتج تام";
     private List<TreeTypeNode> parentGroupTreeNodes = new()
     {
-        new() { Name = "المجموعة الرئيسية", Code = "0", Level = 0, IsExpanded = true, Children = new() {
-            new() { Name = "مجموعة منتج تام", Code = "4", Level = 1 },
-            new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 1 },
-            new() { Name = "مجموعة المخزون", Code = "6", Level = 1 }
-        }}
+        new() { Name = "000خدمات", Code = "1", Level = 0 },
+        new() { Name = "مجموعة منتج تام", Code = "4", Level = 0 },
+        new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 0 },
+        new() { Name = "مجموعة المخزون", Code = "6", Level = 0, IsExpanded = true, Children = new() {
+            new() { Name = "مجموعة مخزن 1", Code = "7", Level = 1 },
+            new() { Name = "معلبات", Code = "512", Level = 1 }
+        }},
+        new() { Name = "ملابس صيفي", Code = "8", Level = 0 },
+        new() { Name = "صيانة سيارات", Code = "9", Level = 0 }
     };
     private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
     private void SelectParentGroupNode(TreeTypeNode node)
@@ -1596,24 +1986,277 @@
     private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
     private void OpenUnitsModal() { CloseAllPopups(); newUnitNameInput = itemData.MeasurementUnit; isUnitsModalOpen = true; }
 
-    // Updated Supplier Model for Table View (Matching Image 49)
     public class SupplierGridItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string Account { get; set; } = ""; }
     private bool isSupplierPopupOpen = false;
     private List<SupplierGridItem> supplierList = new()
     {
-        new() { Code = "V10075", Name = "Cust and vend", Account = "" },
+        new() { Code = "...V10", Name = "...Cust and vend", Account = "" },
         new() { Code = "2014", Name = "1", Account = "" },
         new() { Code = "2013", Name = "تعامل نقدي", Account = "" },
-        new() { Code = "V10031", Name = "تهامي", Account = "" },
-        new() { Code = "V10022", Name = "حسن حسن", Account = "" }
+        new() { Code = "...V10", Name = "تهامي", Account = "" },
+        new() { Code = "...V10", Name = "حسن حسن", Account = "" }
     };
     private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
     private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
 
     private bool isPolicyPopupOpen = false;
-    private List<string> policyList = new() { "النسبه ع التحصيل" };
+    private List<string> policyList = new() { "النسبه ع التحصيل", "توزيع مباشر" };
     private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
     private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
+
+    // ================= CALCULATOR POPUP LOGIC =================
+    private string activeCalcField = "";
+    private string alertMinLimit = "0";
+    private string alertMaxLimit = "100";
+    private string alertStagnantPeriod = "15";
+    private string alertExpiryAlert = "30";
+    private string alertInstallationFee = "0";
+
+    private double calcOperand = 0;
+    private string calcOperator = "";
+    private bool calcNewNumber = true;
+
+    private void ToggleCalculator(string fieldKey)
+    {
+        if (activeCalcField == fieldKey)
+        {
+            activeCalcField = "";
+        }
+        else
+        {
+            CloseAllPopups();
+            activeCalcField = fieldKey;
+            calcNewNumber = true;
+            calcOperator = "";
+            calcOperand = double.TryParse(GetCurrentCalcValue(), out var d) ? d : 0;
+        }
+    }
+
+    private string GetCurrentCalcValue() => activeCalcField switch
+    {
+        "minLimit" => alertMinLimit,
+        "maxLimit" => alertMaxLimit,
+        "stagnant" => alertStagnantPeriod,
+        "expiry" => alertExpiryAlert,
+        "installation" => alertInstallationFee,
+        _ => "0"
+    };
+
+    private void SetCurrentCalcValue(string val)
+    {
+        switch (activeCalcField)
+        {
+            case "minLimit": alertMinLimit = val; break;
+            case "maxLimit": alertMaxLimit = val; break;
+            case "stagnant": alertStagnantPeriod = val; break;
+            case "expiry": alertExpiryAlert = val; break;
+            case "installation": alertInstallationFee = val; break;
+        }
+    }
+
+    private void CalcDigit(string digit)
+    {
+        string current = GetCurrentCalcValue();
+        if (calcNewNumber || current == "0")
+        {
+            SetCurrentCalcValue(digit);
+            calcNewNumber = false;
+        }
+        else
+        {
+            SetCurrentCalcValue(current + digit);
+        }
+    }
+
+    private void CalcDecimal()
+    {
+        string current = GetCurrentCalcValue();
+        if (calcNewNumber)
+        {
+            SetCurrentCalcValue("0.");
+            calcNewNumber = false;
+        }
+        else if (!current.Contains("."))
+        {
+            SetCurrentCalcValue(current + ".");
+        }
+    }
+
+    private void CalcClear()
+    {
+        SetCurrentCalcValue("0");
+        calcOperand = 0;
+        calcOperator = "";
+        calcNewNumber = true;
+    }
+
+    private void CalcClearEntry()
+    {
+        SetCurrentCalcValue("0");
+        calcNewNumber = true;
+    }
+
+    private void CalcBackspace()
+    {
+        string current = GetCurrentCalcValue();
+        if (current.Length > 1)
+            SetCurrentCalcValue(current[..^1]);
+        else
+            SetCurrentCalcValue("0");
+    }
+
+    private void CalcNegate()
+    {
+        if (double.TryParse(GetCurrentCalcValue(), out var val))
+        {
+            val = -val;
+            SetCurrentCalcValue(val.ToString());
+        }
+    }
+
+    private void CalcSqrt()
+    {
+        if (double.TryParse(GetCurrentCalcValue(), out var val) && val >= 0)
+        {
+            SetCurrentCalcValue(Math.Sqrt(val).ToString());
+            calcNewNumber = true;
+        }
+    }
+
+    private void CalcReciprocal()
+    {
+        if (double.TryParse(GetCurrentCalcValue(), out var val) && val != 0)
+        {
+            SetCurrentCalcValue((1.0 / val).ToString());
+            calcNewNumber = true;
+        }
+    }
+
+    private void CalcPercent()
+    {
+        if (double.TryParse(GetCurrentCalcValue(), out var val))
+        {
+            SetCurrentCalcValue((val / 100.0).ToString());
+            calcNewNumber = true;
+        }
+    }
+
+    private void CalcOp(string op)
+    {
+        if (double.TryParse(GetCurrentCalcValue(), out var current))
+        {
+            if (!string.IsNullOrEmpty(calcOperator) && !calcNewNumber)
+            {
+                calcOperand = ExecuteOp(calcOperand, current, calcOperator);
+                SetCurrentCalcValue(calcOperand.ToString());
+            }
+            else
+            {
+                calcOperand = current;
+            }
+        }
+        calcOperator = op;
+        calcNewNumber = true;
+    }
+
+    private void CalcEquals()
+    {
+        if (!string.IsNullOrEmpty(calcOperator) && double.TryParse(GetCurrentCalcValue(), out var current))
+        {
+            calcOperand = ExecuteOp(calcOperand, current, calcOperator);
+            SetCurrentCalcValue(calcOperand.ToString());
+            calcOperator = "";
+            calcNewNumber = true;
+        }
+    }
+
+    private double ExecuteOp(double a, double b, string op) => op switch
+    {
+        "+" => a + b,
+        "-" => a - b,
+        "*" => a * b,
+        "/" => b != 0 ? a / b : 0,
+        _ => b
+    };
+
+    // ================= ACCOUNTS TREE MODAL LOGIC =================
+    public class AccountNodeItem
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public bool IsExpanded { get; set; } = true;
+        public List<AccountNodeItem> Children { get; set; } = new();
+    }
+
+    private bool isAccountsModalOpen = false;
+    private string activeAccountTargetField = "";
+    private string accountSearchTerm = "";
+    private string selectedAccountId = "1";
+
+    public class GroupAccountsModel
+    {
+        public string InventoryAccount { get; set; } = "حساب المخزون الرئيسي (102)";
+        public string SalesAccount { get; set; } = "مبيعات بضائع مشتراة (411)";
+        public string CogsAccount { get; set; } = "تكلفة البضاعة المباعة (511)";
+        public string SalesReturnAccount { get; set; } = "مرتجعات مبيعات (412)";
+        public string WipAccount { get; set; } = "أصول ثابتة (111)";
+    }
+    private GroupAccountsModel groupAccounts = new();
+
+    private List<AccountNodeItem> accountTreeData = new()
+    {
+        new() {
+            Name = "الأصول",
+            Code = "1",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() {
+                    Name = "الأصول طويلة الأجل",
+                    Code = "11",
+                    Level = 1,
+                    IsExpanded = true,
+                    Children = new() {
+                        new() { Name = "أصول ثابتة", Code = "111", Level = 2, IsExpanded = true, Children = new() {
+                            new() { Name = "أراضي", Code = "1111", Level = 3 },
+                            new() { Name = "مباني وإنشاءات ومرافق وطرق", Code = "1112", Level = 3 },
+                            new() { Name = "آلات ومعدات", Code = "1113", Level = 3 }
+                        }}
+                    }
+                }
+            }
+        }
+    };
+
+    private IEnumerable<AccountNodeItem> FilteredAccountNodes => string.IsNullOrWhiteSpace(accountSearchTerm)
+        ? accountTreeData
+        : accountTreeData.Where(a => a.Name.Contains(accountSearchTerm, StringComparison.OrdinalIgnoreCase) || a.Code.Contains(accountSearchTerm));
+
+    private void OpenAccountsModal(string targetField)
+    {
+        activeAccountTargetField = targetField;
+        isAccountsModalOpen = true;
+    }
+
+    private void SelectAccountNode(AccountNodeItem node)
+    {
+        selectedAccountId = node.Code;
+    }
+
+    private void ApplySelectedAccount(AccountNodeItem node)
+    {
+        string displayVal = $"{node.Name} ({node.Code})";
+        switch (activeAccountTargetField)
+        {
+            case "inventory": groupAccounts.InventoryAccount = displayVal; break;
+            case "sales": groupAccounts.SalesAccount = displayVal; break;
+            case "cogs": groupAccounts.CogsAccount = displayVal; break;
+            case "salesReturn": groupAccounts.SalesReturnAccount = displayVal; break;
+            case "wip": groupAccounts.WipAccount = displayVal; break;
+        }
+        isAccountsModalOpen = false;
+    }
 
     private void CloseAllPopups()
     {
@@ -1630,11 +2273,12 @@
         isModalTransPopupOpen = false;
         isGroupTypeDropdownOpen = false;
         isParentGroupDropdownOpen = false;
+        activeCalcField = "";
     }
 
-    private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة" };
-    private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً" };
-    private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %" };
+    private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة", "تكلفة البضاعة المباعة" };
+    private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة" };
+    private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "معفي من الضريبة" };
 
     private ItemModel itemData = new()
     {

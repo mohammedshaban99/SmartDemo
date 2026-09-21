@@ -280,7 +280,6 @@
     padding-right: 14px;
 }
 
-/* Updated section block titles to match desktop blue styling (Image 50) */
 .section-block-title {
     font-weight: bold;
     font-size: 0.9rem;
@@ -310,7 +309,7 @@
 .field-entry-line {
     display: flex;
     align-items: center;
-    gap: 60px;
+    gap: 6px;
     min-width: 0;
 }
 
@@ -636,7 +635,7 @@ select.clean-input:focus {
     font-size: 0.80rem;
 }
 
-/* FIXED TREE DROPDOWN: Code on Right, Name on Left matching Image 38 */
+/* Tree Dropdowns */
 .group-type-tree-dropdown {
     width: 380px !important;
     min-width: 380px !important;
@@ -659,17 +658,17 @@ select.clean-input:focus {
     background-color: #fafbfc;
 }
 
-.tree-node-code {
-    width: 70px;
+.tree-node-name {
+    flex: 1;
     text-align: right;
 }
 
-.tree-node-name {
-    flex: 1;
+.tree-node-code {
+    width: 70px;
     text-align: left;
 }
 
-/* Updated Supplier Advanced Table Dropdown matching Image 49 */
+/* Advanced Supplier Dropdown */
 .custom-supplier-grid-panel-advanced {
     position: absolute;
     top: 34px;
@@ -711,6 +710,7 @@ select.clean-input:focus {
     flex: 1;
     padding: 5px 8px;
     text-align: right;
+    border-left: 1px solid #dee2e6;
 }
 
 .col-acc {
@@ -742,6 +742,301 @@ select.clean-input:focus {
         background-color: #e9f2ff;
     }
 
+/* Inline Accounts Dots Button */
+.input-inline-btn-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+    .input-inline-btn-wrapper .clean-input {
+        width: 100%;
+        padding-left: 28px !important;
+        padding-right: 8px !important;
+        text-align: right;
+        height: 31px;
+    }
+
+.btn-inline-dots {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    width: 24px;
+    border: none;
+    background: transparent;
+    color: #555555;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    line-height: 1;
+}
+
+    .btn-inline-dots:hover {
+        background-color: #e9ecef;
+        color: #0d6efd;
+    }
+
+/* ================= ALERT FIELDS WITH OUTSIDE LABEL ON LEFT ================= */
+.calc-field-outer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    width: 100%;
+}
+
+.calc-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.calc-num-input {
+    width: 100%;
+    padding-left: 24px !important;
+    padding-right: 12px !important;
+    text-align: center;
+    cursor: pointer;
+    height: 31px;
+}
+
+.calc-dropdown-arrow {
+    position: absolute;
+    left: 8px;
+    font-size: 0.65rem;
+    color: #495057;
+    cursor: pointer;
+    user-select: none;
+}
+
+.calc-unit-text-outside {
+    color: #333333;
+    font-size: 0.86rem;
+    font-weight: 500;
+    user-select: none;
+    min-width: 35px;
+    text-align: left;
+}
+
+/* Calculator popup dialog */
+.calculator-popup-dialog {
+    position: absolute;
+    top: 34px;
+    right: 0;
+    left: auto;
+    width: 240px;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    padding: 8px;
+    z-index: 5500;
+    direction: ltr !important;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+}
+
+    .calc-grid .btn-calc:nth-child(1),
+    .calc-grid .btn-calc:nth-child(2),
+    .calc-grid .btn-calc:nth-child(3) {
+        grid-column: span 2;
+    }
+
+.btn-calc {
+    background-color: #007bff;
+    color: #ffffff;
+    border: 1px solid #0069d9;
+    border-radius: 5px;
+    font-size: 0.76rem;
+    font-weight: bold;
+    height: 30px;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: background-color 0.1s;
+}
+
+    .btn-calc:hover {
+        background-color: #0062cc;
+    }
+
+    .btn-calc:active {
+        background-color: #0056b3;
+    }
+
+.btn-calc-empty {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ================= ACCOUNTS TREE POPUP MODAL ================= */
+.accounts-tree-modal-layer {
+    z-index: 5000 !important;
+}
+
+.accounts-tree-dialog {
+    background: #ffffff;
+    border-radius: 4px;
+    width: 440px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid #ced4da;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 5001;
+}
+
+.accounts-tree-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 6px 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.accounts-tree-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.accounts-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-acc-win {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    line-height: 1;
+}
+
+.btn-acc-close:hover {
+    color: #dc3545;
+}
+
+.accounts-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #fdfdfd;
+    border-bottom: 1px solid #eee;
+}
+
+.acc-search-lbl {
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: bold;
+}
+
+.acc-search-input {
+    height: 28px;
+    font-size: 0.82rem;
+    text-align: left;
+    direction: ltr;
+}
+
+.accounts-tree-table-header {
+    display: flex;
+    background-color: #f1f3f6;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: bold;
+    font-size: 0.83rem;
+    color: #333;
+    padding: 6px 12px;
+}
+
+.acc-col-name {
+    flex: 1;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.acc-col-code {
+    width: 80px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.accounts-tree-body {
+    max-height: 240px;
+    overflow-y: auto;
+    background-color: #ffffff;
+}
+
+.acc-row {
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f9fa;
+    user-select: none;
+}
+
+    .acc-row:hover {
+        background-color: #f0f7ff;
+    }
+
+.acc-parent-color {
+    font-weight: bold;
+    color: #0b2e63;
+}
+
+.acc-child-color {
+    color: #b02a37;
+    font-weight: 500;
+}
+
+.acc-selected-row {
+    background-color: #fff3cd !important;
+    border-right: 3px solid #ffc107;
+}
+
+.acc-arrow-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    color: #495057;
+    cursor: pointer;
+}
+
+.accounts-tree-footer {
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.acc-hint-green {
+    font-size: 0.8rem;
+    color: #198754;
+    font-weight: 600;
+}
+
 /* Higher z-index for Group Modal */
 .group-modal-layer {
     z-index: 3000 !important;
@@ -756,7 +1051,7 @@ select.clean-input:focus {
     flex-direction: column;
     overflow: hidden;
     direction: rtl !important;
-    min-height: 890px;
+    min-height: 99vh;
     position: relative;
     z-index: 3001;
 }
@@ -857,9 +1152,6 @@ select.clean-input:focus {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 16px;
-    background: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
     padding: 16px 20px;
     position: relative;
 }
