@@ -859,6 +859,7 @@
     </div>
 }
 
+<!-- 3. Modal: مجموعات الاصناف (Fixed Tree Dropdown: Code on Right with tree expander, Name on Left matching Image 36/38) -->
 @if (isGroupModalOpen)
 {
     <div class="modal-backdrop-blur group-modal-layer">
@@ -952,7 +953,7 @@
                             }
                         </div>
 
-                        <!-- Type field with Tree Table Dropdown matching Image 38 -->
+                        <!-- Type field with Tree Table Dropdown: Code on Right with tree expander, Name on Left (Image 36/38) -->
                         <div class="group-input-line pos-relative">
                             <div class="dropdown-anchor flex-1">
                                 <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleGroupTypeDropdown">
@@ -964,18 +965,37 @@
                                 {
                                     <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
                                         <div class="table-popup-header d-flex justify-content-between">
-                                            <span>الاسم</span>
-                                            <span>الرقم</span>
+                                            <span class="col-code text-right">الرقم</span>
+                                            <span class="col-name text-left">الاسم</span>
                                         </div>
                                         <div class="table-popup-list">
                                             @foreach (var node in groupTypeTreeNodes)
                                             {
                                                 <div class="tree-grid-row @(selectedGroupType == node.Name ? "active-row" : "")"
-                                                     style="padding-right: @(node.Level * 16 + 8)px;"
-                                                     @onclick="() => SelectGroupTypeNode(node.Name)">
-                                                    <span class="tree-node-name">@node.Name</span>
-                                                    <span class="tree-node-code text-muted">@node.Code</span>
+                                                     @onclick="() => SelectGroupTypeNode(node)">
+                                                    <!-- Code on Right with Bootstrap expansion chevron -->
+                                                    <span class="tree-node-code col-code text-right" style="padding-right: @(node.Level * 16)px;">
+                                                        @if (node.Children.Any())
+                                                        {
+                                                            <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") ms-1 small"></i>
+                                                        }
+                                                        @node.Code
+                                                    </span>
+                                                    <!-- Name on Left -->
+                                                    <span class="tree-node-name col-name text-left text-muted">@node.Name</span>
                                                 </div>
+
+                                                @if (node.IsExpanded && node.Children.Any())
+                                                {
+                                                    @foreach (var child in node.Children)
+                                                    {
+                                                        <div class="tree-grid-row tree-child-row @(selectedGroupType == child.Name ? "active-row" : "")"
+                                                             @onclick="() => SelectGroupTypeNode(child)">
+                                                            <span class="tree-node-code col-code text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Code</span>
+                                                            <span class="tree-node-name col-name text-left text-muted">@child.Name</span>
+                                                        </div>
+                                                    }
+                                                }
                                             }
                                         </div>
                                         <div class="table-popup-footer">
@@ -1211,8 +1231,8 @@
                                 <tr>
                                     <th style="width: 40px; color: red;">✕</th>
                                     <th>المعادلة</th>
-                                    <th style="width: 200px;">الحقل</th>
-                                    <th style="width: 250px;">الاسم</th>
+                                    <th style="width: 220px;">الحقل</th>
+                                    <th style="width: 220px;">الاسم</th>
                                     <th style="width: 40px; color: #f39c12;">☼</th>
                                 </tr>
                             </thead>
@@ -1383,24 +1403,46 @@
         isItemTypePopupOpen = false;
     }
 
-    // Tree nodes for Group Type field (Image 38)
-    public class TreeTypeNode { public string Name { get; set; } = ""; public string Code { get; set; } = ""; public int Level { get; set; } = 0; }
+    // Tree nodes matching Image 38 (Code on right with tree expander, Name on left)
+    public class TreeTypeNode
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public bool IsExpanded { get; set; } = false;
+        public List<TreeTypeNode> Children { get; set; } = new();
+    }
+
     private bool isGroupTypeDropdownOpen = false;
-    private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الأليفة";
+    private string selectedGroupType = "الملابس والإكسسوارات";
     private List<TreeTypeNode> groupTypeTreeNodes = new()
     {
         new() { Name = "الحيوانات ومستلزمات الحيوانات الأليفة", Code = "1", Level = 0 },
-        new() { Name = "الملابس والإكسسوارات", Code = "166", Level = 1 },
-        new() { Name = "ملابس", Code = "1604", Level = 2 },
-        new() { Name = "ملابس رياضية", Code = "5322", Level = 2 },
-        new() { Name = "بنطال كرة القدم الأمريكية", Code = "3951", Level = 1 },
-        new() { Name = "ملابس رياضية لركوب الدراجات", Code = "5697", Level = 1 },
-        new() { Name = "مريلة الدراجة", Code = "3128", Level = 1 },
-        new() { Name = "قمصان الداجات", Code = "3455", Level = 1 }
+        new() {
+            Name = "الملابس والإكسسوارات",
+            Code = "166",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "ملابس", Code = "1604", Level = 1 },
+                new() { Name = "إكسسوارات الملابس", Code = "167", Level = 1 }
+            }
+        },
+        new() { Name = "الفنون والترفيه", Code = "8", Level = 0 },
+        new() { Name = "طفل رضيع وطفل صغير", Code = "537", Level = 0 },
+        new() { Name = "الأعمال والصناعة", Code = "111", Level = 0 },
+        new() { Name = "الكاميرات والبصريات", Code = "141", Level = 0 },
+        new() { Name = "الإلكترونيات", Code = "222", Level = 0 },
+        new() { Name = "الأغذية والمشروبات والتبغ", Code = "412", Level = 0 }
     };
 
     private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
-    private void SelectGroupTypeNode(string name) { selectedGroupType = name; isGroupTypeDropdownOpen = false; }
+    private void SelectGroupTypeNode(TreeTypeNode node)
+    {
+        selectedGroupType = node.Name;
+        if (node.Children.Any()) node.IsExpanded = !node.IsExpanded;
+        else isGroupTypeDropdownOpen = false;
+    }
 
     public class CheckableItem { public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
     private bool isBranchPopupOpen = false;

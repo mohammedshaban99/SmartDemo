@@ -646,7 +646,6 @@ select.clean-input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
     font-size: 0.83rem;
     cursor: pointer;
     border-bottom: 1px solid #f2f2f2;
@@ -691,7 +690,6 @@ select.clean-input:focus {
     flex: 1;
     padding: 5px 8px;
     text-align: right;
-    border-left: 1px solid #dee2e6;
 }
 
 .col-code {
