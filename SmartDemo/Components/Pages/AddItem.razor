@@ -318,7 +318,7 @@
                         </div>
 
                         <div class="form-side-column">
-                            <!-- 6. اسم المورد -->
+                            <!-- 6. اسم المورد (Updated to advanced Table View matching Image 49) -->
                             <div class="field-entry-line">
                                 <span class="field-title">اسم المورد</span>
                                 <div class="dropdown-anchor flex-1 field-fixed-width">
@@ -331,22 +331,28 @@
 
                                     @if (isSupplierPopupOpen)
                                     {
-                                        <div class="custom-supplier-grid-panel" @onclick:stopPropagation>
+                                        <div class="custom-supplier-grid-panel-advanced" @onclick:stopPropagation>
                                             <div class="supplier-grid-header">
-                                                <div class="col-name">الاسم</div>
                                                 <div class="col-code">الكود</div>
+                                                <div class="col-name">الاسم</div>
+                                                <div class="col-acc">الحساب</div>
+                                                <div class="col-action">=</div>
                                             </div>
                                             <div class="supplier-grid-subbar">
-                                                <div class="col-name text-center text-muted small">🔤</div>
                                                 <div class="col-code text-center text-muted small">🔤</div>
+                                                <div class="col-name text-center text-muted small">🔤</div>
+                                                <div class="col-acc text-center text-muted small">=</div>
+                                                <div class="col-action text-center">=</div>
                                             </div>
                                             <div class="supplier-grid-rows">
                                                 @foreach (var sup in supplierList)
                                                 {
                                                     <div class="supplier-row @(itemData.SupplierName == sup.Name ? "active-row" : "")"
                                                          @onclick="() => SelectSupplier(sup.Name)">
-                                                        <div class="col-name">@sup.Name</div>
                                                         <div class="col-code">@sup.Code</div>
+                                                        <div class="col-name">@sup.Name</div>
+                                                        <div class="col-acc">@sup.Account</div>
+                                                        <div class="col-action"></div>
                                                     </div>
                                                 }
                                             </div>
@@ -859,7 +865,7 @@
     </div>
 }
 
-<!-- 3. Modal: مجموعات الاصناف (Fixed Tree Dropdown: Code on Right with tree expander, Name on Left matching Image 36/38) -->
+<!-- 3. Modal: مجموعات الاصناف -->
 @if (isGroupModalOpen)
 {
     <div class="modal-backdrop-blur group-modal-layer">
@@ -953,7 +959,7 @@
                             }
                         </div>
 
-                        <!-- Type field with Tree Table Dropdown: Code on Right with tree expander, Name on Left (Image 36/38) -->
+                        <!-- Type field with Tree Table Dropdown (Code on Right, Name on Left matching Image 38/49) -->
                         <div class="group-input-line pos-relative">
                             <div class="dropdown-anchor flex-1">
                                 <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleGroupTypeDropdown">
@@ -973,7 +979,6 @@
                                             {
                                                 <div class="tree-grid-row @(selectedGroupType == node.Name ? "active-row" : "")"
                                                      @onclick="() => SelectGroupTypeNode(node)">
-                                                    <!-- Code on Right with Bootstrap expansion chevron -->
                                                     <span class="tree-node-code col-code text-right" style="padding-right: @(node.Level * 16)px;">
                                                         @if (node.Children.Any())
                                                         {
@@ -981,7 +986,6 @@
                                                         }
                                                         @node.Code
                                                     </span>
-                                                    <!-- Name on Left -->
                                                     <span class="tree-node-name col-name text-left text-muted">@node.Name</span>
                                                 </div>
 
@@ -1019,12 +1023,61 @@
                 {
                     <div class="group-tab-columns">
                         <div class="group-fields-side">
-                            <div class="section-block-title">الخصائص</div>
+                            <div class="section-block-title text-primary">الخصائص</div>
                             <div class="section-with-blue-line mb-3">
-                                <div class="field-entry-line mb-2">
+                                <!-- 'تندرج من' Field with Tree Table Dropdown matching Image 49 -->
+                                <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">تندرج من</span>
-                                    <select class="clean-input flex-1"><option></option></select>
+                                    <div class="dropdown-anchor flex-1">
+                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleParentGroupDropdown">
+                                            <span class="combo-display-text">@selectedParentGroup</span>
+                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                        </div>
+
+                                        @if (isParentGroupDropdownOpen)
+                                        {
+                                            <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header d-flex justify-content-between">
+                                                    <span class="col-code text-right">الرقم</span>
+                                                    <span class="col-name text-left">الاسم</span>
+                                                </div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in parentGroupTreeNodes)
+                                                    {
+                                                        <div class="tree-grid-row @(selectedParentGroup == node.Name ? "active-row" : "")"
+                                                             @onclick="() => SelectParentGroupNode(node)">
+                                                            <span class="tree-node-code col-code text-right" style="padding-right: @(node.Level * 16)px;">
+                                                                @if (node.Children.Any())
+                                                                {
+                                                                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") ms-1 small"></i>
+                                                                }
+                                                                @node.Code
+                                                            </span>
+                                                            <span class="tree-node-name col-name text-left text-muted">@node.Name</span>
+                                                        </div>
+
+                                                        @if (node.IsExpanded && node.Children.Any())
+                                                        {
+                                                            @foreach (var child in node.Children)
+                                                            {
+                                                                <div class="tree-grid-row tree-child-row @(selectedParentGroup == child.Name ? "active-row" : "")"
+                                                                     @onclick="() => SelectParentGroupNode(child)">
+                                                                    <span class="tree-node-code col-code text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Code</span>
+                                                                    <span class="tree-node-name col-name text-left text-muted">@child.Name</span>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isParentGroupDropdownOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
+
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">نوع الصنف</span>
                                     <select class="clean-input flex-1"><option></option></select>
@@ -1051,12 +1104,12 @@
                                 </div>
                             </div>
 
-                            <div class="section-block-title">الوصف</div>
+                            <div class="section-block-title text-primary">الوصف</div>
                             <div class="section-with-blue-line mb-3">
                                 <textarea class="clean-input w-100" rows="3"></textarea>
                             </div>
 
-                            <div class="section-block-title">شاشة اللمس</div>
+                            <div class="section-block-title text-primary">شاشة اللمس</div>
                             <div class="section-with-blue-line">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <div class="d-flex align-items-center gap-2">
@@ -1084,7 +1137,7 @@
                 {
                     <div class="group-tab-accounts-layout">
                         <div class="modal-accounts-col">
-                            <div class="section-block-title">الضرائب</div>
+                            <div class="section-block-title text-primary">الضرائب</div>
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">يخضع للضريبة</span>
@@ -1128,7 +1181,7 @@
                                 </div>
                             </div>
 
-                            <div class="section-block-title">التنبيهات</div>
+                            <div class="section-block-title text-primary">التنبيهات</div>
                             <div class="section-with-blue-line">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">الحد الادنى</span>
@@ -1162,7 +1215,7 @@
                         </div>
 
                         <div class="modal-accounts-col">
-                            <div class="section-block-title">الحسابات</div>
+                            <div class="section-block-title text-primary">الحسابات</div>
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">حساب المخزون</span>
@@ -1186,7 +1239,7 @@
                                 </div>
                             </div>
 
-                            <div class="section-block-title">الخصم</div>
+                            <div class="section-block-title text-primary">الخصم</div>
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">طريقة الخصم</span>
@@ -1212,7 +1265,7 @@
                                 </div>
                             </div>
 
-                            <div class="section-block-title">الخصم</div>
+                            <div class="section-block-title text-primary">الخصم</div>
                             <div class="section-with-blue-line">
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">مصنعية التركيب</span>
@@ -1403,7 +1456,6 @@
         isItemTypePopupOpen = false;
     }
 
-    // Tree nodes matching Image 38 (Code on right with tree expander, Name on left)
     public class TreeTypeNode
     {
         public string Name { get; set; } = "";
@@ -1442,6 +1494,24 @@
         selectedGroupType = node.Name;
         if (node.Children.Any()) node.IsExpanded = !node.IsExpanded;
         else isGroupTypeDropdownOpen = false;
+    }
+
+    private bool isParentGroupDropdownOpen = false;
+    private string selectedParentGroup = "المجموعة الرئيسية";
+    private List<TreeTypeNode> parentGroupTreeNodes = new()
+    {
+        new() { Name = "المجموعة الرئيسية", Code = "0", Level = 0, IsExpanded = true, Children = new() {
+            new() { Name = "مجموعة منتج تام", Code = "4", Level = 1 },
+            new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 1 },
+            new() { Name = "مجموعة المخزون", Code = "6", Level = 1 }
+        }}
+    };
+    private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
+    private void SelectParentGroupNode(TreeTypeNode node)
+    {
+        selectedParentGroup = node.Name;
+        if (node.Children.Any()) node.IsExpanded = !node.IsExpanded;
+        else isParentGroupDropdownOpen = false;
     }
 
     public class CheckableItem { public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
@@ -1526,9 +1596,17 @@
     private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
     private void OpenUnitsModal() { CloseAllPopups(); newUnitNameInput = itemData.MeasurementUnit; isUnitsModalOpen = true; }
 
-    public class SupplierGridItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; }
+    // Updated Supplier Model for Table View (Matching Image 49)
+    public class SupplierGridItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string Account { get; set; } = ""; }
     private bool isSupplierPopupOpen = false;
-    private List<SupplierGridItem> supplierList = new() { new() { Code = "V10075", Name = "Cust and vend" } };
+    private List<SupplierGridItem> supplierList = new()
+    {
+        new() { Code = "V10075", Name = "Cust and vend", Account = "" },
+        new() { Code = "2014", Name = "1", Account = "" },
+        new() { Code = "2013", Name = "تعامل نقدي", Account = "" },
+        new() { Code = "V10031", Name = "تهامي", Account = "" },
+        new() { Code = "V10022", Name = "حسن حسن", Account = "" }
+    };
     private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
     private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
 
@@ -1551,6 +1629,7 @@
         isModalCodePopupOpen = false;
         isModalTransPopupOpen = false;
         isGroupTypeDropdownOpen = false;
+        isParentGroupDropdownOpen = false;
     }
 
     private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة" };

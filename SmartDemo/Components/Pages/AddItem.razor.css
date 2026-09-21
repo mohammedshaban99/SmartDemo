@@ -13,7 +13,6 @@
     margin-right: 20px;
 }
 
-/* FIXED PROBLEM 1: ONE Single Continuous Vertical Orange Line for Header */
 .header-master-grid {
     display: flex;
     align-items: flex-start;
@@ -37,7 +36,7 @@
     left: 0;
     top: 0;
     width: 3px;
-    height: 112px; /* Unbroken line covering all 3 header input rows */
+    height: 112px;
     background-color: #e67e22;
     border-radius: 2px;
 }
@@ -281,10 +280,11 @@
     padding-right: 14px;
 }
 
+/* Updated section block titles to match desktop blue styling (Image 50) */
 .section-block-title {
     font-weight: bold;
     font-size: 0.9rem;
-    color: #333333;
+    color: #0d6efd !important;
     margin-bottom: 10px;
 }
 
@@ -310,7 +310,7 @@
 .field-entry-line {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 60px;
     min-width: 0;
 }
 
@@ -633,10 +633,10 @@ select.clean-input:focus {
 
 .resizer-dots {
     color: #aaa;
-    font-size: 0.8rem;
+    font-size: 0.80rem;
 }
 
-/* FIXED PROBLEM 2: Tree Table Dropdown for Group Type Field (Image 38) */
+/* FIXED TREE DROPDOWN: Code on Right, Name on Left matching Image 38 */
 .group-type-tree-dropdown {
     width: 380px !important;
     min-width: 380px !important;
@@ -655,12 +655,26 @@ select.clean-input:focus {
         background-color: #e9f2ff;
     }
 
-.custom-supplier-grid-panel {
+.tree-child-row {
+    background-color: #fafbfc;
+}
+
+.tree-node-code {
+    width: 70px;
+    text-align: right;
+}
+
+.tree-node-name {
+    flex: 1;
+    text-align: left;
+}
+
+/* Updated Supplier Advanced Table Dropdown matching Image 49 */
+.custom-supplier-grid-panel-advanced {
     position: absolute;
     top: 34px;
     right: 0;
-    width: 100%;
-    min-width: 280px;
+    width: 380px;
     background: #ffffff;
     border: 1px solid #ced4da;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
@@ -686,15 +700,29 @@ select.clean-input:focus {
     border-bottom: 1px solid #eee;
 }
 
+.col-code {
+    width: 80px;
+    padding: 5px 8px;
+    text-align: center;
+    border-left: 1px solid #dee2e6;
+}
+
 .col-name {
     flex: 1;
     padding: 5px 8px;
     text-align: right;
 }
 
-.col-code {
-    width: 80px;
+.col-acc {
+    width: 90px;
     padding: 5px 8px;
+    text-align: center;
+    border-left: 1px solid #dee2e6;
+}
+
+.col-action {
+    width: 35px;
+    padding: 5px;
     text-align: center;
 }
 
@@ -714,7 +742,7 @@ select.clean-input:focus {
         background-color: #e9f2ff;
     }
 
-/* FIXED PROBLEM 3: Higher z-index for Group Modal */
+/* Higher z-index for Group Modal */
 .group-modal-layer {
     z-index: 3000 !important;
 }
@@ -851,7 +879,6 @@ select.clean-input:focus {
     justify-content: center;
 }
 
-/* Continuous vertical orange line container matching Image 38/45 */
 .group-modal-labels-col-continuous {
     order: 2;
     display: flex;
