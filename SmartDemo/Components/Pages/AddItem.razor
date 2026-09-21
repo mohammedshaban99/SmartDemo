@@ -28,22 +28,46 @@
 
             <!-- 3. Form Input Controls -->
             <div class="controls-column">
-                <!-- Row 1: Number & QR -->
-                <div class="form-row-compact">
-                    <input type="text" class="clean-input barcode-main-input" @bind="itemData.BarcodeNumber" />
+                <!-- Row 1: Number & QR Barcode Trigger Combo -->
+                <div class="form-row-compact pos-relative">
+                    <input type="text" class="clean-input barcode-main-input text-center" @bind="itemData.BarcodeNumber" />
 
-                    <div class="qr-dropdown-combo">
-                        <select class="clean-select-mini" value="@selectedQrOption" @onchange="OnQrTypeChanged">
-                            @foreach (var opt in qrOptionList)
-                            {
-                                <option value="@opt.Name">@opt.Name</option>
-                            }
-                        </select>
-                        <span class="ico-folder">@GetSelectedQrIcon()</span>
-                        <span class="ico-arrow">▼</span>
+                    <div class="modal-code-combo-wrapper">
+                        <div class="group-prefix-combo" @onclick="ToggleBarcodeTypePopup" @onclick:stopPropagation>
+                            <span class="combo-arrow">▼</span>
+                            <span class="ico-swap">@GetSelectedBarcodeIcon()</span>
+                        </div>
+
+                        @if (isBarcodeTypePopupOpen)
+                        {
+                            <div class="modal-code-dropdown-panel header-barcode-popup" @onclick:stopPropagation>
+                                <div class="modal-dropdown-row @(selectedBarcodeOption == "تلقائي" ? "active-code-row" : "")"
+                                     @onclick='() => SelectBarcodeOption("تلقائي")'>
+                                    <span>⚙️</span>
+                                    <span>تلقائي</span>
+                                </div>
+                                <div class="modal-dropdown-row @(selectedBarcodeOption == "بالمجموعة" ? "active-code-row" : "")"
+                                     @onclick='() => SelectBarcodeOption("بالمجموعة")'>
+                                    <span>📁</span>
+                                    <span>بالمجموعة</span>
+                                </div>
+                                <div class="modal-dropdown-row @(selectedBarcodeOption == "يدوي" ? "active-code-row" : "")"
+                                     @onclick='() => SelectBarcodeOption("يدوي")'>
+                                    <span>✋</span>
+                                    <span>يدوي</span>
+                                </div>
+                            </div>
+                        }
                     </div>
 
-                    <span class="req-star me-2 ms-1">*</span>
+                    <span class="req-star me-1 ms-1">*</span>
+
+                    @* Show green checkmark ONLY when NOT "بالمجموعة" *@
+                    @if (selectedBarcodeOption != "بالمجموعة")
+                    {
+                        <span class="text-success fw-bold ms-1">✔</span>
+                    }
+
                     <button type="button" class="btn-qr-hover" @onclick="OpenQrModal">QR</button>
                 </div>
 
@@ -73,41 +97,32 @@
                     }
                 </div>
 
-                <!-- Row 3: Item Type (Tree Dropdown Hierarchy) -->
+                <!-- Row 3: Item Type (Dropdown Table Popup) -->
                 <div class="form-row-compact pos-relative">
-                    <div class="dropdown-anchor" style="width: 220px;">
-                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTreeTypePopup">
+                    <div class="dropdown-anchor" style="width: 250px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleItemTypePopup">
                             <span class="combo-display-text">@itemData.ItemType</span>
                             <div class="combo-icons-inside">
                                 <span class="combo-arrow">▼</span>
                             </div>
                         </div>
 
-                        @if (isTreeTypePopupOpen)
+                        @if (isItemTypePopupOpen)
                         {
-                            <div class="tree-dropdown-panel" @onclick:stopPropagation>
-                                <div class="tree-scroll-container">
-                                    @foreach (var node in itemTypeTreeNodes)
+                            <div class="custom-table-popup item-type-popup-size" @onclick:stopPropagation>
+                                <div class="table-popup-header">الاسم</div>
+                                <div class="table-popup-list">
+                                    @foreach (var typeName in itemTypeList)
                                     {
-                                        <div class="tree-node-item @(node.IsExpanded ? "node-open" : "")" style="padding-right: @(node.Level * 18 + 8)px;">
-                                            @if (node.Children.Any())
-                                            {
-                                                <span class="tree-toggle-ico" @onclick="() => node.IsExpanded = !node.IsExpanded">
-                                                    @(node.IsExpanded ? "▼" : "◀")
-                                                </span>
-                                                <span class="tree-folder-ico">📁</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="tree-leaf-spacer"></span>
-                                                <span class="tree-file-ico">📄</span>
-                                            }
-                                            <span class="tree-node-label @(itemData.ItemType == node.Name ? "active-tree-node" : "")"
-                                                  @onclick="() => SelectTreeNode(node.Name)">
-                                                @node.Name
-                                            </span>
+                                        <div class="table-popup-row @(itemData.ItemType == typeName ? "active-row" : "")"
+                                             @onclick="() => SelectItemType(typeName)">
+                                            @typeName
                                         </div>
                                     }
+                                </div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isItemTypePopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
                                 </div>
                             </div>
                         }
@@ -788,7 +803,6 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
-
 <!-- 1. QR Barcode Modal Dialog -->
 @if (isQrModalOpen)
 {
@@ -813,40 +827,42 @@
     </div>
 }
 
-<!-- 2. Languages Configuration Dialog Modal -->
+<!-- 2. Languages Configuration Dialog Modal (Reversed: Banner on Right, Checkbox order & Footer corrected matching Image 41) -->
 @if (isLanguagesModalOpen)
 {
     <div class="modal-backdrop-blur">
-        <div class="languages-modal-dialog">
+        <div class="languages-modal-dialog" dir="rtl">
             <div class="languages-modal-header">
-                <button type="button" class="btn-modal-close" @onclick="CloseLanguagesModal">✕</button>
                 <span class="languages-modal-title">اللغات المستخدمة</span>
+                <button type="button" class="btn-modal-close" @onclick="CloseLanguagesModal">✕</button>
             </div>
 
             <div class="languages-modal-body">
                 <p class="languages-prompt-text">من فضلك حدد اللغات التي تستخدمها في التعامل مع البرنامج</p>
 
                 <div class="languages-frame-box">
+                    <!-- Blue Banner Placed on the Right (as in Image 41) -->
+                    <div class="lang-sidebar-banner">
+                        <span>اللغات المستخدمة</span>
+                    </div>
+
+                    <!-- Languages list items -->
                     <div class="languages-items-column">
                         @foreach (var lang in availableLanguages)
                         {
                             <div class="language-item-row">
-                                <span class="lang-title">@lang.Name</span>
-                                <input type="checkbox" class="chk-box" @bind="lang.IsSelected" />
                                 <span class="lang-flag">@lang.FlagEmoji</span>
+                                <input type="checkbox" class="chk-box" @bind="lang.IsSelected" />
+                                <span class="lang-title">@lang.Name</span>
                             </div>
                         }
-                    </div>
-
-                    <div class="lang-sidebar-banner">
-                        <span>اللغات المستخدمة</span>
                     </div>
                 </div>
             </div>
 
             <div class="languages-modal-footer">
-                <button type="button" class="btn-lang-cancel" @onclick="CloseLanguagesModal">إغلاق</button>
                 <button type="button" class="btn-lang-submit" @onclick="SaveLanguages">موافق</button>
+                <button type="button" class="btn-lang-cancel" @onclick="CloseLanguagesModal">إغلاق</button>
             </div>
         </div>
     </div>
@@ -874,7 +890,7 @@
 
             <!-- Modal Content Area -->
             <div class="master-modal-body">
-                
+
                 <!-- Master Header Grid -->
                 <div class="group-modal-header-grid mb-3">
                     <!-- 1. Books Icon on Far Right -->
@@ -905,7 +921,6 @@
                         <!-- Row 1: Number code with attached [ ▼ 🔀 ] on the right side, * on far left -->
                         <div class="group-input-line pos-relative">
                             <div class="modal-code-combo-wrapper">
-                               
                                 <input type="text" class="clean-input group-code-input" value="513" />
                                 <div class="group-prefix-combo" @onclick="ToggleModalCodePopup" @onclick:stopPropagation>
                                     <span class="combo-arrow">▼</span>
@@ -916,15 +931,18 @@
                                 @if (isModalCodePopupOpen)
                                 {
                                     <div class="modal-code-dropdown-panel" @onclick:stopPropagation>
-                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("تلقائي", "⚙️")'>
+                                        <div class="modal-dropdown-row @(selectedModalOption == "تلقائي" ? "active-code-row" : "")"
+                                             @onclick='() => SelectModalCodeOption("تلقائي", "⚙️")'>
                                             <span>⚙️</span>
                                             <span>تلقائي</span>
                                         </div>
-                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("بالمجموعة", "📁")'>
+                                        <div class="modal-dropdown-row @(selectedModalOption == "بالمجموعة" ? "active-code-row" : "")"
+                                             @onclick='() => SelectModalCodeOption("بالمجموعة", "📁")'>
                                             <span>📁</span>
                                             <span>بالمجموعة</span>
                                         </div>
-                                        <div class="modal-dropdown-row" @onclick='() => SelectModalCodeOption("يدوي", "✋")'>
+                                        <div class="modal-dropdown-row @(selectedModalOption == "يدوي" ? "active-code-row" : "")"
+                                             @onclick='() => SelectModalCodeOption("يدوي", "✋")'>
                                             <span>✋</span>
                                             <span>يدوي</span>
                                         </div>
@@ -934,7 +952,7 @@
                         </div>
 
                         <!-- Row 2: Name Input with Translation Icon on Left edge next to Asterisk * -->
-                        <div class="group-input-line pos-relative">                      
+                        <div class="group-input-line pos-relative">
                             <input type="text" class="clean-input flex-1" />
                             <span class="req-star me-1 ms-1">*</span>
                             <button type="button" class="btn-trans-trigger" @onclick="ToggleModalTransPopup" title="ترجمة الأسماء" @onclick:stopPropagation>
@@ -1301,19 +1319,31 @@
 @code {
     private int activeTab = 1;
 
-    public class QrOption { public string Name { get; set; } = ""; public string Icon { get; set; } = ""; }
-    private List<QrOption> qrOptionList = new()
+    // Header Barcode Generation Combo Options
+    private string selectedBarcodeOption = "تلقائي";
+    private bool isBarcodeTypePopupOpen = false;
+
+    // Displays the exact icon for each mode
+    private string GetSelectedBarcodeIcon() => selectedBarcodeOption switch
     {
-        new() { Name = "يدوي", Icon = "✋" },
-        new() { Name = "تلقائي", Icon = "⚙️" },
-        new() { Name = "بالمجموعة", Icon = "📁" }
+        "تلقائي" => "🔀",
+        "بالمجموعة" => "📁",
+        "يدوي" => "✋",
+        _ => "🔀"
     };
-    private string selectedQrOption = "يدوي";
-    private string GetSelectedQrIcon() => qrOptionList.FirstOrDefault(q => q.Name == selectedQrOption)?.Icon ?? "✋";
-    private void OnQrTypeChanged(ChangeEventArgs e)
+
+    private void ToggleBarcodeTypePopup()
     {
-        selectedQrOption = e.Value?.ToString() ?? "يدوي";
-        itemData.QrType = selectedQrOption;
+        bool wasOpen = isBarcodeTypePopupOpen;
+        CloseAllPopups();
+        isBarcodeTypePopupOpen = !wasOpen;
+    }
+
+    private void SelectBarcodeOption(string opt)
+    {
+        selectedBarcodeOption = opt;
+        itemData.QrType = opt;
+        isBarcodeTypePopupOpen = false;
     }
 
     private bool isQrModalOpen = false;
@@ -1343,63 +1373,43 @@
     private void CloseLanguagesModal() => isLanguagesModalOpen = false;
     private void SaveLanguages() => isLanguagesModalOpen = false;
 
-    public class TreeNode
+    // Item Type Single Column Table Dropdown (Matches Screenshot 40)
+    private bool isItemTypePopupOpen = false;
+    private List<string> itemTypeList = new()
     {
-        public string Name { get; set; } = "";
-        public int Level { get; set; } = 0;
-        public bool IsExpanded { get; set; } = true;
-        public List<TreeNode> Children { get; set; } = new();
-    }
-
-    private bool isTreeTypePopupOpen = false;
-    private List<TreeNode> itemTypeTreeNodes = new()
-    {
-        new() {
-            Name = "خدمة",
-            Level = 0,
-            IsExpanded = true,
-            Children = new() {
-                new() { Name = "خدمات نقل وتوصيل", Level = 1 },
-                new() { Name = "خدمات تركيب وصيانة", Level = 1 }
-            }
-        },
-        new() {
-            Name = "مخزون",
-            Level = 0,
-            IsExpanded = true,
-            Children = new() {
-                new() { Name = "بضاعة جاهزة للبيع", Level = 1 },
-                new() { Name = "مواد أولية وخام", Level = 1 }
-            }
-        },
-        new() {
-            Name = "مجموعة",
-            Level = 0,
-            IsExpanded = false,
-            Children = new() {
-                new() { Name = "مجموعة تصنيعية", Level = 1 }
-            }
-        }
+        "مخزون",
+        "مجموعة",
+        "منتج تام",
+        "خدمة",
+        "مخزون بسيريال",
+        "مخزون بصلاحية",
+        "بضاعة أمانة",
+        "ملابس و أحذية"
     };
 
-    private void ToggleTreeTypePopup()
+    private void ToggleItemTypePopup()
     {
-        bool wasOpen = isTreeTypePopupOpen;
+        bool wasOpen = isItemTypePopupOpen;
         CloseAllPopups();
-        isTreeTypePopupOpen = !wasOpen;
+        isItemTypePopupOpen = !wasOpen;
     }
 
-    private void SelectTreeNode(string nodeName)
+    private void SelectItemType(string typeName)
     {
-        itemData.ItemType = nodeName;
-        if (nodeName.Contains("خدمة"))
-            itemData.ItemTypeNote = "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا";
-        else if (nodeName.Contains("مخزون"))
-            itemData.ItemTypeNote = "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية";
-        else
-            itemData.ItemTypeNote = "صنف مجمع يتكون من مجموعة أصناف متعددة";
-
-        isTreeTypePopupOpen = false;
+        itemData.ItemType = typeName;
+        itemData.ItemTypeNote = typeName switch
+        {
+            "خدمة" => "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا",
+            "مخزون" => "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية",
+            "مجموعة" => "صنف مجمع يتكون من مجموعة أصناف متعددة",
+            "منتج تام" => "منتج كامل الصنع جاهز للتوزيع والبيع المباشر",
+            "مخزون بسيريال" => "صنف يتم تتبعه بواسطة أرقام تسلسلية فريدة لكل قطعة",
+            "مخزون بصلاحية" => "أصناف تخضع لتاريخ إنتاج وانتهاء صلاحية دوري",
+            "بضاعة أمانة" => "بضاعة موردة برسم الأمانة لا تدخل في ملكية المنشأة حتى بيعها",
+            "ملابس و أحذية" => "أصناف متعددة المقاسات والألوان والخصائص المتشعبة",
+            _ => ""
+        };
+        isItemTypePopupOpen = false;
     }
 
     public class CheckableItem { public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
@@ -1471,8 +1481,14 @@
 
     private bool isModalCodePopupOpen = false;
     private string modalCodeIcon = "🔀";
+    private string selectedModalOption = "تلقائي";
     private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
-    private void SelectModalCodeOption(string opt, string icon) { modalCodeIcon = icon; isModalCodePopupOpen = false; }
+    private void SelectModalCodeOption(string opt, string icon)
+    {
+        selectedModalOption = opt;
+        modalCodeIcon = icon;
+        isModalCodePopupOpen = false;
+    }
 
     private bool isModalTransPopupOpen = false;
     private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
@@ -1516,6 +1532,8 @@
 
     private void CloseAllPopups()
     {
+        isBarcodeTypePopupOpen = false;
+        isItemTypePopupOpen = false;
         isBranchPopupOpen = false;
         isWarehousePopupOpen = false;
         isGroupPopupOpen = false;
@@ -1523,47 +1541,35 @@
         isSupplierPopupOpen = false;
         isPolicyPopupOpen = false;
         isTranslationPopupOpen = false;
-        isTreeTypePopupOpen = false;
         isModalCodePopupOpen = false;
         isModalTransPopupOpen = false;
     }
 
-    private List<string> suppliers = new() { "شركة التكنولوجيا الحديثة للتجارة" };
-    private List<string> warehouses = new() { "المخزن الرئيسي 1, المخزن الفرعي" };
-    private List<string> distributionPolicies = new() { "توزيع مباشر - الفئة أ" };
-    private List<string> groups = new() { "مخزون البضاعة" };
     private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة", "تكلفة البضاعة المباعة" };
-    private List<string> measurementUnits = new() { "قطعه", "كرتونة" };
     private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة المرجح" };
     private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "معفي من الضريبة" };
 
     private ItemModel itemData = new()
     {
-        Id = "92-1",
+        Id = "88520841105028",
         Name = "",
         EnglishName = "",
-        ItemType = "خدمة",
-        ItemTypeNote = "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا",
-        QrType = "يدوي",
-        BarcodeNumber = "92-1",
+        ItemType = "مخزون",
+        ItemTypeNote = "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية",
+        QrType = "تلقائي",
+        BarcodeNumber = "88520841105028",
         IsActive = true,
-        Branch = "EXEF, Woo Branch ,الفرع الرئيسي, فرع قويسنا",
-        Warehouse = "",
         GroupCategory = "مخزون البضاعة",
         GlobalBarcodeType = "GS1",
-        GlobalBarcodeValue = "92-1",
+        GlobalBarcodeValue = "88520841105028",
         MeasurementUnit = "قطعه",
         ValuationMethod = "الوارد أولاً صادر أولاً",
         SalesAccount = "مبيعات بضائع مشتراة",
-        CostOfGoodsSold = "تكلفة البضاعة المباعة",
         SalesReturnAccount = "مرتجعات مبيعات (مدين)",
         VatApplicable = "نعم",
-        TaxAccount = "",
-        MinLimit = 10,
-        MaxLimit = 50,
         UnitsTableRows = new List<UnitRowModel>
         {
-            new() { Barcode = "92-1", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true },
+            new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true },
             new() { Barcode = "", PiecesCount = 0, Unit = "", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = false, IsDefaultSale = false, IsActive = false }
         },
         EquationRows = new List<EquationRowModel>
@@ -1584,9 +1590,7 @@
         public string QrType { get; set; } = "";
         public string BarcodeNumber { get; set; } = "";
         public bool IsActive { get; set; }
-        public string Branch { get; set; } = "";
         public string SupplierName { get; set; } = "";
-        public string Warehouse { get; set; } = "";
         public string DistributionPolicy { get; set; } = "";
         public string GroupCategory { get; set; } = "";
         public string GeneralLedgerAccount { get; set; } = "";
@@ -1596,12 +1600,11 @@
         public string ValuationMethod { get; set; } = "";
         public string OpeningBalance { get; set; } = "";
         public string SalesAccount { get; set; } = "";
-        public string CostOfGoodsSold { get; set; } = "";
         public string SalesReturnAccount { get; set; } = "";
         public string VatApplicable { get; set; } = "";
         public string TaxAccount { get; set; } = "";
-        public int MinLimit { get; set; }
-        public int MaxLimit { get; set; }
+        public int MinLimit { get; set; } = 10;
+        public int MaxLimit { get; set; } = 50;
         public string Description { get; set; } = "";
         public string LocationOne { get; set; } = "";
         public string LocationTwo { get; set; } = "";
