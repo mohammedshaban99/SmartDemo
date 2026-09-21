@@ -13,12 +13,14 @@
     margin-right: 20px;
 }
 
+/* FIXED PROBLEM 1: ONE Single Continuous Vertical Orange Line for Header */
 .header-master-grid {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
     gap: 12px;
     margin-bottom: 25px;
+    position: relative;
 }
 
 .image-right-block {
@@ -35,7 +37,7 @@
     left: 0;
     top: 0;
     width: 3px;
-    height: 100px;
+    height: 112px; /* Unbroken line covering all 3 header input rows */
     background-color: #e67e22;
     border-radius: 2px;
 }
@@ -169,7 +171,7 @@
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     padding: 12px;
-    z-index: 100;
+    z-index: 4000;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -302,16 +304,19 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-width: 0;
 }
 
 .field-entry-line {
     display: flex;
     align-items: center;
     gap: 6px;
+    min-width: 0;
 }
 
 .field-title {
     width: 125px;
+    min-width: 125px;
     font-size: 0.85rem;
     color: #333333;
     font-weight: 500;
@@ -320,18 +325,11 @@
 
 .field-title-wide {
     width: 140px;
+    min-width: 140px;
     font-size: 0.85rem;
     color: #333333;
     font-weight: 500;
     white-space: nowrap;
-}
-
-.field-title-sm {
-    font-size: 0.85rem;
-    color: #333;
-    font-weight: 600;
-    width: 70px;
-    text-align: right;
 }
 
 .accounts-tab-grid {
@@ -347,6 +345,13 @@
 
 .flex-1 {
     flex: 1;
+    min-width: 0;
+}
+
+.field-fixed-width {
+    width: 100%;
+    max-width: 320px;
+    min-width: 0;
 }
 
 .clean-input {
@@ -425,6 +430,8 @@ select.clean-input:focus {
     width: 100%;
     position: relative;
     user-select: none;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .combo-display-text {
@@ -433,6 +440,10 @@ select.clean-input:focus {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
+    flex: 1;
+    min-width: 0;
+    text-align: right;
 }
 
 .combo-icons-inside {
@@ -441,6 +452,7 @@ select.clean-input:focus {
     gap: 6px;
     margin-right: auto;
     z-index: 2;
+    flex-shrink: 0;
 }
 
 .btn-inside-plus {
@@ -481,6 +493,7 @@ select.clean-input:focus {
 .dropdown-anchor {
     position: relative;
     width: 100%;
+    min-width: 0;
 }
 
 .custom-dropdown-panel {
@@ -488,11 +501,12 @@ select.clean-input:focus {
     top: 34px;
     right: 0;
     width: 100%;
+    min-width: 260px;
     background: #ffffff;
     border: 1px solid #ced4da;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
-    z-index: 1000;
+    z-index: 2000;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -554,7 +568,7 @@ select.clean-input:focus {
     border: 1px solid #ced4da;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     border-radius: 3px;
-    z-index: 1000;
+    z-index: 2000;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -622,6 +636,26 @@ select.clean-input:focus {
     font-size: 0.8rem;
 }
 
+/* FIXED PROBLEM 2: Tree Table Dropdown for Group Type Field (Image 38) */
+.group-type-tree-dropdown {
+    width: 380px !important;
+    min-width: 380px !important;
+}
+
+.tree-grid-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 0.83rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+    .tree-grid-row:hover {
+        background-color: #e9f2ff;
+    }
+
 .custom-supplier-grid-panel {
     position: absolute;
     top: 34px;
@@ -632,7 +666,7 @@ select.clean-input:focus {
     border: 1px solid #ced4da;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     border-radius: 3px;
-    z-index: 1000;
+    z-index: 2000;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -682,6 +716,11 @@ select.clean-input:focus {
         background-color: #e9f2ff;
     }
 
+/* FIXED PROBLEM 3: Higher z-index for Group Modal */
+.group-modal-layer {
+    z-index: 3000 !important;
+}
+
 .group-master-modal-dialog {
     background: #f8f9fa;
     border-radius: 8px;
@@ -692,6 +731,8 @@ select.clean-input:focus {
     overflow: hidden;
     direction: rtl !important;
     min-height: 890px;
+    position: relative;
+    z-index: 3001;
 }
 
 .master-modal-topbar {
@@ -794,6 +835,7 @@ select.clean-input:focus {
     border: 1px solid #e9ecef;
     border-radius: 6px;
     padding: 16px 20px;
+    position: relative;
 }
 
 .group-modal-icon-col {
@@ -811,26 +853,37 @@ select.clean-input:focus {
     justify-content: center;
 }
 
-.group-modal-labels-col {
+/* Continuous vertical orange line container matching Image 38/45 */
+.group-modal-labels-col-continuous {
     order: 2;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: relative;
+    padding-right: 8px;
+}
+
+.continuous-orange-bar {
+    position: absolute;
+    right: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background-color: #e67e22;
+    border-radius: 2px;
+}
+
+.group-labels-inner {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-top: 2px;
+    padding-right: 8px;
 }
 
 .group-lbl-row {
     height: 31px;
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.orange-bar-vert {
-    width: 3px;
-    height: 26px;
-    background-color: #e67e22;
-    border-radius: 2px;
 }
 
 .group-modal-inputs-col {
@@ -845,6 +898,7 @@ select.clean-input:focus {
     height: 31px;
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .modal-code-combo-wrapper {
@@ -882,7 +936,7 @@ select.clean-input:focus {
     border: 1px solid #ced4da;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
-    z-index: 1060;
+    z-index: 3050;
     display: flex;
     flex-direction: column;
     padding: 4px 0;
@@ -1060,7 +1114,7 @@ select.clean-input:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: 2500;
 }
 
 .qr-modal-dialog {
@@ -1153,7 +1207,7 @@ select.clean-input:focus {
     cursor: pointer;
 }
 
-/* ================= LANGUAGES MODAL - DESKTOP LAYOUT (IMAGE 41) ================= */
+/* ================= LANGUAGES MODAL ================= */
 .languages-modal-dialog {
     background: #ffffff;
     border-radius: 6px;
@@ -1163,6 +1217,7 @@ select.clean-input:focus {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    z-index: 4001;
 }
 
 .languages-modal-header {
