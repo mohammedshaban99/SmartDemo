@@ -1,0 +1,218 @@
+﻿@if (IsOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="languages-modal-dialog" dir="rtl">
+            <div class="languages-modal-header">
+                <span class="languages-modal-title">اللغات المستخدمة</span>
+                <button type="button" class="btn-modal-close" @onclick="Close">✕</button>
+            </div>
+            <div class="languages-modal-body">
+                <p class="languages-prompt-text">من فضلك حدد اللغات التي تستخدمها في التعامل مع البرنامج</p>
+                <div class="languages-frame-box">
+                    <div class="languages-items-column">
+                        @foreach (var lang in Languages)
+                        {
+                            <div class="language-item-row">
+                                <span class="lang-flag">@lang.FlagEmoji</span>
+                                <input type="checkbox" class="chk-box" @checked="lang.IsSelected" @onchange="(e) => lang.IsSelected = (bool)(e.Value ?? false)" />
+                                <span class="lang-title">@lang.Name</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="lang-sidebar-banner">
+                        <span>اللغات المستخدمة</span>
+                    </div>
+                </div>
+            </div>
+            <div class="languages-modal-footer">
+                <button type="button" class="btn-lang-submit" @onclick="Save">موافق</button>
+                <button type="button" class="btn-lang-cancel" @onclick="Close">إغلاق</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public List<LanguageItem> Languages { get; set; } = new();
+    [Parameter] public EventCallback OnSave { get; set; }
+
+    public class LanguageItem
+    {
+        public string Name { get; set; } = "";
+        public string FlagEmoji { get; set; } = "";
+        public bool IsSelected { get; set; }
+    }
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+
+    private async Task Save()
+    {
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync();
+        }
+        await Close();
+    }
+}
+
+<style>
+    .modal-backdrop-blur {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2500;
+    }
+
+    .languages-modal-dialog {
+        background: #ffffff;
+        border-radius: 6px;
+        width: 390px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        z-index: 4001;
+    }
+
+    .languages-modal-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .languages-modal-title {
+        font-size: 0.9rem;
+        color: #333333;
+        font-weight: 600;
+    }
+
+    .btn-modal-close {
+        border: none;
+        background: transparent;
+        font-size: 1.1rem;
+        color: #6c757d;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+    }
+
+    .languages-prompt-text {
+        font-size: 0.84rem;
+        color: #333333;
+        text-align: center;
+        margin-bottom: 16px;
+    }
+
+    .languages-frame-box {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 20px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #ffffff;
+    }
+
+    .languages-items-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+        overflow-y: auto;
+        max-height: 220px;
+        padding: 4px;
+    }
+
+    .language-item-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        font-size: 0.88rem;
+        color: #212529;
+    }
+
+    .lang-flag {
+        font-size: 1.25rem;
+        line-height: 1;
+        width: 26px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .language-item-row .chk-box {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .lang-title {
+        width: fit-content;
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .lang-sidebar-banner {
+        width: 42px;
+        background-color: #2196f3;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 0.82rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        padding: 12px 0;
+        user-select: none;
+        flex-shrink: 0;
+    }
+
+    .languages-modal-footer {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .btn-lang-submit {
+        background-color: #a8a8a8;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 36px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+
+    .btn-lang-cancel {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 36px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+</style>
