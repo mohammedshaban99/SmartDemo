@@ -1,0 +1,142 @@
+﻿@using SmartDemo.Components.Models
+
+<div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
+    <div class="table-popup-header d-flex justify-content-between">
+        <span class="col-code text-right">الرقم</span>
+        <span class="col-name text-left">الاسم</span>
+    </div>
+    <div class="table-popup-list">
+        @foreach (var node in Nodes)
+        {
+            @RenderTreeNode(node)
+        }
+    </div>
+    <div class="table-popup-footer">
+        <button type="button" class="btn-table-close" @onclick="OnClose">✕</button>
+        <span class="resizer-dots">⠿</span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<TreeTypeNode> Nodes { get; set; } = new();
+    [Parameter] public string SelectedValue { get; set; } = "";
+    [Parameter] public EventCallback<TreeTypeNode> OnNodeSelected { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private RenderFragment RenderTreeNode(TreeTypeNode node) => @<text>
+    <div class="tree-grid-row @(SelectedValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="@($"padding-right: {node.Level * 16 + 12}px;")"
+         @onclick="() => OnNodeSelected.InvokeAsync(node)">
+        <span class="tree-node-code col-code text-right text-muted">
+            @if (node.Children.Any())
+                        {
+            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+            </span>
+                        }
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-left">
+            @node.Name
+        </span>
+    </div>
+
+@if (node.IsExpanded && node.Children.Any())
+    {
+@foreach (var child in node.Children)
+    {
+@RenderTreeNode(child)
+    }
+    }
+</text>;
+}
+
+<style>
+    .group-type-tree-dropdown {
+        width: 380px !important;
+        min-width: 380px !important;
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .table-popup-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 6px 12px;
+        font-weight: bold;
+        font-size: 0.83rem;
+        color: #333;
+    }
+
+    .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .tree-grid-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .tree-grid-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .tree-child-row {
+        background-color: #fafbfc;
+    }
+
+    .tree-node-name {
+        flex: 1;
+        text-align: left;
+    }
+
+    .tree-node-code {
+        width: 80px;
+        text-align: right;
+    }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 3px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .toggle-arrow-wrap {
+        cursor: pointer;
+        display: inline-block;
+    }
+</style>

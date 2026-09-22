@@ -234,7 +234,7 @@
                                 <span class="req-star me-1">*</span>
                             </div>
 
-                            <!-- 3. المجموعة -->
+                            <!-- 3. المجموعة (Tree Dropdown Popup) -->
                             <div class="field-entry-line">
                                 <span class="field-title">المجموعة</span>
                                 <div class="dropdown-anchor flex-1 field-fixed-width">
@@ -256,7 +256,7 @@
                                             <div class="table-popup-list">
                                                 @foreach (var node in groupTreeList)
                                                 {
-                                                    @RenderGroupTreeNode(node)
+                                                    @RenderTreeDropdownNode(node, selectedGroupName => { itemData.GroupCategory = selectedGroupName; isGroupPopupOpen = false; })
                                                 }
                                             </div>
                                             <div class="table-popup-footer">
@@ -946,33 +946,9 @@
                                             <span class="col-code text-left">الرقم</span>
                                         </div>
                                         <div class="table-popup-list">
-                                            @foreach (var node in groupTypeTreeNodes)
+                                            @foreach (var node in groupTreeList)
                                             {
-                                                <div class="tree-grid-row @(selectedGroupType == node.Name ? "active-row" : "")"
-                                                     @onclick="() => SelectGroupTypeNode(node)">
-                                                    <span class="tree-node-name col-name text-right" style="padding-right: @(node.Level * 16)px;">
-                                                        @node.Name
-                                                    </span>
-                                                    <span class="tree-node-code col-code text-left text-muted">
-                                                        @if (node.Children.Any())
-                                                        {
-                                                            <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") me-1 small"></i>
-                                                        }
-                                                        @node.Code
-                                                    </span>
-                                                </div>
-
-                                                @if (node.IsExpanded && node.Children.Any())
-                                                {
-                                                    @foreach (var child in node.Children)
-                                                    {
-                                                        <div class="tree-grid-row tree-child-row @(selectedGroupType == child.Name ? "active-row" : "")"
-                                                             @onclick="() => SelectGroupTypeNode(child)">
-                                                            <span class="tree-node-name col-name text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Name</span>
-                                                            <span class="tree-node-code col-code text-left text-muted">@child.Code</span>
-                                                        </div>
-                                                    }
-                                                }
+                                                @RenderTreeDropdownNode(node, selectedName => { selectedGroupType = selectedName; isGroupTypeDropdownOpen = false; })
                                             }
                                         </div>
                                         <div class="table-popup-footer">
@@ -1014,33 +990,9 @@
                                                     <span class="col-code text-left">الرقم</span>
                                                 </div>
                                                 <div class="table-popup-list">
-                                                    @foreach (var node in parentGroupTreeNodes)
+                                                    @foreach (var node in groupTreeList)
                                                     {
-                                                        <div class="tree-grid-row @(selectedParentGroup == node.Name ? "active-row" : "")"
-                                                             @onclick="() => SelectParentGroupNode(node)">
-                                                            <span class="tree-node-name col-name text-right" style="padding-right: @(node.Level * 16)px;">
-                                                                @node.Name
-                                                            </span>
-                                                            <span class="tree-node-code col-code text-left text-muted">
-                                                                @if (node.Children.Any())
-                                                                {
-                                                                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") me-1 small"></i>
-                                                                }
-                                                                @node.Code
-                                                            </span>
-                                                        </div>
-
-                                                        @if (node.IsExpanded && node.Children.Any())
-                                                        {
-                                                            @foreach (var child in node.Children)
-                                                            {
-                                                                <div class="tree-grid-row tree-child-row @(selectedParentGroup == child.Name ? "active-row" : "")"
-                                                                     @onclick="() => SelectParentGroupNode(child)">
-                                                                    <span class="tree-node-name col-name text-right" style="padding-right: @((child.Level) * 16 + 16)px;">@child.Name</span>
-                                                                    <span class="tree-node-code col-code text-left text-muted">@child.Code</span>
-                                                                </div>
-                                                            }
-                                                        }
+                                                        @RenderTreeDropdownNode(node, selectedName => { selectedParentGroup = selectedName; isParentGroupDropdownOpen = false; })
                                                     }
                                                 </div>
                                                 <div class="table-popup-footer">
@@ -1282,7 +1234,7 @@
         public string Name { get; set; } = "";
         public string Code { get; set; } = "";
         public int Level { get; set; } = 0;
-        public bool IsExpanded { get; set; } = false;
+        public bool IsExpanded { get; set; } = true;
         public List<TreeTypeNode> Children { get; set; } = new();
     }
 
@@ -1291,30 +1243,37 @@
     private List<TreeTypeNode> groupTreeList = new()
     {
         new() {
-            Name = "000خدمات",
+            Name = "الحيوانات ومستلزمات الحيوانات الحية",
             Code = "1",
             Level = 0,
             IsExpanded = true,
             Children = new() {
-                new() { Name = "ايجار السيارات 0", Code = "101", Level = 1 },
-                new() { Name = "تزيين السيارات", Code = "102", Level = 1 },
-                new() { Name = "ألالات", Code = "103", Level = 1 }
+                new() { Name = "الحيوانات الحية", Code = "3237", Level = 1 },
+                new() { Name = "مستلزمات الحيوانات الأليفة", Code = "2", Level = 1 },
+                new() { Name = "مستلزمات الطيور", Code = "3", Level = 1, Children = new() {
+                    new() { Name = "ملحقات قفص الطيور", Code = "7385", Level = 2 }
+                }}
             }
         },
-        new() { Name = "مجموعة منتج تام", Code = "4", Level = 0 },
+        new() {
+            Name = "مجموعة المواد الغذائية",
+            Code = "4",
+            Level = 0,
+            Children = new() {
+                new() { Name = "البوادي", Code = "401", Level = 1 },
+                new() { Name = "الرشيدي", Code = "402", Level = 1 }
+            }
+        },
         new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 0 },
         new() {
             Name = "مجموعة المخزون",
             Code = "6",
             Level = 0,
-            IsExpanded = true,
             Children = new() {
                 new() { Name = "مجموعة مخزن 1", Code = "7", Level = 1 },
                 new() { Name = "معلبات", Code = "512", Level = 1 }
             }
-        },
-        new() { Name = "ملابس صيفي", Code = "8", Level = 0 },
-        new() { Name = "صيانة سيارات", Code = "9", Level = 0 }
+        }
     };
 
     private void ToggleGroupPopup()
@@ -1324,59 +1283,45 @@
         isGroupPopupOpen = !wasOpen;
     }
 
-    private void SelectGroupNode(TreeTypeNode node)
-    {
-        itemData.GroupCategory = node.Name;
-        if (!node.Children.Any())
-        {
-            isGroupPopupOpen = false;
-        }
-        else
-        {
-            node.IsExpanded = !node.IsExpanded;
-        }
-    }
-
-    private RenderFragment RenderGroupTreeNode(TreeTypeNode node) => @<text>
-    <div class="tree-grid-row @(itemData.GroupCategory == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+    private RenderFragment RenderTreeDropdownNode(TreeTypeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(itemData.GroupCategory == node.Name || selectedGroupType == node.Name || selectedParentGroup == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
-         @onclick="() => SelectGroupNode(node)">
+         @onclick="() => onSelected(node.Name)">
         <span class="tree-node-name col-name text-right">
+            @node.Name
+        </span>
+        <span class="tree-node-code col-code text-left text-muted">
             @if (node.Children.Any())
                         {
-            <span class="ms-1" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
                 <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
             </span>
                         }
-            @node.Name
+            @node.Code
         </span>
-        <span class="tree-node-code col-code text-left text-muted">@node.Code</span>
     </div>
 
 @if (node.IsExpanded && node.Children.Any())
     {
 @foreach (var child in node.Children)
     {
-@RenderGroupTreeNode(child)
+@RenderTreeDropdownNode(child, onSelected)
     }
     }
 </text>;
 
     private bool isGroupTypeDropdownOpen = false;
-    private string selectedGroupType = "الملابس والإكسسوارات";
-    private List<TreeTypeNode> groupTypeTreeNodes = new();
+    private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الحية";
     private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
-private void SelectGroupTypeNode(TreeTypeNode node) { selectedGroupType = node.Name; isGroupTypeDropdownOpen = false; }
 
 private bool isParentGroupDropdownOpen = false;
-private string selectedParentGroup = "مجموعة منتج تام";
-private List<TreeTypeNode> parentGroupTreeNodes = new();
+private string selectedParentGroup = "الحيوانات الحية";
 private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
-private void SelectParentGroupNode(TreeTypeNode node) { selectedParentGroup = node.Name; isParentGroupDropdownOpen = false; }
 
 public class CheckableItem
 {
-    public string Name { get; set; } = ""; public bool IsSelected { get; set; }
+    public string Name { get; set; } = "";
+    public bool IsSelected { get; set; }
     }
     private bool isBranchPopupOpen = false;
     private List<CheckableItem> branchList = new() { new() { Name = "الفرع الرئيسي", IsSelected = true }, new() { Name = "فرع قويسنا", IsSelected = true } };
@@ -1387,7 +1332,7 @@ private string GetSelectedBranchesSummary() => IsAllBranchesSelected ? "(كل ا
 private string GetSelectedBranchesTooltip() => GetSelectedBranchesSummary();
 
 private bool isWarehousePopupOpen = false;
-private List<CheckableItem> warehouseList = new() { new() { Name = "المخزن الرئيسي 1", IsSelected = true } };
+private List<CheckableItem> warehouseList = new() { new() { Name = "المخزن الرئيسي 1", IsSelected = true }, new() { Name = "مخزن الفرعي A", IsSelected = true } };
 private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
 private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
 private void ToggleAllWarehouses() { bool target = !IsAllWarehousesSelected; warehouseList.ForEach(w => w.IsSelected = target); }
@@ -1412,7 +1357,7 @@ private bool isUnitPopupOpen = false;
 private bool isUnitsModalOpen = false;
 private string unitSearchTerm = "";
 private string newUnitNameInput = "";
-private List<string> unitList = new() { "قطعه", "كيلو", "زجاجة" };
+private List<string> unitList = new() { "قطعه", "كيلو", "زجاجة", "كرتونة", "حبة" };
 private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm) ? unitList : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
 private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
 private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
@@ -1420,27 +1365,41 @@ private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
 
 public class SupplierGridItem
 {
-    public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string Account { get; set; } = "";
+    public string Code { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Account { get; set; } = "";
     }
     private bool isSupplierPopupOpen = false;
-    private List<SupplierGridItem> supplierList = new() { new() { Code = "1", Name = "تهامي", Account = "" } };
+    private List<SupplierGridItem> supplierList = new() {
+        new() { Code = "1", Name = "تهامي", Account = "20101" },
+        new() { Code = "2", Name = "حسن حسن", Account = "20102" },
+        new() { Code = "3", Name = "مؤسسة النور للتجارة", Account = "20103" }
+    };
     private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
 private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
 
 private bool isPolicyPopupOpen = false;
-private List<string> policyList = new() { "توزيع مباشر" };
+private List<string> policyList = new() { "توزيع مباشر", "توزيع جملة", "توزيع تجزئة" };
 private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
 private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
 
 private bool isAccountsModalOpen = false;
 private string accountSearchTerm = "";
-private string selectedAccountId = "1";
+private string selectedAccountId = "102";
 public class AccountNodeItem
 {
-    public string Name { get; set; } = ""; public string Code { get; set; } = ""; public int Level { get; set; } = 0; public bool IsExpanded { get; set; } = true; public List<AccountNodeItem> Children { get; set; } = new();
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Level { get; set; } = 0;
+    public bool IsExpanded { get; set; } = true;
+    public List<AccountNodeItem> Children { get; set; } = new();
     }
-    private List<AccountNodeItem> accountTreeData = new();
-    private IEnumerable<AccountNodeItem> FilteredAccountNodes => accountTreeData;
+    private List<AccountNodeItem> accountTreeData = new() {
+        new() { Name = "الأصول المتداولة", Code = "100", Level = 0, Children = new() {
+            new() { Name = "حساب المخزون الرئيسي", Code = "102", Level = 1 }
+        }}
+    };
+    private IEnumerable<AccountNodeItem> FilteredAccountNodes => string.IsNullOrWhiteSpace(accountSearchTerm) ? accountTreeData : accountTreeData.Where(a => a.Name.Contains(accountSearchTerm));
     private void SelectAccountNode(AccountNodeItem node) { selectedAccountId = node.Code; }
 private void ApplySelectedAccount(AccountNodeItem node) { isAccountsModalOpen = false; }
 
@@ -1461,17 +1420,24 @@ private void CloseAllPopups()
     isParentGroupDropdownOpen = false;
 }
 
-private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102" };
-private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة" };
-private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %" };
+private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "حساب المخزون الفرعي - 103" };
+private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة", "الوارد أخيراً صادر أولاً" };
+private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "ضريبة القيمة المضافة 14 %" };
 
 private ItemModel itemData = new()
 {
     Id = "88520841105028",
     BarcodeNumber = "88520841105028",
-    GroupCategory = "مجموعة المخزون",
+    GroupCategory = "الحيوانات ومستلزمات الحيوانات الحية",
     MeasurementUnit = "قطعه",
-    UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", IsActive = true } }
+    SupplierName = "تهامي",
+    DistributionPolicy = "توزيع مباشر",
+    ValuationMethod = "الوارد أولاً صادر أولاً",
+    GeneralLedgerAccount = "حساب المخزون الرئيسي - 102",
+    SalesAccount = "حساب المخزون الرئيسي - 102",
+    SalesReturnAccount = "حساب المخزون الرئيسي - 102",
+    UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
+    EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
 };
 
 private void SaveData() { }
@@ -2103,6 +2069,43 @@ public class EquationRowModel
         box-sizing: border-box;
     }
 
+    .group-type-tree-dropdown {
+        width: 380px !important;
+        min-width: 380px !important;
+    }
+
+    .tree-grid-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .tree-grid-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .tree-child-row {
+        background-color: #fafbfc;
+    }
+
+    .tree-node-name {
+        flex: 1;
+        text-align: right;
+    }
+
+    .tree-node-code {
+        width: 80px;
+        text-align: left;
+    }
+
+    .toggle-arrow-wrap {
+        cursor: pointer;
+        display: inline-block;
+    }
+
     .item-type-popup-size {
         width: 250px;
         min-width: 250px;
@@ -2164,38 +2167,6 @@ public class EquationRowModel
     .resizer-dots {
         color: #aaa;
         font-size: 0.80rem;
-    }
-
-    .group-type-tree-dropdown {
-        width: 380px !important;
-        min-width: 380px !important;
-    }
-
-    .tree-grid-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.83rem;
-        cursor: pointer;
-        border-bottom: 1px solid #f2f2f2;
-    }
-
-        .tree-grid-row:hover {
-            background-color: #e9f2ff;
-        }
-
-    .tree-child-row {
-        background-color: #fafbfc;
-    }
-
-    .tree-node-name {
-        flex: 1;
-        text-align: right;
-    }
-
-    .tree-node-code {
-        width: 70px;
-        text-align: left;
     }
 
     .custom-supplier-grid-panel-advanced {
