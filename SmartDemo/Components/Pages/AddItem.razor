@@ -839,7 +839,7 @@
                        Languages="availableLanguages"
                        OnSave="SaveLanguages" />
 
-<!-- 3. Modal: مجموعات الاصناف -->
+<!-- 3. Modal: مجموعات الاصناف (Item Groups Modal matching exact reference layout) -->
 @if (isGroupModalOpen)
 {
     <div class="modal-backdrop-blur group-modal-layer">
@@ -1043,6 +1043,19 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <!-- Additional Touch Screen Section for Groups matching image_d94223.png -->
+                            <div class="section-block-title text-primary">شاشة اللمس</div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title-wide">إخفاء من شاشة اللمس</span>
+                                    <input type="checkbox" class="form-check-input m-0" />
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">ترتيب الظهور في شاشة</span>
+                                    <input type="number" class="clean-input text-center" style="width: 120px;" value="1" />
+                                </div>
+                            </div>
                         </div>
 
                         <div class="group-image-side">
@@ -1056,13 +1069,121 @@
 
                 @if (groupModalTab == 2)
                 {
-                    <div class="group-tab-accounts-layout">
-                        <div class="modal-accounts-col">
+                    <div class="accounts-tab-grid">
+                        <div class="accounts-column-block">
                             <div class="section-block-title text-primary">الضرائب</div>
-                            <div class="section-with-blue-line mb-3">
-                                <div class="field-entry-line mb-2">
+                            <div class="section-with-blue-line mb-4">
+                                <div class="field-entry-line">
                                     <span class="field-title-wide">يخضع للضريبة</span>
                                     <select class="clean-input flex-1"><option value="نعم">نعم</option><option value="لا">لا</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب الضريبة</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">نسبة الضريبة المبيعات</span>
+                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">نسبة الضريبة المشتريات</span>
+                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">هل السعر يشمل الضريبة ؟</span>
+                                    <select class="clean-input flex-1"><option>لا</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">يخضع لضريبة الخصم والإضافة</span>
+                                    <select class="clean-input flex-1"><option>كما بالفاتورة</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب ضريبة الخصم</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">نسبة الضريبة</span>
+                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                </div>
+                            </div>
+
+                            <div class="section-block-title text-primary">التنبيهات</div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">الحد الادنى</span>
+                                    <input type="number" class="clean-input" style="width: 90px;" />
+                                    <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">الحد الأقصى</span>
+                                    <input type="number" class="clean-input" style="width: 90px;" />
+                                    <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">فترة الركود</span>
+                                    <input type="number" class="clean-input" style="width: 90px;" />
+                                    <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
+                                    <input type="number" class="clean-input" style="width: 90px;" />
+                                    <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accounts-column-block">
+                            <div class="section-block-title text-primary">الحسابات</div>
+                            <div class="section-with-blue-line mb-4">
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب المخزون</span>
+                                    <select class="clean-input flex-1"><option>...</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب المبيعات</span>
+                                    <select class="clean-input flex-1"><option>...</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب تكلفة المبيعات</span>
+                                    <select class="clean-input flex-1"><option>...</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب مرتجع المبيعات</span>
+                                    <select class="clean-input flex-1"><option>...</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">حساب تحت التشغيل</span>
+                                    <select class="clean-input flex-1"><option>...</option></select>
+                                </div>
+                            </div>
+
+                            <div class="section-block-title text-primary">الخصم</div>
+                            <div class="section-with-blue-line mb-4">
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">طريقة الخصم</span>
+                                    <select class="clean-input flex-1"><option>بالنسبة</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">يخضع خصم التعجيل</span>
+                                    <select class="clean-input flex-1"><option></option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">خصم المشتريات</span>
+                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                    <span class="small text-muted">%</span>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">خصم المبيعات</span>
+                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                    <span class="small text-muted">%</span>
+                                </div>
+                            </div>
+
+                            <div class="section-block-title text-primary">الخصم</div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line">
+                                    <span class="field-title-wide">مصعية التركيب</span>
+                                    <select class="clean-input flex-1"><option></option></select>
                                 </div>
                             </div>
                         </div>
