@@ -1053,6 +1053,7 @@ select.clean-input:focus {
     overflow: hidden;
     direction: rtl !important;
     min-height: 99vh;
+    min-width:50vw;
     position: relative;
     z-index: 3001;
 }
