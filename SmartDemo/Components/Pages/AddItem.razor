@@ -233,7 +233,7 @@
                                 <span class="req-star me-1">*</span>
                             </div>
 
-                            <!-- 3. المجموعة -->
+                            <!-- 3. المجموعة (Interactive Nested Tree Dropdown) -->
                             <div class="field-entry-line">
                                 <span class="field-title">المجموعة</span>
                                 <div class="dropdown-anchor flex-1 field-fixed-width">
@@ -247,15 +247,15 @@
 
                                     @if (isGroupPopupOpen)
                                     {
-                                        <div class="custom-table-popup" @onclick:stopPropagation>
-                                            <div class="table-popup-header">الاسم</div>
+                                        <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
+                                            <div class="table-popup-header d-flex justify-content-between">
+                                                <span class="col-name text-right">الاسم</span>
+                                                <span class="col-code text-left">الرقم</span>
+                                            </div>
                                             <div class="table-popup-list">
-                                                @foreach (var g in groupList)
+                                                @foreach (var node in groupTreeList)
                                                 {
-                                                    <div class="table-popup-row @(itemData.GroupCategory == g ? "active-row" : "")"
-                                                         @onclick="() => SelectGroup(g)">
-                                                        @g
-                                                    </div>
+                                                    @RenderGroupTreeNode(node)
                                                 }
                                             </div>
                                             <div class="table-popup-footer">
@@ -886,8 +886,6 @@
             </div>
 
             <div class="master-modal-body">
-
-                <!-- Master Header Grid with ONE continuous vertical orange line -->
                 <div class="group-modal-header-grid mb-3">
                     <div class="group-modal-icon-col">
                         <div class="books-icon-box">
@@ -961,7 +959,6 @@
                             }
                         </div>
 
-                        <!-- Type field with Tree Table Dropdown -->
                         <div class="group-input-line pos-relative">
                             <div class="dropdown-anchor flex-1">
                                 <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleGroupTypeDropdown">
@@ -1017,7 +1014,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-start gap-2 mb-3  pb-2">
+                <div class="d-flex justify-content-start gap-2 mb-3 pb-2">
                     <button type="button" class="strip-tab-btn @(groupModalTab == 1 ? "active" : "")" @onclick="() => groupModalTab = 1">عام</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 2 ? "active" : "")" @onclick="() => groupModalTab = 2">الحسابات</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 3 ? "active" : "")" @onclick="() => groupModalTab = 3">المعادلة</button>
@@ -1029,7 +1026,6 @@
                         <div class="group-fields-side">
                             <div class="section-block-title text-primary">الخصائص</div>
                             <div class="section-with-blue-line mb-3">
-                                <!-- 'تندرج من' Field with Tree Table Dropdown -->
                                 <div class="field-entry-line mb-2 pos-relative">
                                     <span class="field-title-wide">تندرج من</span>
                                     <div class="dropdown-anchor flex-1">
@@ -1123,25 +1119,6 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="section-block-title text-primary">الوصف</div>
-                            <div class="section-with-blue-line mb-3">
-                                <textarea class="clean-input w-100" rows="3" placeholder="أدخل وصف المجموعة هنا..."></textarea>
-                            </div>
-
-                            <div class="section-block-title text-primary">شاشة اللمس</div>
-                            <div class="section-with-blue-line">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="checkbox" class="form-check-input m-0" />
-                                        <span class="small text-muted">اخفاء من شاشة اللمس</span>
-                                    </div>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">ترتيب الظهور في شاشة</span>
-                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="1" />
-                                </div>
-                            </div>
                         </div>
 
                         <div class="group-image-side">
@@ -1156,408 +1133,12 @@
                 @if (groupModalTab == 2)
                 {
                     <div class="group-tab-accounts-layout">
-                        <!-- Right Column: الضرائب والتنبيهات -->
                         <div class="modal-accounts-col">
                             <div class="section-block-title text-primary">الضرائب</div>
                             <div class="section-with-blue-line mb-3">
                                 <div class="field-entry-line mb-2">
                                     <span class="field-title-wide">يخضع للضريبة</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="نعم">نعم</option>
-                                        <option value="لا">لا</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب الضريبة</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="ضريبة المبيعات 14%">ضريبة المبيعات 14%</option>
-                                        <option value="ضريبة القيمة المضافة 15%">ضريبة القيمة المضافة 15%</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">نسبة الضريبة المبيعات</span>
-                                    <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="14" />
-                                        <span class="small text-muted">%</span>
-                                    </div>
-                                    <span class="req-star me-1">*</span>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">نسبة الضريبة المشتريات</span>
-                                    <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="14" />
-                                        <span class="small text-muted">%</span>
-                                    </div>
-                                    <span class="req-star me-1">*</span>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">هل السعر يشمل الضريبة ؟</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="لا">لا</option>
-                                        <option value="نعم">نعم</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">يخضع لضريبة الخصم والإضافة</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="لا">لا</option>
-                                        <option value="نعم">نعم</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب ضريبة الخصم</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="ضريبة أ.ت.ص">ضريبة أ.ت.ص</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">نسبة الضريبة</span>
-                                    <input type="number" class="clean-input text-center" style="width: 100px;" value="1" />
-                                </div>
-                            </div>
-
-                            <div class="section-block-title text-primary">التنبيهات</div>
-                            <div class="section-with-blue-line">
-
-                                <!-- الحد الادنى -->
-                                <div class="field-entry-line mb-2 pos-relative">
-                                    <span class="field-title-wide">الحد الادنى</span>
-                                    <div class="calc-field-outer flex-1">
-                                        <div class="calc-input-wrapper flex-1">
-                                            <input type="text" class="clean-input calc-num-input" value="@alertMinLimit"
-                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("minLimit")' />
-                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("minLimit")'>▼</span>
-                                        </div>
-                                        <span class="calc-unit-text-outside">قطعة</span>
-
-                                        @if (activeCalcField == "minLimit")
-                                        {
-                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
-                                                <div class="calc-grid">
-                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
-                                                    <button type="button" class="btn-calc">MC</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
-                                                    <button type="button" class="btn-calc">MR</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
-                                                    <button type="button" class="btn-calc">MS</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
-                                                    <button type="button" class="btn-calc">+M</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-
-                                <!-- الحد الأقصى -->
-                                <div class="field-entry-line mb-2 pos-relative">
-                                    <span class="field-title-wide">الحد الأقصى</span>
-                                    <div class="calc-field-outer flex-1">
-                                        <div class="calc-input-wrapper flex-1">
-                                            <input type="text" class="clean-input calc-num-input" value="@alertMaxLimit"
-                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("maxLimit")' />
-                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("maxLimit")'>▼</span>
-                                        </div>
-                                        <span class="calc-unit-text-outside">قطعة</span>
-
-                                        @if (activeCalcField == "maxLimit")
-                                        {
-                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
-                                                <div class="calc-grid">
-                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
-                                                    <button type="button" class="btn-calc">MC</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
-                                                    <button type="button" class="btn-calc">MR</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
-                                                    <button type="button" class="btn-calc">MS</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
-                                                    <button type="button" class="btn-calc">+M</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-
-                                <!-- فترة الركود -->
-                                <div class="field-entry-line mb-2 pos-relative">
-                                    <span class="field-title-wide">فترة الركود</span>
-                                    <div class="calc-field-outer flex-1">
-                                        <div class="calc-input-wrapper flex-1">
-                                            <input type="text" class="clean-input calc-num-input" value="@alertStagnantPeriod"
-                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("stagnant")' />
-                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("stagnant")'>▼</span>
-                                        </div>
-                                        <span class="calc-unit-text-outside">يوم</span>
-
-                                        @if (activeCalcField == "stagnant")
-                                        {
-                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
-                                                <div class="calc-grid">
-                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
-                                                    <button type="button" class="btn-calc">MC</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
-                                                    <button type="button" class="btn-calc">MR</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
-                                                    <button type="button" class="btn-calc">MS</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
-                                                    <button type="button" class="btn-calc">+M</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-
-                                <!-- التنبيه قبل انتهاء الصلاحية بـ -->
-                                <div class="field-entry-line pos-relative">
-                                    <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
-                                    <div class="calc-field-outer flex-1">
-                                        <div class="calc-input-wrapper flex-1">
-                                            <input type="text" class="clean-input calc-num-input" value="@alertExpiryAlert"
-                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("expiry")' />
-                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("expiry")'>▼</span>
-                                        </div>
-                                        <span class="calc-unit-text-outside">يوم</span>
-
-                                        @if (activeCalcField == "expiry")
-                                        {
-                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
-                                                <div class="calc-grid">
-                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
-                                                    <button type="button" class="btn-calc">MC</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
-                                                    <button type="button" class="btn-calc">MR</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
-                                                    <button type="button" class="btn-calc">MS</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
-                                                    <button type="button" class="btn-calc">+M</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Left Column: الحسابات مع زر النقاط (مع مصنعية التركيب المدعومة بالآلة الحاسبة تماماً مثل الصورة 36) -->
-                        <div class="modal-accounts-col">
-                            <div class="section-block-title text-primary">الحسابات</div>
-                            <div class="section-with-blue-line mb-3">
-
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب المخزون</span>
-                                    <div class="input-inline-btn-wrapper flex-1">
-                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.InventoryAccount" readonly />
-                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("inventory")'>...</button>
-                                    </div>
-                                </div>
-
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب المبيعات</span>
-                                    <div class="input-inline-btn-wrapper flex-1">
-                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.SalesAccount" readonly />
-                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("sales")'>...</button>
-                                    </div>
-                                </div>
-
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب تكلفة المبيعات</span>
-                                    <div class="input-inline-btn-wrapper flex-1">
-                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.CogsAccount" readonly />
-                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("cogs")'>...</button>
-                                    </div>
-                                </div>
-
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">حساب مرتجع المبيعات</span>
-                                    <div class="input-inline-btn-wrapper flex-1">
-                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.SalesReturnAccount" readonly />
-                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("salesReturn")'>...</button>
-                                    </div>
-                                </div>
-
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب تحت التشغيل</span>
-                                    <div class="input-inline-btn-wrapper flex-1">
-                                        <input type="text" class="clean-input w-100" @bind="groupAccounts.WipAccount" readonly />
-                                        <button type="button" class="btn-inline-dots" @onclick='() => OpenAccountsModal("wip")'>...</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="section-block-title text-primary">الخصم</div>
-                            <div class="section-with-blue-line mb-3">
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">طريقة الخصم</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="بالنسبة">بالنسبة</option>
-                                        <option value="مبلغ ثابت">مبلغ ثابت</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">يخضع خصم التعجيل</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="نعم">نعم</option>
-                                        <option value="لا">لا</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">خصم المشتريات</span>
-                                    <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="0" />
-                                        <span class="small text-muted">%</span>
-                                    </div>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">خصم المبيعات</span>
-                                    <div class="d-flex align-items-center gap-1 flex-1">
-                                        <input type="number" class="clean-input text-center flex-1" value="0" />
-                                        <span class="small text-muted">%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="section-block-title text-primary">الخصم</div>
-                            <div class="section-with-blue-line">
-                                <!-- مصنعية التركيب (مفعلة مع الآلة الحاسبة مثل صورة 36) -->
-                                <div class="field-entry-line pos-relative">
-                                    <span class="field-title-wide">مصنعية التركيب</span>
-                                    <div class="calc-field-outer flex-1">
-                                        <div class="calc-input-wrapper flex-1">
-                                            <input type="text" class="clean-input calc-num-input" value="@alertInstallationFee"
-                                                   @onclick:stopPropagation @onclick='() => ToggleCalculator("installation")' />
-                                            <span class="calc-dropdown-arrow" @onclick:stopPropagation @onclick='() => ToggleCalculator("installation")'>▼</span>
-                                        </div>
-
-                                        @if (activeCalcField == "installation")
-                                        {
-                                            <div class="calculator-popup-dialog" @onclick:stopPropagation>
-                                                <div class="calc-grid">
-                                                    <button type="button" class="btn-calc" @onclick="CalcClear">C</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcClearEntry">CE</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcBackspace">Back</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcSqrt">sqrt</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("/")'>/</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("9")'>9</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("8")'>8</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("7")'>7</button>
-                                                    <button type="button" class="btn-calc">MC</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcPercent">%</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("*")'>*</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("6")'>6</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("5")'>5</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("4")'>4</button>
-                                                    <button type="button" class="btn-calc">MR</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcReciprocal">x/1</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("-")'>-</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("3")'>3</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("2")'>2</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("1")'>1</button>
-                                                    <button type="button" class="btn-calc">MS</button>
-
-                                                    <button type="button" class="btn-calc" @onclick="CalcEquals">=</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcOp("+")'>+</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcDecimal">.</button>
-                                                    <button type="button" class="btn-calc" @onclick="CalcNegate">-/+</button>
-                                                    <button type="button" class="btn-calc" @onclick='() => CalcDigit("0")'>0</button>
-                                                    <button type="button" class="btn-calc">+M</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
+                                    <select class="clean-input flex-1"><option value="نعم">نعم</option><option value="لا">لا</option></select>
                                 </div>
                             </div>
                         </div>
@@ -1594,17 +1175,12 @@
                         </table>
                     </div>
                 }
-
             </div>
 
             <div class="master-modal-footer">
                 <div class="modal-footer-actions-right">
                     <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">حفظ</button>
                     <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">إغلاق</button>
-                </div>
-                <div class="modal-footer-nav-left">
-                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left fs-5"></i></button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-right fs-5"></i></button>
                 </div>
             </div>
         </div>
@@ -1619,26 +1195,21 @@
             <div class="accounts-tree-topbar">
                 <span class="accounts-tree-title">الحسابات</span>
                 <div class="accounts-topbar-actions">
-                    <button type="button" class="btn-acc-win" title="تصغير">_</button>
-                    <button type="button" class="btn-acc-win" title="تكبير">□</button>
-                    <button type="button" class="btn-acc-win btn-acc-close" @onclick="() => isAccountsModalOpen = false">✕</button>
+                    <button type="button" class="btn-acc-win" @onclick="() => isAccountsModalOpen = false">✕</button>
                 </div>
             </div>
-
             <div class="accounts-search-bar">
                 <span class="acc-search-lbl">بحث</span>
                 <input type="text" class="clean-input flex-1 acc-search-input" placeholder="...Enter text to search" @bind="accountSearchTerm" @bind:event="oninput" />
             </div>
-
             <div class="accounts-tree-table-header">
                 <div class="acc-col-name">الاسم</div>
                 <div class="acc-col-code">رقم الحساب</div>
             </div>
-
             <div class="accounts-tree-body">
                 @foreach (var acc in FilteredAccountNodes)
                 {
-                    <div class="acc-row @(selectedAccountId == acc.Code ? "acc-selected-row" : "") @(acc.Level > 0 ? "acc-child-color" : "acc-parent-color")"
+                    <div class="acc-row @(selectedAccountId == acc.Code ? "acc-selected-row" : "")"
                          style="padding-right: @(acc.Level * 18 + 8)px;"
                          @onclick="() => SelectAccountNode(acc)"
                          @ondblclick="() => ApplySelectedAccount(acc)">
@@ -1653,49 +1224,7 @@
                         </div>
                         <div class="acc-col-code">@acc.Code</div>
                     </div>
-
-                    @if (acc.IsExpanded && acc.Children.Any())
-                    {
-                        @foreach (var child in acc.Children)
-                        {
-                            <div class="acc-row @(selectedAccountId == child.Code ? "acc-selected-row" : "") acc-child-color"
-                                 style="padding-right: @(child.Level * 18 + 8)px;"
-                                 @onclick="() => SelectAccountNode(child)"
-                                 @ondblclick="() => ApplySelectedAccount(child)">
-                                <div class="acc-col-name">
-                                    @if (child.Children.Any())
-                                    {
-                                        <span class="acc-arrow-toggle" @onclick:stopPropagation @onclick="() => child.IsExpanded = !child.IsExpanded">
-                                            <i class="bi @(child.IsExpanded ? "bi-caret-down-fill" : "bi-caret-left-fill")"></i>
-                                        </span>
-                                    }
-                                    <span>@child.Name</span>
-                                </div>
-                                <div class="acc-col-code">@child.Code</div>
-                            </div>
-
-                            @if (child.IsExpanded && child.Children.Any())
-                            {
-                                @foreach (var grandChild in child.Children)
-                                {
-                                    <div class="acc-row @(selectedAccountId == grandChild.Code ? "acc-selected-row" : "") acc-child-color"
-                                         style="padding-right: @(grandChild.Level * 18 + 8)px;"
-                                         @onclick="() => SelectAccountNode(grandChild)"
-                                         @ondblclick="() => ApplySelectedAccount(grandChild)">
-                                        <div class="acc-col-name">
-                                            <span>@grandChild.Name</span>
-                                        </div>
-                                        <div class="acc-col-code">@grandChild.Code</div>
-                                    </div>
-                                }
-                            }
-                        }
-                    }
                 }
-            </div>
-
-            <div class="accounts-tree-footer">
-                <span class="acc-hint-green">أضغط مرتين على الحساب المطلوب حتى يتم اختياره</span>
             </div>
         </div>
     </div>
@@ -1708,9 +1237,7 @@
         <div class="units-master-modal-dialog" dir="rtl">
             <div class="master-modal-topbar">
                 <span class="modal-top-title">الوحدات</span>
-                <div class="topbar-controls-left">
-                    <button type="button" class="btn-topbar-close-flat" @onclick="() => isUnitsModalOpen = false">✕</button>
-                </div>
+                <button type="button" class="btn-topbar-close-flat" @onclick="() => isUnitsModalOpen = false">✕</button>
             </div>
             <div class="master-modal-body">
                 <div class="d-flex align-items-center justify-content-start gap-3 mb-4">
@@ -1718,45 +1245,7 @@
                     <div class="orange-bar-vert"></div>
                     <span class="fw-bold">الاسم</span>
                     <input type="text" class="clean-input" style="width: 420px;" @bind="newUnitNameInput" />
-                    <span class="req-star me-1">*</span>
                 </div>
-                <div class="section-with-blue-line mb-4">
-                    <div class="table-scroll-wrapper">
-                        <table class="item-details-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px; color: red;">✕</th>
-                                    <th>إفتراضي البيع</th>
-                                    <th>إفتراضي الشراء</th>
-                                    <th>العملة</th>
-                                    <th>عدد القطع</th>
-                                    <th>الاسم</th>
-                                    <th>الكود</th>
-                                    <th style="width: 30px;">◀</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><button class="delete-icon-btn">✖</button></td>
-                                    <td><span class="badge bg-primary">▬</span></td>
-                                    <td><span class="badge bg-primary">▬</span></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>@newUnitNameInput</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="master-modal-footer">
-                <div class="modal-footer-actions-right">
-                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isUnitsModalOpen = false">حفظ</button>
-                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isUnitsModalOpen = false">إغلاق</button>
-                </div>
-                <div class="modal-footer-nav-left"></div>
             </div>
         </div>
     </div>
@@ -1803,13 +1292,7 @@
     private List<LanguageItem> availableLanguages = new()
     {
         new() { Name = "عربي", FlagEmoji = "🇪🇬", IsSelected = true },
-        new() { Name = "English", FlagEmoji = "🇺🇸", IsSelected = true },
-        new() { Name = "Français", FlagEmoji = "🇫🇷", IsSelected = false },
-        new() { Name = "اردو", FlagEmoji = "🇮🇷", IsSelected = false },
-        new() { Name = "Türk", FlagEmoji = "🇹🇷", IsSelected = false },
-        new() { Name = "Românesc", FlagEmoji = "🇷🇴", IsSelected = false },
-        new() { Name = "中國", FlagEmoji = "🇨🇳", IsSelected = false },
-        new() { Name = "русский", FlagEmoji = "🇷🇺", IsSelected = false }
+        new() { Name = "English", FlagEmoji = "🇺🇸", IsSelected = true }
     };
     private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
     private void CloseTranslationPopup() => isTranslationPopupOpen = false;
@@ -1818,30 +1301,11 @@
     private void SaveLanguages() => isLanguagesModalOpen = false;
 
     private bool isItemTypePopupOpen = false;
-    private List<string> itemTypeList = new() { "مخزون", "مجموعة", "منتج تام", "خدمة", "مخزون بسيريال", "مخزون بصلاحية", "بضاعة أمانة", "ملابس و أحذية" };
+    private List<string> itemTypeList = new() { "مخزون", "مجموعة", "منتج تام", "خدمة" };
+    private void ToggleItemTypePopup() { bool wasOpen = isItemTypePopupOpen; CloseAllPopups(); isItemTypePopupOpen = !wasOpen; }
+    private void SelectItemType(string typeName) { itemData.ItemType = typeName; isItemTypePopupOpen = false; }
 
-    private void ToggleItemTypePopup()
-    {
-        bool wasOpen = isItemTypePopupOpen;
-        CloseAllPopups();
-        isItemTypePopupOpen = !wasOpen;
-    }
-
-    private void SelectSelectItemType(string typeName)
-    {
-        itemData.ItemType = typeName;
-        itemData.ItemTypeNote = typeName switch
-        {
-            "خدمة" => "هي خدمة تقدم للعميل مقابل مبلغ مالي .. مثال (تكلفة توصيل الطلبات ، تكلفة ايجار شيء معين ) وهكذا",
-            "مخزون" => "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية",
-            "مجموعة" => "صنف مجمع يتكون من مجموعة أصناف متعددة",
-            _ => ""
-        };
-        isItemTypePopupOpen = false;
-    }
-
-    private void SelectItemType(string typeName) => SelectSelectItemType(typeName);
-
+    // ================= GROUP TREE NODES & RECURSIVE RENDERER =================
     public class TreeTypeNode
     {
         public string Name { get; set; } = "";
@@ -1851,512 +1315,1690 @@
         public List<TreeTypeNode> Children { get; set; } = new();
     }
 
-    private bool isGroupTypeDropdownOpen = false;
-    private string selectedGroupType = "الملابس والإكسسوارات";
-    private List<TreeTypeNode> groupTypeTreeNodes = new()
-    {
-        new() { Name = "الحيوانات ومستلزمات الحيوانات الأليفة", Code = "1", Level = 0 },
-        new() {
-            Name = "الملابس والإكسسوارات",
-            Code = "166",
-            Level = 0,
-            IsExpanded = true,
-            Children = new() {
-                new() { Name = "ملابس", Code = "1604", Level = 1 },
-                new() { Name = "إكسسوارات الملابس", Code = "167", Level = 1 }
-            }
-        },
-        new() { Name = "الفنون والترفيه", Code = "8", Level = 0 },
-        new() { Name = "طفل رضيع وطفل صغير", Code = "537", Level = 0 },
-        new() { Name = "الأعمال والصناعة", Code = "111", Level = 0 },
-        new() { Name = "الكاميرات والبصريات", Code = "141", Level = 0 },
-        new() { Name = "الإلكترونيات", Code = "222", Level = 0 },
-        new() { Name = "الأغذية والمشروبات والتبغ", Code = "412", Level = 0 }
-    };
-
-    private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
-    private void SelectGroupTypeNode(TreeTypeNode node)
-    {
-        selectedGroupType = node.Name;
-        if (node.Children.Any()) node.IsExpanded = !node.IsExpanded;
-        else isGroupTypeDropdownOpen = false;
-    }
-
-    private bool isParentGroupDropdownOpen = false;
-    private string selectedParentGroup = "مجموعة منتج تام";
-    private List<TreeTypeNode> parentGroupTreeNodes = new()
-    {
-        new() { Name = "000خدمات", Code = "1", Level = 0 },
-        new() { Name = "مجموعة منتج تام", Code = "4", Level = 0 },
-        new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 0 },
-        new() { Name = "مجموعة المخزون", Code = "6", Level = 0, IsExpanded = true, Children = new() {
-            new() { Name = "مجموعة مخزن 1", Code = "7", Level = 1 },
-            new() { Name = "معلبات", Code = "512", Level = 1 }
-        }},
-        new() { Name = "ملابس صيفي", Code = "8", Level = 0 },
-        new() { Name = "صيانة سيارات", Code = "9", Level = 0 }
-    };
-    private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
-    private void SelectParentGroupNode(TreeTypeNode node)
-    {
-        selectedParentGroup = node.Name;
-        if (node.Children.Any()) node.IsExpanded = !node.IsExpanded;
-        else isParentGroupDropdownOpen = false;
-    }
-
-    public class CheckableItem { public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
-    private bool isBranchPopupOpen = false;
-    private List<CheckableItem> branchList = new()
-    {
-        new() { Name = "الفرع الرئيسي", IsSelected = true },
-        new() { Name = "فرع قويسنا", IsSelected = true },
-        new() { Name = "DEXEF", IsSelected = true },
-        new() { Name = "Woo Branch", IsSelected = true }
-    };
-    private bool IsAllBranchesSelected => branchList.All(b => b.IsSelected);
-    private void ToggleBranchPopup() { CloseAllPopups(); isBranchPopupOpen = !isBranchPopupOpen; }
-    private void ToggleAllBranches()
-    {
-        bool targetState = !IsAllBranchesSelected;
-        branchList.ForEach(b => b.IsSelected = targetState);
-    }
-    private string GetSelectedBranchesSummary()
-    {
-        if (IsAllBranchesSelected) return "(كل الفروع)";
-        var sel = branchList.Where(b => b.IsSelected).Select(b => b.Name).ToList();
-        return sel.Any() ? string.Join(", ", sel) : "اختر الفروع...";
-    }
-    private string GetSelectedBranchesTooltip() => string.Join(", ", branchList.Where(b => b.IsSelected).Select(b => b.Name));
-
-    private bool isWarehousePopupOpen = false;
-    private List<CheckableItem> warehouseList = new()
-    {
-        new() { Name = "المخزن الرئيسي 1", IsSelected = false },
-        new() { Name = "المخزن الفرعي", IsSelected = false }
-    };
-    private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
-    private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
-    private void ToggleAllWarehouses()
-    {
-        bool targetState = !IsAllWarehousesSelected;
-        warehouseList.ForEach(w => w.IsSelected = targetState);
-    }
-    private string GetSelectedWarehousesSummary()
-    {
-        if (IsAllWarehousesSelected) return "(كل المخازن)";
-        var sel = warehouseList.Where(w => w.IsSelected).Select(w => w.Name).ToList();
-        return sel.Any() ? string.Join(", ", sel) : "";
-    }
-    private string GetSelectedWarehousesTooltip() => string.Join(", ", warehouseList.Where(w => w.IsSelected).Select(w => w.Name));
-
     private bool isGroupPopupOpen = false;
-    private bool isGroupModalOpen = false;
-    private int groupModalTab = 1;
-    private List<string> groupList = new() { "DX", "السجائر", "معسل", "البوادي" };
-    private void ToggleGroupPopup() { CloseAllPopups(); isGroupPopupOpen = !isGroupPopupOpen; }
-    private void SelectGroup(string groupName) { itemData.GroupCategory = groupName; isGroupPopupOpen = false; }
-    private void OpenGroupModal() { CloseAllPopups(); isGroupModalOpen = true; }
 
-    private bool isModalCodePopupOpen = false;
-    private string modalCodeIcon = "⚙️";
-    private string selectedModalOption = "تلقائي";
-    private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
-    private void SelectModalCodeOption(string opt, string icon)
-    {
-        selectedModalOption = opt;
-        modalCodeIcon = icon;
-        isModalCodePopupOpen = false;
-    }
-
-    private bool isModalTransPopupOpen = false;
-    private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
-
-    private void ToggleActiveState(ChangeEventArgs e)
-    {
-        if (e.Value is bool val) itemData.IsActive = val;
-    }
-
-    private bool isUnitPopupOpen = false;
-    private bool isUnitsModalOpen = false;
-    private string unitSearchTerm = "";
-    private string newUnitNameInput = "";
-    private List<string> unitList = new() { "كيس 1", "كيلو", "زجاجة", "شكارة" };
-    private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm) ? unitList : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
-    private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
-    private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
-    private void OpenUnitsModal() { CloseAllPopups(); newUnitNameInput = itemData.MeasurementUnit; isUnitsModalOpen = true; }
-
-    public class SupplierGridItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string Account { get; set; } = ""; }
-    private bool isSupplierPopupOpen = false;
-    private List<SupplierGridItem> supplierList = new()
-    {
-        new() { Code = "...V10", Name = "...Cust and vend", Account = "" },
-        new() { Code = "2014", Name = "1", Account = "" },
-        new() { Code = "2013", Name = "تعامل نقدي", Account = "" },
-        new() { Code = "...V10", Name = "تهامي", Account = "" },
-        new() { Code = "...V10", Name = "حسن حسن", Account = "" }
-    };
-    private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
-    private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
-
-    private bool isPolicyPopupOpen = false;
-    private List<string> policyList = new() { "النسبه ع التحصيل", "توزيع مباشر" };
-    private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
-    private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
-
-    // ================= CALCULATOR POPUP LOGIC =================
-    private string activeCalcField = "";
-    private string alertMinLimit = "0";
-    private string alertMaxLimit = "100";
-    private string alertStagnantPeriod = "15";
-    private string alertExpiryAlert = "30";
-    private string alertInstallationFee = "0";
-
-    private double calcOperand = 0;
-    private string calcOperator = "";
-    private bool calcNewNumber = true;
-
-    private void ToggleCalculator(string fieldKey)
-    {
-        if (activeCalcField == fieldKey)
-        {
-            activeCalcField = "";
-        }
-        else
-        {
-            CloseAllPopups();
-            activeCalcField = fieldKey;
-            calcNewNumber = true;
-            calcOperator = "";
-            calcOperand = double.TryParse(GetCurrentCalcValue(), out var d) ? d : 0;
-        }
-    }
-
-    private string GetCurrentCalcValue() => activeCalcField switch
-    {
-        "minLimit" => alertMinLimit,
-        "maxLimit" => alertMaxLimit,
-        "stagnant" => alertStagnantPeriod,
-        "expiry" => alertExpiryAlert,
-        "installation" => alertInstallationFee,
-        _ => "0"
-    };
-
-    private void SetCurrentCalcValue(string val)
-    {
-        switch (activeCalcField)
-        {
-            case "minLimit": alertMinLimit = val; break;
-            case "maxLimit": alertMaxLimit = val; break;
-            case "stagnant": alertStagnantPeriod = val; break;
-            case "expiry": alertExpiryAlert = val; break;
-            case "installation": alertInstallationFee = val; break;
-        }
-    }
-
-    private void CalcDigit(string digit)
-    {
-        string current = GetCurrentCalcValue();
-        if (calcNewNumber || current == "0")
-        {
-            SetCurrentCalcValue(digit);
-            calcNewNumber = false;
-        }
-        else
-        {
-            SetCurrentCalcValue(current + digit);
-        }
-    }
-
-    private void CalcDecimal()
-    {
-        string current = GetCurrentCalcValue();
-        if (calcNewNumber)
-        {
-            SetCurrentCalcValue("0.");
-            calcNewNumber = false;
-        }
-        else if (!current.Contains("."))
-        {
-            SetCurrentCalcValue(current + ".");
-        }
-    }
-
-    private void CalcClear()
-    {
-        SetCurrentCalcValue("0");
-        calcOperand = 0;
-        calcOperator = "";
-        calcNewNumber = true;
-    }
-
-    private void CalcClearEntry()
-    {
-        SetCurrentCalcValue("0");
-        calcNewNumber = true;
-    }
-
-    private void CalcBackspace()
-    {
-        string current = GetCurrentCalcValue();
-        if (current.Length > 1)
-            SetCurrentCalcValue(current[..^1]);
-        else
-            SetCurrentCalcValue("0");
-    }
-
-    private void CalcNegate()
-    {
-        if (double.TryParse(GetCurrentCalcValue(), out var val))
-        {
-            val = -val;
-            SetCurrentCalcValue(val.ToString());
-        }
-    }
-
-    private void CalcSqrt()
-    {
-        if (double.TryParse(GetCurrentCalcValue(), out var val) && val >= 0)
-        {
-            SetCurrentCalcValue(Math.Sqrt(val).ToString());
-            calcNewNumber = true;
-        }
-    }
-
-    private void CalcReciprocal()
-    {
-        if (double.TryParse(GetCurrentCalcValue(), out var val) && val != 0)
-        {
-            SetCurrentCalcValue((1.0 / val).ToString());
-            calcNewNumber = true;
-        }
-    }
-
-    private void CalcPercent()
-    {
-        if (double.TryParse(GetCurrentCalcValue(), out var val))
-        {
-            SetCurrentCalcValue((val / 100.0).ToString());
-            calcNewNumber = true;
-        }
-    }
-
-    private void CalcOp(string op)
-    {
-        if (double.TryParse(GetCurrentCalcValue(), out var current))
-        {
-            if (!string.IsNullOrEmpty(calcOperator) && !calcNewNumber)
-            {
-                calcOperand = ExecuteOp(calcOperand, current, calcOperator);
-                SetCurrentCalcValue(calcOperand.ToString());
-            }
-            else
-            {
-                calcOperand = current;
-            }
-        }
-        calcOperator = op;
-        calcNewNumber = true;
-    }
-
-    private void CalcEquals()
-    {
-        if (!string.IsNullOrEmpty(calcOperator) && double.TryParse(GetCurrentCalcValue(), out var current))
-        {
-            calcOperand = ExecuteOp(calcOperand, current, calcOperator);
-            SetCurrentCalcValue(calcOperand.ToString());
-            calcOperator = "";
-            calcNewNumber = true;
-        }
-    }
-
-    private double ExecuteOp(double a, double b, string op) => op switch
-    {
-        "+" => a + b,
-        "-" => a - b,
-        "*" => a * b,
-        "/" => b != 0 ? a / b : 0,
-        _ => b
-    };
-
-    // ================= ACCOUNTS TREE MODAL LOGIC =================
-    public class AccountNodeItem
-    {
-        public string Name { get; set; } = "";
-        public string Code { get; set; } = "";
-        public int Level { get; set; } = 0;
-        public bool IsExpanded { get; set; } = true;
-        public List<AccountNodeItem> Children { get; set; } = new();
-    }
-
-    private bool isAccountsModalOpen = false;
-    private string activeAccountTargetField = "";
-    private string accountSearchTerm = "";
-    private string selectedAccountId = "1";
-
-    public class GroupAccountsModel
-    {
-        public string InventoryAccount { get; set; } = "حساب المخزون الرئيسي (102)";
-        public string SalesAccount { get; set; } = "مبيعات بضائع مشتراة (411)";
-        public string CogsAccount { get; set; } = "تكلفة البضاعة المباعة (511)";
-        public string SalesReturnAccount { get; set; } = "مرتجعات مبيعات (412)";
-        public string WipAccount { get; set; } = "أصول ثابتة (111)";
-    }
-    private GroupAccountsModel groupAccounts = new();
-
-    private List<AccountNodeItem> accountTreeData = new()
+    private List<TreeTypeNode> groupTreeList = new()
     {
         new() {
-            Name = "الأصول",
+            Name = "000خدمات",
             Code = "1",
             Level = 0,
             IsExpanded = true,
             Children = new() {
-                new() {
-                    Name = "الأصول طويلة الأجل",
-                    Code = "11",
-                    Level = 1,
-                    IsExpanded = true,
-                    Children = new() {
-                        new() { Name = "أصول ثابتة", Code = "111", Level = 2, IsExpanded = true, Children = new() {
-                            new() { Name = "أراضي", Code = "1111", Level = 3 },
-                            new() { Name = "مباني وإنشاءات ومرافق وطرق", Code = "1112", Level = 3 },
-                            new() { Name = "آلات ومعدات", Code = "1113", Level = 3 }
-                        }}
-                    }
-                }
+                new() { Name = "ايجار السيارات 0", Code = "101", Level = 1 },
+                new() { Name = "تزيين السيارات", Code = "102", Level = 1 },
+                new() { Name = "ألالات", Code = "103", Level = 1 }
             }
-        }
-    };
-
-    private IEnumerable<AccountNodeItem> FilteredAccountNodes => string.IsNullOrWhiteSpace(accountSearchTerm)
-        ? accountTreeData
-        : accountTreeData.Where(a => a.Name.Contains(accountSearchTerm, StringComparison.OrdinalIgnoreCase) || a.Code.Contains(accountSearchTerm));
-
-    private void OpenAccountsModal(string targetField)
-    {
-        activeAccountTargetField = targetField;
-        isAccountsModalOpen = true;
-    }
-
-    private void SelectAccountNode(AccountNodeItem node)
-    {
-        selectedAccountId = node.Code;
-    }
-
-    private void ApplySelectedAccount(AccountNodeItem node)
-    {
-        string displayVal = $"{node.Name} ({node.Code})";
-        switch (activeAccountTargetField)
-        {
-            case "inventory": groupAccounts.InventoryAccount = displayVal; break;
-            case "sales": groupAccounts.SalesAccount = displayVal; break;
-            case "cogs": groupAccounts.CogsAccount = displayVal; break;
-            case "salesReturn": groupAccounts.SalesReturnAccount = displayVal; break;
-            case "wip": groupAccounts.WipAccount = displayVal; break;
-        }
-        isAccountsModalOpen = false;
-    }
-
-    private void CloseAllPopups()
-    {
-        isBarcodeTypePopupOpen = false;
-        isItemTypePopupOpen = false;
-        isBranchPopupOpen = false;
-        isWarehousePopupOpen = false;
-        isGroupPopupOpen = false;
-        isUnitPopupOpen = false;
-        isSupplierPopupOpen = false;
-        isPolicyPopupOpen = false;
-        isTranslationPopupOpen = false;
-        isModalCodePopupOpen = false;
-        isModalTransPopupOpen = false;
-        isGroupTypeDropdownOpen = false;
-        isParentGroupDropdownOpen = false;
-        activeCalcField = "";
-    }
-
-    private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "مبيعات بضائع مشتراة", "تكلفة البضاعة المباعة" };
-    private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة" };
-    private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "معفي من الضريبة" };
-
-    private ItemModel itemData = new()
-    {
-        Id = "88520841105028",
-        Name = "",
-        EnglishName = "",
-        ItemType = "مخزون",
-        ItemTypeNote = "المنتجات التي يتم شراؤها للبيع ويتم تعقبها في المخزون وتضاف على الميزانية العمومية",
-        QrType = "تلقائي",
-        BarcodeNumber = "88520841105028",
-        IsActive = true,
-        GroupCategory = "مخزون البضاعة",
-        GlobalBarcodeType = "GS1",
-        GlobalBarcodeValue = "88520841105028",
-        MeasurementUnit = "قطعه",
-        ValuationMethod = "الوارد أولاً صادر أولاً",
-        SalesAccount = "مبيعات بضائع مشتراة",
-        SalesReturnAccount = "مرتجعات مبيعات (مدين)",
-        VatApplicable = "نعم",
-        UnitsTableRows = new List<UnitRowModel>
-        {
-            new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 0, SalePrice = 0, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true }
         },
-        EquationRows = new List<EquationRowModel>
-        {
-            new() { Field = "سعر البيع الافتراضي", Equation = "" }
-        }
+        new() { Name = "مجموعة منتج تام", Code = "4", Level = 0 },
+        new() { Name = "مجموعة اصناف خدمه", Code = "5", Level = 0 },
+        new() {
+            Name = "مجموعة المخزون",
+            Code = "6",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "مجموعة مخزن 1", Code = "7", Level = 1 },
+                new() { Name = "معلبات", Code = "512", Level = 1 }
+            }
+        },
+        new() { Name = "ملابس صيفي", Code = "8", Level = 0 },
+        new() { Name = "صيانة سيارات", Code = "9", Level = 0 }
     };
 
-    private void SaveData() { }
-
-    public class ItemModel
+    private void ToggleGroupPopup()
     {
-        public string Id { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string EnglishName { get; set; } = "";
-        public string ItemType { get; set; } = "";
-        public string ItemTypeNote { get; set; } = "";
-        public string QrType { get; set; } = "";
-        public string BarcodeNumber { get; set; } = "";
-        public bool IsActive { get; set; }
-        public string SupplierName { get; set; } = "";
-        public string DistributionPolicy { get; set; } = "";
-        public string GroupCategory { get; set; } = "";
-        public string GeneralLedgerAccount { get; set; } = "";
-        public string GlobalBarcodeType { get; set; } = "";
-        public string GlobalBarcodeValue { get; set; } = "";
-        public string MeasurementUnit { get; set; } = "";
-        public string ValuationMethod { get; set; } = "";
-        public string OpeningBalance { get; set; } = "";
-        public string SalesAccount { get; set; } = "";
-        public string SalesReturnAccount { get; set; } = "";
-        public string VatApplicable { get; set; } = "";
-        public string TaxAccount { get; set; } = "";
-        public int MinLimit { get; set; } = 10;
-        public int MaxLimit { get; set; } = 50;
-        public string Description { get; set; } = "";
-        public string LocationOne { get; set; } = "";
-        public string LocationTwo { get; set; } = "";
-        public List<UnitRowModel> UnitsTableRows { get; set; } = new();
-        public List<EquationRowModel> EquationRows { get; set; } = new();
+        bool wasOpen = isGroupPopupOpen;
+        CloseAllPopups();
+        isGroupPopupOpen = !wasOpen;
     }
 
-    public class UnitRowModel
+    private void SelectGroupNode(TreeTypeNode node)
     {
-        public string Barcode { get; set; } = "";
-        public int PiecesCount { get; set; }
-        public string Unit { get; set; } = "";
-        public decimal PurchasePrice { get; set; }
-        public decimal SalePrice { get; set; }
-        public bool IsDefaultPurchase { get; set; }
-        public bool IsDefaultSale { get; set; }
-        public bool IsActive { get; set; }
+        itemData.GroupCategory = node.Name;
+        if (!node.Children.Any())
+        {
+            isGroupPopupOpen = false;
+        }
+        else
+        {
+            node.IsExpanded = !node.IsExpanded;
+        }
     }
 
-    public class EquationRowModel
+    private RenderFragment RenderGroupTreeNode(TreeTypeNode node) => @<text>
+    <div class="tree-grid-row @(itemData.GroupCategory == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => SelectGroupNode(node)">
+        <span class="tree-node-name col-name text-right">
+            @if (node.Children.Any())
+                        {
+            <span class="ms-1" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+            </span>
+                        }
+            @node.Name
+        </span>
+        <span class="tree-node-code col-code text-left text-muted">@node.Code</span>
+    </div>
+
+@if (node.IsExpanded && node.Children.Any())
     {
-        public string Field { get; set; } = "";
-        public string Equation { get; set; } = "";
+@foreach (var child in node.Children)
+    {
+@RenderGroupTreeNode(child)
     }
+    }
+</text>;
+
+    private bool isGroupTypeDropdownOpen = false;
+    private string selectedGroupType = "الملابس والإكسسوارات";
+    private List<TreeTypeNode> groupTypeTreeNodes = new();
+    private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
+private void SelectGroupTypeNode(TreeTypeNode node) { selectedGroupType = node.Name; isGroupTypeDropdownOpen = false; }
+
+private bool isParentGroupDropdownOpen = false;
+private string selectedParentGroup = "مجموعة منتج تام";
+private List<TreeTypeNode> parentGroupTreeNodes = new();
+private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
+private void SelectParentGroupNode(TreeTypeNode node) { selectedParentGroup = node.Name; isParentGroupDropdownOpen = false; }
+
+public class CheckableItem
+{
+    public string Name { get; set; } = ""; public bool IsSelected { get; set; } }
+    private bool isBranchPopupOpen = false;
+    private List<CheckableItem> branchList = new() { new() { Name = "الفرع الرئيسي", IsSelected = true }, new() { Name = "فرع قويسنا", IsSelected = true } };
+    private bool IsAllBranchesSelected => branchList.All(b => b.IsSelected);
+    private void ToggleBranchPopup() { CloseAllPopups(); isBranchPopupOpen = !isBranchPopupOpen; }
+private void ToggleAllBranches() { bool target = !IsAllBranchesSelected; branchList.ForEach(b => b.IsSelected = target); }
+private string GetSelectedBranchesSummary() => IsAllBranchesSelected ? "(كل الفروع)" : string.Join(", ", branchList.Where(b => b.IsSelected).Select(b => b.Name));
+private string GetSelectedBranchesTooltip() => GetSelectedBranchesSummary();
+
+private bool isWarehousePopupOpen = false;
+private List<CheckableItem> warehouseList = new() { new() { Name = "المخزن الرئيسي 1", IsSelected = true } };
+private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
+private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
+private void ToggleAllWarehouses() { bool target = !IsAllWarehousesSelected; warehouseList.ForEach(w => w.IsSelected = target); }
+private string GetSelectedWarehousesSummary() => IsAllWarehousesSelected ? "(كل المخازن)" : string.Join(", ", warehouseList.Where(w => w.IsSelected).Select(w => w.Name));
+private string GetSelectedWarehousesTooltip() => GetSelectedWarehousesSummary();
+
+private bool isGroupModalOpen = false;
+private int groupModalTab = 1;
+private void OpenGroupModal() { CloseAllPopups(); isGroupModalOpen = true; }
+private void ToggleActiveState(ChangeEventArgs e) { if (e.Value is bool val) itemData.IsActive = val; }
+
+private bool isModalCodePopupOpen = false;
+private string modalCodeIcon = "⚙️";
+private string selectedModalOption = "تلقائي";
+private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
+private void SelectModalCodeOption(string opt, string icon) { selectedModalOption = opt; modalCodeIcon = icon; isModalCodePopupOpen = false; }
+
+private bool isModalTransPopupOpen = false;
+private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
+
+private bool isUnitPopupOpen = false;
+private bool isUnitsModalOpen = false;
+private string unitSearchTerm = "";
+private string newUnitNameInput = "";
+private List<string> unitList = new() { "قطعه", "كيلو", "زجاجة" };
+private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm) ? unitList : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
+private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
+private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
+private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
+
+public class SupplierGridItem
+{
+    public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string Account { get; set; } = ""; }
+    private bool isSupplierPopupOpen = false;
+    private List<SupplierGridItem> supplierList = new() { new() { Code = "1", Name = "تهامي", Account = "" } };
+    private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
+private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
+
+private bool isPolicyPopupOpen = false;
+private List<string> policyList = new() { "توزيع مباشر" };
+private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
+private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
+
+private bool isAccountsModalOpen = false;
+private string accountSearchTerm = "";
+private string selectedAccountId = "1";
+public class AccountNodeItem
+{
+    public string Name { get; set; } = ""; public string Code { get; set; } = ""; public int Level { get; set; } = 0; public bool IsExpanded { get; set; } = true; public List<AccountNodeItem> Children { get; set; } = new(); }
+    private List<AccountNodeItem> accountTreeData = new();
+    private IEnumerable<AccountNodeItem> FilteredAccountNodes => accountTreeData;
+    private void SelectAccountNode(AccountNodeItem node) { selectedAccountId = node.Code; }
+private void ApplySelectedAccount(AccountNodeItem node) { isAccountsModalOpen = false; }
+
+private void CloseAllPopups()
+{
+    isBarcodeTypePopupOpen = false;
+    isItemTypePopupOpen = false;
+    isBranchPopupOpen = false;
+    isWarehousePopupOpen = false;
+    isGroupPopupOpen = false;
+    isUnitPopupOpen = false;
+    isSupplierPopupOpen = false;
+    isPolicyPopupOpen = false;
+    isTranslationPopupOpen = false;
+    isModalCodePopupOpen = false;
+    isModalTransPopupOpen = false;
+    isGroupTypeDropdownOpen = false;
+    isParentGroupDropdownOpen = false;
 }
+
+private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102" };
+private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة" };
+private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %" };
+
+private ItemModel itemData = new()
+{
+    Id = "88520841105028",
+    BarcodeNumber = "88520841105028",
+    GroupCategory = "مجموعة المخزون",
+    MeasurementUnit = "قطعه",
+    UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", IsActive = true } }
+};
+
+private void SaveData() { }
+
+public class ItemModel
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string EnglishName { get; set; } = "";
+    public string ItemType { get; set; } = "مخزون";
+    public string ItemTypeNote { get; set; } = "";
+    public string QrType { get; set; } = "";
+    public string BarcodeNumber { get; set; } = "";
+    public bool IsActive { get; set; } = true;
+    public string SupplierName { get; set; } = "";
+    public string DistributionPolicy { get; set; } = "";
+    public string GroupCategory { get; set; } = "";
+    public string GeneralLedgerAccount { get; set; } = "";
+    public string GlobalBarcodeType { get; set; } = "GS1";
+    public string GlobalBarcodeValue { get; set; } = "";
+    public string MeasurementUnit { get; set; } = "";
+    public string ValuationMethod { get; set; } = "";
+    public string OpeningBalance { get; set; } = "";
+    public string SalesAccount { get; set; } = "";
+    public string SalesReturnAccount { get; set; } = "";
+    public string VatApplicable { get; set; } = "";
+    public string TaxAccount { get; set; } = "";
+    public int MinLimit { get; set; } = 10;
+    public int MaxLimit { get; set; } = 50;
+    public string Description { get; set; } = "";
+    public string LocationOne { get; set; } = "";
+    public string LocationTwo { get; set; } = "";
+    public List<UnitRowModel> UnitsTableRows { get; set; } = new();
+    public List<EquationRowModel> EquationRows { get; set; } = new();
+}
+
+public class UnitRowModel
+{
+    public string Barcode { get; set; } = "";
+    public int PiecesCount { get; set; }
+    public string Unit { get; set; } = "";
+    public decimal PurchasePrice { get; set; }
+    public decimal SalePrice { get; set; }
+    public bool IsDefaultPurchase { get; set; }
+    public bool IsDefaultSale { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public class EquationRowModel
+{
+    public string Field { get; set; } = "";
+    public string Equation { get; set; } = "";
+}
+}
+
+<style>
+    .page-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 30px 40px;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .main-canvas {
+        max-width: 1040px;
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .header-master-grid {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .image-right-block {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 15px;
+        user-select: none;
+    }
+
+    .orange-divider-line {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 112px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .image-square {
+        width: 75px;
+        height: 75px;
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2px;
+        margin-bottom: 6px;
+    }
+
+    .image-placeholder-text {
+        color: #495057;
+        font-size: 0.85rem;
+    }
+
+    .active-check-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .small-chk-label {
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .chk-box {
+        cursor: pointer;
+    }
+
+    .labels-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 2px;
+    }
+
+    .label-row-cell {
+        height: 31px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .hdr-lbl {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .controls-column {
+        width: 530px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-row-compact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 31px;
+    }
+
+    .name-field-relative {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .barcode-main-input {
+        width: 250px;
+    }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .btn-qr-hover {
+        background-color: transparent;
+        color: #333;
+        border: none;
+        border-radius: 14px;
+        font-weight: bold;
+        font-size: 0.88rem;
+        padding: 4px 14px;
+        margin-left: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        width: 80px;
+    }
+
+        .btn-qr-hover:hover {
+            background-color: #007bff;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
+        }
+
+    .btn-trans-trigger {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 2px 6px;
+        display: flex;
+        align-items: center;
+        color: #495057;
+        margin-left: 2px;
+    }
+
+    .ico-trans-char {
+        font-size: 1.15rem;
+    }
+
+    .trans-popup-box {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        width: 380px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 12px;
+        z-index: 4000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .modal-trans-popup-pos {
+        top: 36px !important;
+        left: 0 !important;
+        right: auto !important;
+    }
+
+    .trans-input-wrap {
+        border-bottom: 2px solid #007bff;
+    }
+
+    .trans-input {
+        width: 100%;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-radius: 3px 3px 0 0;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        outline: none;
+        box-sizing: border-box;
+        background-color: #ffffff;
+    }
+
+    .trans-popup-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-popup-icon {
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+        .btn-popup-icon:hover {
+            color: #007bff;
+        }
+
+    .type-description-hint {
+        font-size: 0.75rem;
+        color: #6c757d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .save-cell {
+        margin-right: 40px;
+        padding-top: 40px;
+    }
+
+    .btn-primary-custom {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 120px;
+    }
+
+    .tab-strip-bar {
+        display: flex;
+        justify-content: flex-start;
+        gap: 6px;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+
+    .strip-tab-btn {
+        border: none;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 5px 18px;
+        font-size: 0.85rem;
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .strip-tab-btn.active {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+    .tab-content-seamless {
+        background-color: transparent;
+        padding: 10px 0;
+        min-height: 480px;
+        box-sizing: border-box;
+    }
+
+    .section-with-blue-line {
+        border-right: 3px solid #007bff;
+        padding-right: 14px;
+    }
+
+    .section-block-title {
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #0d6efd !important;
+        margin-bottom: 10px;
+    }
+
+    .section-title-header {
+        font-weight: bold;
+        color: #333333;
+    }
+
+    .two-column-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 40px;
+        row-gap: 12px;
+    }
+
+    .form-side-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .field-entry-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .field-title {
+        width: 125px;
+        min-width: 125px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .field-title-wide {
+        width: 140px;
+        min-width: 140px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .accounts-tab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 36px;
+    }
+
+    .accounts-column-block {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .flex-1 {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .field-fixed-width {
+        width: 100%;
+        max-width: 320px;
+        min-width: 0;
+    }
+
+    .clean-input {
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-bottom 0.15s ease-in-out;
+    }
+
+    input.clean-input:focus,
+    textarea.clean-input:focus,
+    .barcode-main-input:focus,
+    .modal-barcode-input:focus {
+        border-color: #ced4da;
+        border-bottom: 3px solid #007bff !important;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: none;
+    }
+
+    select.clean-input:focus {
+        border-color: #80bdff;
+        border-bottom: 1px solid #ced4da;
+        box-shadow: none;
+    }
+
+    .combo-with-btn {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-addon-square {
+        border: 1px solid #ced4da;
+        background: #ffffff;
+        border-right: none;
+        border-radius: 3px 0 0 3px;
+        padding: 4px 10px;
+        cursor: pointer;
+    }
+
+    .barcode-control {
+        display: flex;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+    .mini-prefix-select {
+        border: none;
+        border-left: 1px solid #ced4da;
+        background: #ffffff;
+        padding: 2px 8px;
+        font-size: 0.8rem;
+    }
+
+    .spacer-line {
+        visibility: hidden;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+        user-select: none;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        flex: 1;
+        min-width: 0;
+        text-align: right;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: auto;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .btn-inside-plus {
+        border: none;
+        background: transparent;
+        color: #495057;
+        font-size: 1rem;
+        line-height: 1;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s ease-in-out;
+    }
+
+        .btn-inside-plus:hover {
+            color: #007bff;
+        }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+        line-height: 1;
+    }
+
+    .clean-select-overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 1;
+    }
+
+    .dropdown-anchor {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .custom-dropdown-panel {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 100%;
+        min-width: 260px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .panel-scroll-content {
+        max-height: 280px;
+        overflow-y: auto;
+        padding: 6px 0;
+    }
+
+    .panel-checkbox-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 5px 12px;
+        cursor: pointer;
+        font-size: 0.83rem;
+    }
+
+        .panel-checkbox-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .select-all-row {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        font-weight: 600;
+    }
+
+    .panel-footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 8px 10px;
+        border-top: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+
+    .btn-panel-ok,
+    .btn-panel-cancel {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        font-size: 0.78rem;
+        padding: 3px 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .custom-table-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .item-type-popup-size {
+        width: 250px;
+        min-width: 250px;
+    }
+
+    .table-popup-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 6px 12px;
+        font-weight: bold;
+        font-size: 0.83rem;
+        color: #333;
+        text-align: right;
+    }
+
+    .table-popup-search-box {
+        padding: 6px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .table-popup-row {
+        padding: 6px 12px;
+        font-size: 0.83rem;
+        cursor: pointer;
+        text-align: right;
+    }
+
+        .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 3px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .group-type-tree-dropdown {
+        width: 380px !important;
+        min-width: 380px !important;
+    }
+
+    .tree-grid-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .tree-grid-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .tree-child-row {
+        background-color: #fafbfc;
+    }
+
+    .tree-node-name {
+        flex: 1;
+        text-align: right;
+    }
+
+    .tree-node-code {
+        width: 70px;
+        text-align: left;
+    }
+
+    .custom-supplier-grid-panel-advanced {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 380px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .supplier-grid-header {
+        display: flex;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .supplier-grid-subbar {
+        display: flex;
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .col-code {
+        width: 80px;
+        padding: 5px 8px;
+        text-align: center;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .col-name {
+        flex: 1;
+        padding: 5px 8px;
+        text-align: right;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .col-acc {
+        width: 90px;
+        padding: 5px 8px;
+        text-align: center;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .col-action {
+        width: 35px;
+        padding: 5px;
+        text-align: center;
+    }
+
+    .supplier-grid-rows {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .supplier-row {
+        display: flex;
+        font-size: 0.82rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .supplier-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .accounts-tree-modal-layer {
+        z-index: 5000 !important;
+    }
+
+    .accounts-tree-dialog {
+        background: #ffffff;
+        border-radius: 4px;
+        width: 440px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid #ced4da;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        z-index: 5001;
+    }
+
+    .accounts-tree-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f8f9fa;
+        padding: 6px 12px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .accounts-tree-title {
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+
+    .accounts-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-acc-win {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        line-height: 1;
+    }
+
+    .accounts-search-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background-color: #fdfdfd;
+        border-bottom: 1px solid #eee;
+    }
+
+    .acc-search-lbl {
+        font-size: 0.85rem;
+        color: #495057;
+        font-weight: bold;
+    }
+
+    .acc-search-input {
+        height: 28px;
+        font-size: 0.82rem;
+        text-align: left;
+        direction: ltr;
+    }
+
+    .accounts-tree-table-header {
+        display: flex;
+        background-color: #f1f3f6;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.83rem;
+        color: #333;
+        padding: 6px 12px;
+    }
+
+    .acc-col-name {
+        flex: 1;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .acc-col-code {
+        width: 80px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .accounts-tree-body {
+        max-height: 240px;
+        overflow-y: auto;
+        background-color: #ffffff;
+    }
+
+    .acc-row {
+        display: flex;
+        align-items: center;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f8f9fa;
+        user-select: none;
+    }
+
+        .acc-row:hover {
+            background-color: #f0f7ff;
+        }
+
+    .acc-selected-row {
+        background-color: #fff3cd !important;
+        border-right: 3px solid #ffc107;
+    }
+
+    .acc-arrow-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        color: #495057;
+        cursor: pointer;
+    }
+
+    .group-modal-layer {
+        z-index: 3000 !important;
+    }
+
+    .group-master-modal-dialog {
+        background: #f8f9fa;
+        border-radius: 8px;
+        max-width: 95vw;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        direction: rtl !important;
+        min-height: 99vh;
+        position: relative;
+        z-index: 3001;
+    }
+
+    .master-modal-topbar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        padding: 10px 18px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .modal-top-title {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #495057;
+        order: 1;
+    }
+
+    .topbar-controls-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        order: 2;
+    }
+
+    .switch-toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+        margin: 0;
+    }
+
+    .switch-input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .2s;
+        border-radius: 20px;
+    }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+    .switch-input:checked + .switch-slider {
+        background-color: #007bff;
+    }
+
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
+
+    .btn-topbar-close-flat {
+        border: none;
+        background: transparent;
+        font-size: 1.15rem;
+        color: #495057;
+        cursor: pointer;
+        line-height: 1;
+        padding: 2px 6px;
+    }
+
+        .btn-topbar-close-flat:hover {
+            color: #dc3545;
+        }
+
+    .ico-info-circle {
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .master-modal-body {
+        padding: 20px 24px;
+    }
+
+    .group-modal-header-grid {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 16px 20px;
+        position: relative;
+    }
+
+    .group-modal-icon-col {
+        order: 1;
+    }
+
+    .books-icon-box {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .group-modal-labels-col-continuous {
+        order: 2;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        position: relative;
+        padding-right: 8px;
+    }
+
+    .continuous-orange-bar {
+        position: absolute;
+        right: 0;
+        top: 4px;
+        bottom: 4px;
+        width: 3px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .group-labels-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-right: 8px;
+    }
+
+    .group-lbl-row {
+        height: 31px;
+        display: flex;
+        align-items: center;
+    }
+
+    .group-modal-inputs-col {
+        order: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 420px;
+    }
+
+    .group-input-line {
+        height: 31px;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .modal-code-combo-wrapper {
+        display: flex;
+        align-items: center;
+        width: auto;
+        position: relative;
+    }
+
+    .group-code-input {
+        width: 130px;
+        text-align: center;
+        border-radius: 0 3px 3px 0;
+        border-left: none;
+    }
+
+    .group-prefix-combo {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 31px;
+        border: 1px solid #ced4da;
+        border-radius: 3px 0 0 3px;
+        background: #ffffff;
+        padding: 0 8px;
+        cursor: pointer;
+    }
+
+    .modal-code-dropdown-panel {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 180px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        z-index: 3050;
+        display: flex;
+        flex-direction: column;
+        padding: 4px 0;
+    }
+
+    .header-barcode-popup {
+        top: 34px !important;
+        right: auto !important;
+        left: 0 !important;
+    }
+
+    .modal-dropdown-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 12px;
+        font-size: 0.83rem;
+        cursor: pointer;
+    }
+
+        .modal-dropdown-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .active-code-row {
+        background-color: #e9f2ff;
+        border-right: 3px solid #007bff;
+        font-weight: 600;
+    }
+
+    .group-tab-columns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    .group-fields-side {
+        flex: 1;
+    }
+
+    .group-image-side {
+        width: 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 15px;
+    }
+
+    .modal-large-img-box {
+        width: 180px;
+        height: 180px;
+        border: 1px solid #ced4da;
+        background: #ffffff;
+        position: relative;
+        border-radius: 4px;
+    }
+
+    .btn-box-x {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        border: 1px solid #ccc;
+        background: #ffffff;
+        font-size: 0.75rem;
+        line-height: 1;
+        padding: 2px 4px;
+        cursor: pointer;
+    }
+
+    .group-tab-accounts-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 32px;
+    }
+
+    .modal-accounts-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .master-modal-footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        padding: 12px 20px;
+        margin: 20px;
+        border-radius: 20px;
+    }
+
+    .modal-footer-actions-right {
+        display: flex;
+        gap: 8px;
+        order: 1;
+    }
+
+    .units-master-modal-dialog {
+        background: #f8f9fa;
+        border-radius: 6px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        width: 700px;
+    }
+
+    .table-scroll-wrapper {
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+    }
+
+    .item-details-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+    }
+
+        .item-details-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 7px;
+        }
+
+        .item-details-table td {
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 6px;
+            color: #333333;
+            background-color: #ffffff;
+        }
+
+    .delete-icon-btn {
+        border: none;
+        background: transparent;
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .opening-balance-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .opening-balance-lbl {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #333333;
+    }
+
+    .modal-backdrop-blur {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2500;
+    }
+
+    .qr-modal-dialog {
+        background: #ffffff;
+        border-radius: 8px;
+        width: 440px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        padding: 18px 24px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .qr-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .qr-modal-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #212529;
+    }
+
+    .btn-modal-close {
+        border: none;
+        background: transparent;
+        font-size: 1.1rem;
+        color: #6c757d;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+    }
+
+    .qr-modal-subtext {
+        font-size: 0.85rem;
+        color: #333333;
+    }
+
+    .btn-generate-blue {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.82rem;
+        padding: 4px 14px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .modal-barcode-input {
+        width: 100%;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        outline: none;
+        box-sizing: border-box;
+        margin-bottom: 18px;
+        background-color: #ffffff;
+    }
+
+    .qr-modal-footer {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-modal-ok,
+    .btn-modal-cancel {
+        flex: 1;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        padding: 7px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .languages-modal-dialog {
+        background: #ffffff;
+        border-radius: 6px;
+        width: 390px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        z-index: 4001;
+    }
+
+    .languages-modal-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .languages-modal-title {
+        font-size: 0.9rem;
+        color: #333333;
+        font-weight: 600;
+    }
+
+    .languages-prompt-text {
+        font-size: 0.84rem;
+        color: #333333;
+        text-align: center;
+        margin-bottom: 16px;
+    }
+
+    .languages-frame-box {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .lang-sidebar-banner {
+        width: 48px;
+        background-color: #2196f3;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2px;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 0.82rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        padding: 12px 0;
+    }
+
+    .languages-items-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .language-item-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        font-size: 0.88rem;
+        color: #212529;
+    }
+
+    .lang-flag {
+        font-size: 1.25rem;
+        line-height: 1;
+        width: 26px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .language-item-row .chk-box {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .lang-title {
+        width: fit-content;
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .languages-modal-footer {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .btn-lang-submit,
+    .btn-lang-cancel {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 36px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+</style>

@@ -1,4 +1,4 @@
-﻿.page-viewport {
+﻿/*.page-viewport {
     background-color: #f1f3f6;
     min-height: 100vh;
     width: 100%;
@@ -633,10 +633,10 @@ select.clean-input:focus {
 .resizer-dots {
     color: #aaa;
     font-size: 0.80rem;
-}
+}*/
 
 /* Tree Dropdowns */
-.group-type-tree-dropdown {
+/*.group-type-tree-dropdown {
     width: 380px !important;
     min-width: 380px !important;
 }
@@ -666,10 +666,10 @@ select.clean-input:focus {
 .tree-node-code {
     width: 70px;
     text-align: left;
-}
+}*/
 
 /* Advanced Supplier Dropdown */
-.custom-supplier-grid-panel-advanced {
+/*.custom-supplier-grid-panel-advanced {
     position: absolute;
     top: 34px;
     right: 0;
@@ -740,10 +740,10 @@ select.clean-input:focus {
 
     .supplier-row:hover {
         background-color: #e9f2ff;
-    }
+    }*/
 
 /* Inline Accounts Dots Button */
-.input-inline-btn-wrapper {
+/*.input-inline-btn-wrapper {
     position: relative;
     display: flex;
     align-items: center;
@@ -779,10 +779,10 @@ select.clean-input:focus {
     .btn-inline-dots:hover {
         background-color: #e9ecef;
         color: #0d6efd;
-    }
+    }*/
 
 /* ================= ALERT FIELDS WITH OUTSIDE LABEL ON LEFT ================= */
-.calc-field-outer {
+/*.calc-field-outer {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -821,10 +821,10 @@ select.clean-input:focus {
     user-select: none;
     min-width: 35px;
     text-align: left;
-}
+}*/
 
 /* Calculator popup dialog */
-.calculator-popup-dialog {
+/*.calculator-popup-dialog {
     position: absolute;
     top: 34px;
     right: 0;
@@ -879,10 +879,10 @@ select.clean-input:focus {
 .btn-calc-empty {
     visibility: hidden;
     pointer-events: none;
-}
+}*/
 
 /* ================= ACCOUNTS TREE POPUP MODAL ================= */
-.accounts-tree-modal-layer {
+/*.accounts-tree-modal-layer {
     z-index: 5000 !important;
 }
 
@@ -1035,10 +1035,10 @@ select.clean-input:focus {
     font-size: 0.8rem;
     color: #198754;
     font-weight: 600;
-}
+}*/
 
 /* Higher z-index for Group Modal */
-.group-modal-layer {
+/*.group-modal-layer {
     z-index: 3000 !important;
 }
 
@@ -1520,10 +1520,10 @@ select.clean-input:focus {
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
-}
+}*/
 
 /* ================= LANGUAGES MODAL ================= */
-.languages-modal-dialog {
+/*.languages-modal-dialog {
     background: #ffffff;
     border-radius: 6px;
     width: 390px;
@@ -1646,4 +1646,4 @@ select.clean-input:focus {
     font-weight: 600;
     font-size: 0.88rem;
     cursor: pointer;
-}
+}*/
