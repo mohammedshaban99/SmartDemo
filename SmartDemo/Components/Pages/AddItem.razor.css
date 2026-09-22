@@ -276,7 +276,7 @@
 }
 
 .section-with-blue-line {
-    border-right: 2px solid #007bff;
+    border-right: 3px solid #007bff;
     padding-right: 14px;
 }
 
@@ -369,7 +369,7 @@ textarea.clean-input:focus,
 .barcode-main-input:focus,
 .modal-barcode-input:focus {
     border-color: #ced4da;
-    border-bottom: 2px solid #007bff !important;
+    border-bottom: 3px solid #007bff !important;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     box-shadow: none;
