@@ -1,0 +1,167 @@
+﻿<div class="calc-input-wrapper @CssClass" @onclick:stopPropagation>
+    <div class="calc-input-group">
+        @if (!string.IsNullOrEmpty(UnitLabel))
+        {
+            <select class="calc-unit-select" @bind="SelectedUnit">
+                <option value="@UnitLabel">@UnitLabel</option>
+            </select>
+        }
+        <input type="text" class="clean-input text-center flex-1" @bind="Value" />
+        <button type="button" class="calc-dropdown-btn" @onclick="ToggleCalculator">
+            <span class="combo-arrow">▼</span>
+        </button>
+    </div>
+
+    @if (isCalculatorOpen)
+    {
+        <div class="calculator-popup" @onclick:stopPropagation>
+            <div class="calc-grid">
+                <button type="button" class="calc-btn action-btn" @onclick='() => AppendValue("C")'>C</button>
+                <button type="button" class="calc-btn action-btn" @onclick='() => AppendValue("CE")'>CE</button>
+                <button type="button" class="calc-btn action-btn" @onclick='() => AppendValue("Back")'>Back</button>
+                <button type="button" class="calc-btn empty-btn"></button>
+
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("sqrt")'>sqrt</button>
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("/")'>/</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("9")'>9</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("8")'>8</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("7")'>7</button>
+                <button type="button" class="calc-btn mem-btn" @onclick='() => AppendValue("MC")'>MC</button>
+
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("%")'>%</button>
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("*")'>*</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("6")'>6</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("5")'>5</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("4")'>4</button>
+                <button type="button" class="calc-btn mem-btn" @onclick='() => AppendValue("MR")'>MR</button>
+
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("x/1")'>x/1</button>
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("-")'>-</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("3")'>3</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("2")'>2</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("1")'>1</button>
+                <button type="button" class="calc-btn mem-btn" @onclick='() => AppendValue("MS")'>MS</button>
+
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("=")'>=</button>
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("+")'>+</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue(".")'>.</button>
+                <button type="button" class="calc-btn op-btn" @onclick='() => AppendValue("-/+")'>-/+</button>
+                <button type="button" class="calc-btn num-btn" @onclick='() => AppendValue("0")'>0</button>
+                <button type="button" class="calc-btn mem-btn" @onclick='() => AppendValue("+M")'>+M</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = "0";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string UnitLabel { get; set; } = "";
+    [Parameter] public string SelectedUnit { get; set; } = "";
+    [Parameter] public string CssClass { get; set; } = "";
+
+    private bool isCalculatorOpen = false;
+
+    private void ToggleCalculator() => isCalculatorOpen = !isCalculatorOpen;
+
+    private async Task AppendValue(string val)
+    {
+        if (val == "C")
+        {
+            Value = "0";
+        }
+        else if (val == "Back" && Value.Length > 0)
+        {
+            Value = Value.Substring(0, Value.Length - 1);
+            if (string.IsNullOrEmpty(Value)) Value = "0";
+        }
+        else
+        {
+            if (Value == "0") Value = val;
+            else Value += val;
+        }
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
+
+<style>
+    .calc-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .calc-input-group {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        background: #fff;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .calc-unit-select {
+        border: none;
+        background: #f8f9fa;
+        border-left: 1px solid #ced4da;
+        padding: 4px 6px;
+        font-size: 0.8rem;
+        outline: none;
+    }
+
+    .calc-dropdown-btn {
+        background: #f8f9fa;
+        border: none;
+        border-right: 1px solid #ced4da;
+        padding: 4px 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .calculator-popup {
+        position: absolute;
+        top: 36px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        padding: 10px;
+        z-index: 5000;
+        width: 290px;
+    }
+
+    .calc-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+    }
+
+    .calc-btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 0;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        .calc-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .action-btn {
+        grid-column: span 2;
+    }
+
+    .empty-btn {
+        background: transparent;
+        cursor: default;
+    }
+</style>
