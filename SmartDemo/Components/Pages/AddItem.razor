@@ -1241,54 +1241,9 @@
                                     }
                                 </div>
                             </div>
-                            <div class="field-entry-line pos-relative">
+                            <div class="field-entry-line">
                                 <span class="field-title">تاريخ المصروف</span>
-                                <div class="d-flex align-items-center flex-1 gap-1">
-                                    <div class="dropdown-anchor flex-1 pos-relative">
-                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleExpenseDateCalendar">
-                                            <span class="combo-display-text text-center">@itemData.ExpenseDate.ToString("yyyy-MM-dd")</span>
-                                            <div class="combo-icons-inside">
-                                                <span class="combo-arrow">▼</span>
-                                            </div>
-                                        </div>
-                                        @if (isExpenseDateCalendarOpen)
-                                        {
-                                            <div class="calendar-popup-box" @onclick:stopPropagation>
-                                                <div class="calendar-header text-center fw-bold py-2 border-bottom">
-                                                    الأربعاء، 23 سبتمبر 2026
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center px-3 py-2">
-                                                    <span style="cursor:pointer;">◀</span>
-                                                    <span>سبتمبر 2026</span>
-                                                    <span style="cursor:pointer;">▶</span>
-                                                </div>
-                                                <table class="w-100 text-center small calendar-table">
-                                                    <thead>
-                                                        <tr class="text-muted">
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                            <th>ال</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr><td class="text-muted">29</td><td class="text-muted">30</td><td class="text-muted">31</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
-                                                        <tr><td class="text-danger">5</td><td class="text-danger">6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
-                                                        <tr><td class="text-danger">12</td><td class="text-danger">13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td></tr>
-                                                        <tr><td class="text-danger">19</td><td class="text-danger">20</td><td>21</td><td>22</td><td><span class="bg-primary text-white rounded px-2 py-1">23</span></td><td>24</td><td>25</td></tr>
-                                                        <tr><td class="text-danger">26</td><td class="text-danger">27</td><td>28</td><td>29</td><td>30</td><td class="text-muted">1</td><td class="text-muted">2</td></tr>
-                                                    </tbody>
-                                                </table>
-                                                <div class="text-center p-2 border-top">
-                                                    <button type="button" class="btn btn-sm btn-light border px-4" @onclick="ClearExpenseDate">Clear</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                                <input type="date" class="clean-input flex-1" @bind="itemData.ExpenseDate" />
                             </div>
                         </div>
                     </div>
@@ -2181,11 +2136,6 @@ private void ApplyCalcResult()
     else if (activeCalcTarget == "Panels") itemData.AdditionalPanels = calcDisplay;
 }
 
-// Calendar Popup State & Logic for Expense Date (Tab 4)
-private bool isExpenseDateCalendarOpen = false;
-private void ToggleExpenseDateCalendar() { bool wasOpen = isExpenseDateCalendarOpen; CloseAllPopups(); isExpenseDateCalendarOpen = !wasOpen; }
-private void ClearExpenseDate() { itemData.ExpenseDate = default; isExpenseDateCalendarOpen = false; }
-
 // Ledger Account Tree Popup State & Support matching Image #4
 private bool isLedgerAccountPopupOpen = false;
 private void ToggleLedgerAccountPopup()
@@ -2538,7 +2488,6 @@ private void CloseAllPopups()
     isWidthCalcOpen = false;
     isHeightCalcOpen = false;
     isPanelsCalcOpen = false;
-    isExpenseDateCalendarOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
@@ -3304,34 +3253,6 @@ public class OpeningBalanceModel
     .calc-mem {
         background-color: #007bff;
     }
-
-    /* Calendar Popup Styles */
-    .calendar-popup-box {
-        position: absolute;
-        top: 34px;
-        right: 0;
-        width: 280px;
-        background: #ffffff;
-        border: 1px solid #ced4da;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-        border-radius: 6px;
-        z-index: 4000;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        direction: rtl;
-    }
-
-    .calendar-table td {
-        padding: 4px 0;
-        cursor: pointer;
-    }
-
-        .calendar-table td:hover {
-            background-color: #e9f2ff;
-            border-radius: 3px;
-        }
 
     /* Color Picker Dropdown styling attached locally to color field */
     .color-field-container {
