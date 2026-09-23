@@ -783,7 +783,7 @@
                 <textarea class="clean-input w-100 mb-4" rows="3" @bind="itemData.Description"></textarea>
 
                 <div class="d-flex justify-content-between gap-4">
-                    <!-- Right Column in RTL: أماكن التخزين, الكلمات الدلالية (editable textarea, no plus button), الوصف (GPC, الشركة المنتجة without plus, المادة الفعالة without plus) -->
+                    <!-- Right Column in RTL -->
                     <div style="width: 380px;">
                         <div class="section-block-title text-primary">أماكن التخزين</div>
                         <div class="section-with-blue-line mb-4">
@@ -910,16 +910,12 @@
 
                             <div class="field-entry-line">
                                 <span class="field-title-wide">نشط من</span>
-                                <select class="clean-input" style="width: 140px;" @bind="itemData.ActiveFrom">
-                                    <option value=""></option>
-                                    <option value="الفرع الرئيسي">الفرع الرئيسي</option>
-                                    <option value="فرع قويسنا">فرع قويسنا</option>
-                                </select>
+                                <input type="date" class="clean-input" style="width: 140px;" @bind="itemData.ActiveFromDate" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Left Column in RTL: شاشة اللمس (with color picker attached correctly), التجانس بين الوحدات -->
+                    <!-- Left Column in RTL -->
                     <div class="flex-grow-1">
                         <div class="section-block-title text-primary">شاشة اللمس</div>
                         <div class="section-with-blue-line mb-4">
@@ -933,17 +929,19 @@
                                 </select>
                             </div>
 
-                            <!-- Color Field with correctly nested color picker popup -->
+                            <!-- Color Field with badge color on the left inside the input container -->
                             <div class="field-entry-line">
                                 <span class="field-title">اللون</span>
                                 <div class="color-field-container">
                                     <div class="custom-combo-trigger color-trigger-box" @onclick:stopPropagation @onclick="ToggleColorPickerPopup">
-                                        <span class="combo-display-text">@selectedColorTab</span>
+                                        <div class="d-flex align-items-center gap-2 flex-1">
+                                            <div class="color-preview-badge" style="background-color: @selectedColorHex;"></div>
+                                            <span class="combo-display-text text-start">@selectedColorText</span>
+                                        </div>
                                         <div class="combo-icons-inside">
                                             <span class="combo-arrow">▼</span>
                                         </div>
                                     </div>
-                                    <div class="color-preview-box" style="background-color: @GetSelectedColorHex();"></div>
 
                                     @if (isColorPickerPopupOpen)
                                     {
@@ -966,17 +964,17 @@
                                                         @for (int i = 0; i < 10; i++)
                                                         {
                                                             var hex = GetThemeColor(i);
-                                                            <div @onclick="() => SelectColor(hex)" style="width: 18px; height: 18px; background: @hex; border: 1px solid #ddd; cursor: pointer;"></div>
+                                                            <div @onclick="() => SelectColor(hex, hex)" style="width: 18px; height: 18px; background: @hex; border: 1px solid #ddd; cursor: pointer;"></div>
                                                         }
                                                     </div>
                                                     <div class="fw-bold small mt-2 mb-1">Standard Colors</div>
                                                     <div class="color-grid-standard">
-                                                        <div @onclick='() => SelectColor("red")' style="background: red; cursor: pointer;"></div>
-                                                        <div @onclick='() => SelectColor("blue")' style="background: blue; cursor: pointer;"></div>
-                                                        <div @onclick='() => SelectColor("yellow")' style="background: yellow; cursor: pointer;"></div>
-                                                        <div @onclick='() => SelectColor("green")' style="background: green; cursor: pointer;"></div>
-                                                        <div @onclick='() => SelectColor("orange")' style="background: orange; cursor: pointer;"></div>
-                                                        <div @onclick='() => SelectColor("purple")' style="background: purple; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("red", "red")' style="background: red; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("blue", "blue")' style="background: blue; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("yellow", "yellow")' style="background: yellow; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("green", "green")' style="background: green; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("orange", "orange")' style="background: orange; cursor: pointer;"></div>
+                                                        <div @onclick='() => SelectColor("purple", "purple")' style="background: purple; cursor: pointer;"></div>
                                                     </div>
                                                     <div class="mt-2 pt-1 border-top small text-primary" style="cursor: pointer;">...More Colors</div>
                                                 </div>
@@ -984,19 +982,19 @@
                                             else if (colorTabMode == "Web")
                                             {
                                                 <div class="color-picker-list">
-                                                    <div class="color-row-item" @onclick='() => SelectColor("transparent")'><span>Transparent</span><div style="width:14px;height:14px;border:1px solid #000;background:transparent;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("black")'><span>Black</span><div style="width:14px;height:14px;background:#000;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("dimgray")'><span>DimGray</span><div style="width:14px;height:14px;background:dimgray;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("gray")'><span>Gray</span><div style="width:14px;height:14px;background:gray;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("silver")'><span>Silver</span><div style="width:14px;height:14px;background:silver;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("transparent", "Transparent")'><span>Transparent</span><div style="width:14px;height:14px;border:1px solid #000;background:transparent;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("#000000", "Black")'><span>Black</span><div style="width:14px;height:14px;background:#000;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("dimgray", "DimGray")'><span>DimGray</span><div style="width:14px;height:14px;background:dimgray;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("gray", "Gray")'><span>Gray</span><div style="width:14px;height:14px;background:gray;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("silver", "Silver")'><span>Silver</span><div style="width:14px;height:14px;background:silver;"></div></div>
                                                 </div>
                                             }
                                             else
                                             {
                                                 <div class="color-picker-list">
-                                                    <div class="color-row-item" @onclick='() => SelectColor("#b4b4b4")'><span>ActiveBorder</span><div style="width:14px;height:14px;background:#b4b4b4;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("#99b4d1")'><span>ActiveCaption</span><div style="width:14px;height:14px;background:#99b4d1;"></div></div>
-                                                    <div class="color-row-item" @onclick='() => SelectColor("#f0f0f0")'><span>Control</span><div style="width:14px;height:14px;background:#f0f0f0;border:1px solid #ccc;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("#b4b4b4", "ActiveBorder")'><span>ActiveBorder</span><div style="width:14px;height:14px;background:#b4b4b4;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("#99b4d1", "ActiveCaption")'><span>ActiveCaption</span><div style="width:14px;height:14px;background:#99b4d1;"></div></div>
+                                                    <div class="color-row-item" @onclick='() => SelectColor("#f0f0f0", "Control")'><span>Control</span><div style="width:14px;height:14px;background:#f0f0f0;border:1px solid #ccc;"></div></div>
                                                 </div>
                                             }
                                         </div>
@@ -1264,9 +1262,9 @@
 
 <!-- 2. Reusable Language Settings Modal Component -->
 <LanguageSettingsModal IsOpen="isLanguagesModalOpen"
-                        IsOpenChanged="@((val) => isLanguagesModalOpen = val)"
-                        Languages="availableLanguages"
-                        OnSave="SaveLanguages" />
+                       IsOpenChanged="@((val) => isLanguagesModalOpen = val)"
+                       Languages="availableLanguages"
+                       OnSave="SaveLanguages" />
 
 <!-- 3. Modal: مجموعات الاصناف -->
 @if (isGroupModalOpen)
@@ -1768,21 +1766,21 @@
         </span>
         <span class="tree-node-code col-code text-left text-muted">
             @if (node.Children.Any())
-            {
-                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
-                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
-                </span>
-            }
+                        {
+            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+            </span>
+                        }
             @node.Code
         </span>
     </div>
 
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderTreeDropdownNode(child, onSelected)
-        }
+@foreach (var child in node.Children)
+    {
+@RenderTreeDropdownNode(child, onSelected)
+    }
     }
 </text>;
 
@@ -1790,87 +1788,87 @@
     private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الحية";
     private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
 
-    private bool isParentGroupDropdownOpen = false;
-    private string selectedParentGroup = "الحيوانات الحية";
-    private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
+private bool isParentGroupDropdownOpen = false;
+private string selectedParentGroup = "الحيوانات الحية";
+private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
 
-    public class CheckableItem
-    {
-        public string Name { get; set; } = "";
-        public bool IsSelected { get; set; }
+public class CheckableItem
+{
+    public string Name { get; set; } = "";
+    public bool IsSelected { get; set; }
     }
     private bool isBranchPopupOpen = false;
     private List<CheckableItem> branchList = new() { new() { Name = "الفرع الرئيسي", IsSelected = true }, new() { Name = "فرع قويسنا", IsSelected = true } };
     private bool IsAllBranchesSelected => branchList.All(b => b.IsSelected);
     private void ToggleBranchPopup() { CloseAllPopups(); isBranchPopupOpen = !isBranchPopupOpen; }
-    private void ToggleAllBranches() { bool target = !IsAllBranchesSelected; branchList.ForEach(b => b.IsSelected = target); }
-    private string GetSelectedBranchesSummary() => IsAllBranchesSelected ? "(كل الفروع)" : string.Join(", ", branchList.Where(b => b.IsSelected).Select(b => b.Name));
-    private string GetSelectedBranchesTooltip() => GetSelectedBranchesSummary();
+private void ToggleAllBranches() { bool target = !IsAllBranchesSelected; branchList.ForEach(b => b.IsSelected = target); }
+private string GetSelectedBranchesSummary() => IsAllBranchesSelected ? "(كل الفروع)" : string.Join(", ", branchList.Where(b => b.IsSelected).Select(b => b.Name));
+private string GetSelectedBranchesTooltip() => GetSelectedBranchesSummary();
 
-    private bool isWarehousePopupOpen = false;
-    private List<CheckableItem> warehouseList = new() { new() { Name = "المخزن الرئيسي 1", IsSelected = true }, new() { Name = "مخزن الفرعي A", IsSelected = true } };
-    private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
-    private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
-    private void ToggleAllWarehouses() { bool target = !IsAllWarehousesSelected; warehouseList.ForEach(w => w.IsSelected = target); }
-    private string GetSelectedWarehousesSummary() => IsAllWarehousesSelected ? "(كل المخازن)" : string.Join(", ", warehouseList.Where(w => w.IsSelected).Select(w => w.Name));
-    private string GetSelectedWarehousesTooltip() => GetSelectedWarehousesSummary();
+private bool isWarehousePopupOpen = false;
+private List<CheckableItem> warehouseList = new() { new() { Name = "المخزن الرئيسي 1", IsSelected = true }, new() { Name = "مخزن الفرعي A", IsSelected = true } };
+private bool IsAllWarehousesSelected => warehouseList.All(w => w.IsSelected);
+private void ToggleWarehousePopup() { CloseAllPopups(); isWarehousePopupOpen = !isWarehousePopupOpen; }
+private void ToggleAllWarehouses() { bool target = !IsAllWarehousesSelected; warehouseList.ForEach(w => w.IsSelected = target); }
+private string GetSelectedWarehousesSummary() => IsAllWarehousesSelected ? "(كل المخازن)" : string.Join(", ", warehouseList.Where(w => w.IsSelected).Select(w => w.Name));
+private string GetSelectedWarehousesTooltip() => GetSelectedWarehousesSummary();
 
-    private bool isGroupModalOpen = false;
-    private int groupModalTab = 1;
-    private void OpenGroupModal() { CloseAllPopups(); isGroupModalOpen = true; }
-    private void ToggleActiveState(ChangeEventArgs e) { if (e.Value is bool val) itemData.IsActive = val; }
+private bool isGroupModalOpen = false;
+private int groupModalTab = 1;
+private void OpenGroupModal() { CloseAllPopups(); isGroupModalOpen = true; }
+private void ToggleActiveState(ChangeEventArgs e) { if (e.Value is bool val) itemData.IsActive = val; }
 
-    private bool isModalCodePopupOpen = false;
-    private string modalCodeIcon = "⚙️";
-    private string selectedModalOption = "تلقائي";
-    private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
-    private void SelectModalCodeOption(string opt, string icon) { selectedModalOption = opt; modalCodeIcon = icon; isModalCodePopupOpen = false; }
+private bool isModalCodePopupOpen = false;
+private string modalCodeIcon = "⚙️";
+private string selectedModalOption = "تلقائي";
+private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
+private void SelectModalCodeOption(string opt, string icon) { selectedModalOption = opt; modalCodeIcon = icon; isModalCodePopupOpen = false; }
 
-    private bool isModalTransPopupOpen = false;
-    private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
+private bool isModalTransPopupOpen = false;
+private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
 
-    private bool isUnitPopupOpen = false;
-    private bool isUnitsModalOpen = false;
-    private string unitSearchTerm = "";
-    private string newUnitNameInput = "";
-    private List<string> unitList = new() { "قطعه", "كيلو", "زجاجة", "كرتونة", "حبة" };
-    private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm) ? unitList : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
-    private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
-    private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
-    private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
-    private void CloseUnitsModal() => isUnitsModalOpen = false;
+private bool isUnitPopupOpen = false;
+private bool isUnitsModalOpen = false;
+private string unitSearchTerm = "";
+private string newUnitNameInput = "";
+private List<string> unitList = new() { "قطعه", "كيلو", "زجاجة", "كرتونة", "حبة" };
+private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSearchTerm) ? unitList : unitList.Where(u => u.Contains(unitSearchTerm, StringComparison.OrdinalIgnoreCase));
+private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
+private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
+private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
+private void CloseUnitsModal() => isUnitsModalOpen = false;
 
-    public class UnitMasterRowModel
-    {
-        public string Code { get; set; } = "";
-        public string Name { get; set; } = "";
-        public int PiecesCount { get; set; } = 1;
-        public string Currency { get; set; } = "جنية";
-        public bool IsDefaultPurchase { get; set; }
-        public bool IsDefaultSale { get; set; }
+public class UnitMasterRowModel
+{
+    public string Code { get; set; } = "";
+    public string Name { get; set; } = "";
+    public int PiecesCount { get; set; } = 1;
+    public string Currency { get; set; } = "جنية";
+    public bool IsDefaultPurchase { get; set; }
+    public bool IsDefaultSale { get; set; }
     }
     private List<UnitMasterRowModel> unitsModalRows = new() { new() { Code = "1", Name = "قطعة", PiecesCount = 1, Currency = "جنية", IsDefaultPurchase = true, IsDefaultSale = true } };
     private void AddUnitsModalRow() => unitsModalRows.Add(new() { Code = (unitsModalRows.Count + 1).ToString(), Name = "", PiecesCount = 1, Currency = "جنية" });
-    private void SaveUnitsModal()
+private void SaveUnitsModal()
+{
+    if (!string.IsNullOrWhiteSpace(newUnitNameInput) && !unitList.Contains(newUnitNameInput))
     {
-        if (!string.IsNullOrWhiteSpace(newUnitNameInput) && !unitList.Contains(newUnitNameInput))
-        {
-            unitList.Add(newUnitNameInput);
-            itemData.MeasurementUnit = newUnitNameInput;
-        }
-        isUnitsModalOpen = false;
+        unitList.Add(newUnitNameInput);
+        itemData.MeasurementUnit = newUnitNameInput;
     }
+    isUnitsModalOpen = false;
+}
 
-    // Ledger Account Tree Popup State & Support matching Image #4
-    private bool isLedgerAccountPopupOpen = false;
-    private void ToggleLedgerAccountPopup()
-    {
-        bool wasOpen = isLedgerAccountPopupOpen;
-        CloseAllPopups();
-        isLedgerAccountPopupOpen = !wasOpen;
-    }
+// Ledger Account Tree Popup State & Support matching Image #4
+private bool isLedgerAccountPopupOpen = false;
+private void ToggleLedgerAccountPopup()
+{
+    bool wasOpen = isLedgerAccountPopupOpen;
+    CloseAllPopups();
+    isLedgerAccountPopupOpen = !wasOpen;
+}
 
-    private RenderFragment RenderAccountsTreeDropdownNodeForLedger(AccountsTreeNode node, Action<string> onSelected) => @<text>
+private RenderFragment RenderAccountsTreeDropdownNodeForLedger(AccountsTreeNode node, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(itemData.GeneralLedgerAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
@@ -1888,76 +1886,76 @@
         </span>
     </div>
 
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderAccountsTreeDropdownNodeForLedger(child, onSelected)
-        }
+        @RenderAccountsTreeDropdownNodeForLedger(child, onSelected)
     }
+}
 </text>;
 
-    // Tab 2 Account Popups Logic matching images 4, 5, 6
-    private bool isSalesAccountPopupOpen = false;
-    private bool isCogsAccountPopupOpen = false;
-    private bool isSalesReturnAccountPopupOpen = false;
-    private bool isTaxAccountPopupOpen = false;
+// Tab 2 Account Popups Logic matching images 4, 5, 6
+private bool isSalesAccountPopupOpen = false;
+private bool isCogsAccountPopupOpen = false;
+private bool isSalesReturnAccountPopupOpen = false;
+private bool isTaxAccountPopupOpen = false;
 
-    private void ToggleSalesAccountPopup() { CloseAllPopups(); isSalesAccountPopupOpen = !isSalesAccountPopupOpen; }
-    private void ToggleCogsAccountPopup() { CloseAllPopups(); isCogsAccountPopupOpen = !isCogsAccountPopupOpen; }
-    private void ToggleSalesReturnAccountPopup() { CloseAllPopups(); isSalesReturnAccountPopupOpen = !isSalesReturnAccountPopupOpen; }
-    private void ToggleTaxAccountPopup() { CloseAllPopups(); isTaxAccountPopupOpen = !isTaxAccountPopupOpen; }
+private void ToggleSalesAccountPopup() { CloseAllPopups(); isSalesAccountPopupOpen = !isSalesAccountPopupOpen; }
+private void ToggleCogsAccountPopup() { CloseAllPopups(); isCogsAccountPopupOpen = !isCogsAccountPopupOpen; }
+private void ToggleSalesReturnAccountPopup() { CloseAllPopups(); isSalesReturnAccountPopupOpen = !isSalesReturnAccountPopupOpen; }
+private void ToggleTaxAccountPopup() { CloseAllPopups(); isTaxAccountPopupOpen = !isTaxAccountPopupOpen; }
 
-    // Tab 3 Specific Popups for GPC, Manufacturer, Active Ingredient
-    private bool isGpcPopupOpen = false;
-    private bool isManufacturerPopupOpen = false;
-    private bool isActiveIngredientPopupOpen = false;
+// Tab 3 Specific Popups for GPC, Manufacturer, Active Ingredient
+private bool isGpcPopupOpen = false;
+private bool isManufacturerPopupOpen = false;
+private bool isActiveIngredientPopupOpen = false;
 
-    private void ToggleGpcPopup() { CloseAllPopups(); isGpcPopupOpen = !isGpcPopupOpen; }
-    private void ToggleManufacturerPopup() { CloseAllPopups(); isManufacturerPopupOpen = !isManufacturerPopupOpen; }
-    private void ToggleActiveIngredientPopup() { CloseAllPopups(); isActiveIngredientPopupOpen = !isActiveIngredientPopupOpen; }
+private void ToggleGpcPopup() { CloseAllPopups(); isGpcPopupOpen = !isGpcPopupOpen; }
+private void ToggleManufacturerPopup() { CloseAllPopups(); isManufacturerPopupOpen = !isManufacturerPopupOpen; }
+private void ToggleActiveIngredientPopup() { CloseAllPopups(); isActiveIngredientPopupOpen = !isActiveIngredientPopupOpen; }
 
-    // Color Picker Popup State & Logic for Tab 3 (الخصائص)
-    private bool isColorPickerPopupOpen = false;
-    private string selectedColorTab = "Custom";
-    private string colorTabMode = "Custom";
-    private string selectedColorHex = "#ffffff";
+// Color Picker Popup State & Logic for Tab 3 (الخصائص)
+private bool isColorPickerPopupOpen = false;
+private string selectedColorTab = "Custom";
+private string colorTabMode = "Custom";
+private string selectedColorHex = "#ff0000";
+private string selectedColorText = "0 ;0 ;240";
 
-    private void ToggleColorPickerPopup()
-    {
-        bool wasOpen = isColorPickerPopupOpen;
-        CloseAllPopups();
-        isColorPickerPopupOpen = !wasOpen;
-    }
+private void ToggleColorPickerPopup()
+{
+    bool wasOpen = isColorPickerPopupOpen;
+    CloseAllPopups();
+    isColorPickerPopupOpen = !wasOpen;
+}
 
-    private void SelectColor(string hex)
-    {
-        selectedColorHex = hex;
-        selectedColorTab = hex;
-        isColorPickerPopupOpen = false;
-    }
+private void SelectColor(string hex, string text)
+{
+    selectedColorHex = hex;
+    selectedColorText = text;
+    selectedColorTab = text;
+    isColorPickerPopupOpen = false;
+}
 
-    private string GetSelectedColorHex() => selectedColorHex;
+private string GetThemeColor(int index) => index switch
+{
+    0 => "#ffffff",
+    1 => "#000000",
+    2 => "#eeece1",
+    3 => "#1f497d",
+    4 => "#4f81bd",
+    5 => "#c0504d",
+    6 => "#9bbb59",
+    7 => "#8064a2",
+    8 => "#4bacc6",
+    _ => "#f79646"
+};
 
-    private string GetThemeColor(int index) => index switch
-    {
-        0 => "#ffffff",
-        1 => "#000000",
-        2 => "#eeece1",
-        3 => "#1f497d",
-        4 => "#4f81bd",
-        5 => "#c0504d",
-        6 => "#9bbb59",
-        7 => "#8064a2",
-        8 => "#4bacc6",
-        _ => "#f79646"
-    };
-
-    public class TaxAccountItem
-    {
-        public string Name { get; set; } = "";
-        public string SalesRate { get; set; } = "";
-        public string PurchaseRate { get; set; } = "";
+public class TaxAccountItem
+{
+    public string Name { get; set; } = "";
+    public string SalesRate { get; set; } = "";
+    public string PurchaseRate { get; set; } = "";
     }
 
     private List<TaxAccountItem> taxAccountsList = new()
@@ -1970,18 +1968,18 @@
     };
 
     private void SelectTaxAccount(string name)
+{
+    itemData.TaxAccount = name;
+    var found = taxAccountsList.FirstOrDefault(t => t.Name == name);
+    if (found != null)
     {
-        itemData.TaxAccount = name;
-        var found = taxAccountsList.FirstOrDefault(t => t.Name == name);
-        if (found != null)
-        {
-            if (decimal.TryParse(found.SalesRate, out var sr)) itemData.TaxSalesRate = sr;
-            if (decimal.TryParse(found.PurchaseRate, out var pr)) itemData.TaxPurchaseRate = pr;
-        }
-        isTaxAccountPopupOpen = false;
+        if (decimal.TryParse(found.SalesRate, out var sr)) itemData.TaxSalesRate = sr;
+        if (decimal.TryParse(found.PurchaseRate, out var pr)) itemData.TaxPurchaseRate = pr;
     }
+    isTaxAccountPopupOpen = false;
+}
 
-    private RenderFragment RenderAccountsTreeDropdownNodeForSales(AccountsTreeNode node, Action<string> onSelected) => @<text>
+private RenderFragment RenderAccountsTreeDropdownNodeForSales(AccountsTreeNode node, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(itemData.SalesAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
@@ -1998,16 +1996,16 @@
             @node.Name
         </span>
     </div>
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderAccountsTreeDropdownNodeForSales(child, onSelected)
-        }
+        @RenderAccountsTreeDropdownNodeForSales(child, onSelected)
     }
+}
 </text>;
 
-    private RenderFragment RenderAccountsTreeDropdownNodeForCogs(AccountsTreeNode node, Action<string> onSelected) => @<text>
+private RenderFragment RenderAccountsTreeDropdownNodeForCogs(AccountsTreeNode node, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(itemData.CogsAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
@@ -2024,16 +2022,16 @@
             @node.Name
         </span>
     </div>
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderAccountsTreeDropdownNodeForCogs(child, onSelected)
-        }
+        @RenderAccountsTreeDropdownNodeForCogs(child, onSelected)
     }
+}
 </text>;
 
-    private RenderFragment RenderAccountsTreeDropdownNodeForReturns(AccountsTreeNode node, Action<string> onSelected) => @<text>
+private RenderFragment RenderAccountsTreeDropdownNodeForReturns(AccountsTreeNode node, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(itemData.SalesReturnAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
@@ -2050,40 +2048,40 @@
             @node.Name
         </span>
     </div>
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderAccountsTreeDropdownNodeForReturns(child, onSelected)
-        }
+        @RenderAccountsTreeDropdownNodeForReturns(child, onSelected)
     }
+}
 </text>;
 
-    // Opening Balance Modal State & Models
-    private bool isOpeningBalanceModalOpen = false;
-    private bool isOpeningBalanceAccountPopupOpen = false;
-    private OpeningBalanceModel openingBalanceData = new()
-    {
-        Quantity = 0,
-        Unit = "قطعه",
-        QuantityUnit = "قطعه",
-        UnitCost = 0,
-        TotalCost = 0,
-        Date = new DateTime(2026, 9, 23),
-        LedgerAccount = "الأرصدة الإفتتاحية"
-    };
+// Opening Balance Modal State & Models
+private bool isOpeningBalanceModalOpen = false;
+private bool isOpeningBalanceAccountPopupOpen = false;
+private OpeningBalanceModel openingBalanceData = new()
+{
+    Quantity = 0,
+    Unit = "قطعه",
+    QuantityUnit = "قطعه",
+    UnitCost = 0,
+    TotalCost = 0,
+    Date = new DateTime(2026, 9, 23),
+    LedgerAccount = "الأرصدة الإفتتاحية"
+};
 
-    private void ToggleOpeningBalanceModal() { CloseAllPopups(); isOpeningBalanceModalOpen = !isOpeningBalanceModalOpen; }
-    private void CloseOpeningBalanceModal() => isOpeningBalanceModalOpen = false;
-    private void ToggleOpeningBalanceAccountPopup() => isOpeningBalanceAccountPopupOpen = !isOpeningBalanceAccountPopupOpen;
+private void ToggleOpeningBalanceModal() { CloseAllPopups(); isOpeningBalanceModalOpen = !isOpeningBalanceModalOpen; }
+private void CloseOpeningBalanceModal() => isOpeningBalanceModalOpen = false;
+private void ToggleOpeningBalanceAccountPopup() => isOpeningBalanceAccountPopupOpen = !isOpeningBalanceAccountPopupOpen;
 
-    public class AccountsTreeNode
-    {
-        public string Name { get; set; } = "";
-        public string Code { get; set; } = "";
-        public int Level { get; set; } = 0;
-        public bool IsExpanded { get; set; } = true;
-        public List<AccountsTreeNode> Children { get; set; } = new();
+public class AccountsTreeNode
+{
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Level { get; set; } = 0;
+    public bool IsExpanded { get; set; } = true;
+    public List<AccountsTreeNode> Children { get; set; } = new();
     }
 
     private List<AccountsTreeNode> accountsTreeList = new()
@@ -2155,20 +2153,20 @@
         </span>
     </div>
 
-    @if (node.IsExpanded && node.Children.Any())
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-        @foreach (var child in node.Children)
-        {
-            @RenderAccountsTreeDropdownNode(child, onSelected)
-        }
+        @RenderAccountsTreeDropdownNode(child, onSelected)
     }
+}
 </text>;
 
-    public class SupplierGridItem
-    {
-        public string Code { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string Account { get; set; } = "";
+public class SupplierGridItem
+{
+    public string Code { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Account { get; set; } = "";
     }
     private bool isSupplierPopupOpen = false;
     private List<SupplierGridItem> supplierList = new() {
@@ -2177,158 +2175,159 @@
         new() { Code = "3", Name = "مؤسسة النور للتجارة", Account = "20103" }
     };
     private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
-    private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
+private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
 
-    private bool isPolicyPopupOpen = false;
-    private List<string> policyList = new() { "توزيع مباشر", "توزيع جملة", "توزيع تجزئة" };
-    private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
-    private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
+private bool isPolicyPopupOpen = false;
+private List<string> policyList = new() { "توزيع مباشر", "توزيع جملة", "توزيع تجزئة" };
+private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
+private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
 
-    private void CloseAllPopups()
-    {
-        isBarcodeTypePopupOpen = false;
-        isItemTypePopupOpen = false;
-        isBranchPopupOpen = false;
-        isWarehousePopupOpen = false;
-        isGroupPopupOpen = false;
-        isUnitPopupOpen = false;
-        isSupplierPopupOpen = false;
-        isPolicyPopupOpen = false;
-        isTranslationPopupOpen = false;
-        isModalCodePopupOpen = false;
-        isModalTransPopupOpen = false;
-        isGroupTypeDropdownOpen = false;
-        isParentGroupDropdownOpen = false;
-        isOpeningBalanceAccountPopupOpen = false;
-        isLedgerAccountPopupOpen = false;
-        isSalesAccountPopupOpen = false;
-        isCogsAccountPopupOpen = false;
-        isSalesReturnAccountPopupOpen = false;
-        isTaxAccountPopupOpen = false;
-        isColorPickerPopupOpen = false;
-        isGpcPopupOpen = false;
-        isManufacturerPopupOpen = false;
-        isActiveIngredientPopupOpen = false;
-    }
+private void CloseAllPopups()
+{
+    isBarcodeTypePopupOpen = false;
+    isItemTypePopupOpen = false;
+    isBranchPopupOpen = false;
+    isWarehousePopupOpen = false;
+    isGroupPopupOpen = false;
+    isUnitPopupOpen = false;
+    isSupplierPopupOpen = false;
+    isPolicyPopupOpen = false;
+    isTranslationPopupOpen = false;
+    isModalCodePopupOpen = false;
+    isModalTransPopupOpen = false;
+    isGroupTypeDropdownOpen = false;
+    isParentGroupDropdownOpen = false;
+    isOpeningBalanceAccountPopupOpen = false;
+    isLedgerAccountPopupOpen = false;
+    isSalesAccountPopupOpen = false;
+    isCogsAccountPopupOpen = false;
+    isSalesReturnAccountPopupOpen = false;
+    isTaxAccountPopupOpen = false;
+    isColorPickerPopupOpen = false;
+    isGpcPopupOpen = false;
+    isManufacturerPopupOpen = false;
+    isActiveIngredientPopupOpen = false;
+}
 
-    private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
-    private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة", "الوارد أخيراً صادر أولاً" };
-    private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "ضريبة القيمة المضافة 14 %" };
+private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
+private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة", "الوارد أخيراً صادر أولاً" };
+private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "ضريبة القيمة المضافة 14 %" };
 
-    private ItemModel itemData = new()
-    {
-        Id = "88520841105028",
-        BarcodeNumber = "88520841105028",
-        GroupCategory = "الحيوانات ومستلزمات الحيوانات الحية",
-        MeasurementUnit = "قطعه",
-        SupplierName = "تهامي",
-        DistributionPolicy = "توزيع مباشر",
-        ValuationMethod = "الوارد أولاً صادر أولاً",
-        GeneralLedgerAccount = "مخزون البضاعة",
-        SalesAccount = "مبيعات بضائع مشتراة",
-        CogsAccount = "تكلفة البضاعة المباعة",
-        SalesReturnAccount = "مرتجع مبيعات (مدين)",
-        TaxAccount = "ضريبة القيمة المضافة 15 %",
-        TaxSalesRate = 15,
-        TaxPurchaseRate = 15,
-        PriceIncludesTax = false,
-        CashDiscountApplicable = false,
-        DiscountMethod = "بالنسبة",
-        PurchaseDiscount = 0,
-        SalesDiscount = 0,
-        MinLimit = 10,
-        MaxLimit = 50,
-        StagnationPeriod = 10,
-        SerialNumber = "24040",
-        UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
-        EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
-    };
+private ItemModel itemData = new()
+{
+    Id = "88520841105028",
+    BarcodeNumber = "88520841105028",
+    GroupCategory = "الحيوانات ومستلزمات الحيوانات الحية",
+    MeasurementUnit = "قطعه",
+    SupplierName = "تهامي",
+    DistributionPolicy = "توزيع مباشر",
+    ValuationMethod = "الوارد أولاً صادر أولاً",
+    GeneralLedgerAccount = "مخزون البضاعة",
+    SalesAccount = "مبيعات بضائع مشتراة",
+    CogsAccount = "تكلفة البضاعة المباعة",
+    SalesReturnAccount = "مرتجع مبيعات (مدين)",
+    TaxAccount = "ضريبة القيمة المضافة 15 %",
+    TaxSalesRate = 15,
+    TaxPurchaseRate = 15,
+    PriceIncludesTax = false,
+    CashDiscountApplicable = false,
+    DiscountMethod = "بالنسبة",
+    PurchaseDiscount = 0,
+    SalesDiscount = 0,
+    MinLimit = 10,
+    MaxLimit = 50,
+    StagnationPeriod = 10,
+    SerialNumber = "24040",
+    ActiveFromDate = DateTime.Today,
+    UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
+    EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
+};
 
-    private void SaveData() { }
+private void SaveData() { }
 
-    public class ItemModel
-    {
-        public string Id { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string EnglishName { get; set; } = "";
-        public string ItemType { get; set; } = "مخزون";
-        public string ItemTypeNote { get; set; } = "";
-        public string QrType { get; set; } = "";
-        public string BarcodeNumber { get; set; } = "";
-        public bool IsActive { get; set; } = true;
-        public string SupplierName { get; set; } = "";
-        public string DistributionPolicy { get; set; } = "";
-        public string GroupCategory { get; set; } = "";
-        public string GeneralLedgerAccount { get; set; } = "";
-        public string GlobalBarcodeType { get; set; } = "GS1";
-        public string GlobalBarcodeValue { get; set; } = "";
-        public string MeasurementUnit { get; set; } = "";
-        public string ValuationMethod { get; set; } = "";
-        public string OpeningBalance { get; set; } = "";
-        public string SalesAccount { get; set; } = "";
-        public string CogsAccount { get; set; } = "";
-        public string SalesReturnAccount { get; set; } = "";
-        public string VatApplicable { get; set; } = "نعم";
-        public string TaxAccount { get; set; } = "";
-        public decimal TaxSalesRate { get; set; } = 15;
-        public decimal TaxPurchaseRate { get; set; } = 15;
-        public bool PriceIncludesTax { get; set; }
-        public string DiscountTaxApplicable { get; set; } = "كما بالفاتورة";
-        public string DiscountTaxAccount { get; set; } = "";
-        public decimal DiscountTaxRate { get; set; }
-        public int MinLimit { get; set; } = 10;
-        public int MaxLimit { get; set; } = 50;
-        public int StagnationPeriod { get; set; } = 10;
-        public bool CashDiscountApplicable { get; set; }
-        public string DiscountMethod { get; set; } = "بالنسبة";
-        public decimal PurchaseDiscount { get; set; }
-        public decimal SalesDiscount { get; set; }
-        public string CostCenter { get; set; } = "";
-        public decimal AdditionalCost { get; set; }
-        public string SerialNumber { get; set; } = "24040";
-        public string Description { get; set; } = "";
-        public string LocationOne { get; set; } = "";
-        public string LocationTwo { get; set; } = "";
-        public string LocationThree { get; set; } = "";
-        public string Keywords { get; set; } = "";
-        public string GpcValue { get; set; } = "";
-        public string Manufacturer { get; set; } = "";
-        public string ActiveIngredient { get; set; } = "";
-        public string ActiveFrom { get; set; } = "";
-        public string TouchScreenSize { get; set; } = "";
-        public bool HideFromTouchScreen { get; set; }
-        public List<UnitRowModel> UnitsTableRows { get; set; } = new();
-        public List<EquationRowModel> EquationRows { get; set; } = new();
-    }
+public class ItemModel
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string EnglishName { get; set; } = "";
+    public string ItemType { get; set; } = "مخزون";
+    public string ItemTypeNote { get; set; } = "";
+    public string QrType { get; set; } = "";
+    public string BarcodeNumber { get; set; } = "";
+    public bool IsActive { get; set; } = true;
+    public string SupplierName { get; set; } = "";
+    public string DistributionPolicy { get; set; } = "";
+    public string GroupCategory { get; set; } = "";
+    public string GeneralLedgerAccount { get; set; } = "";
+    public string GlobalBarcodeType { get; set; } = "GS1";
+    public string GlobalBarcodeValue { get; set; } = "";
+    public string MeasurementUnit { get; set; } = "";
+    public string ValuationMethod { get; set; } = "";
+    public string OpeningBalance { get; set; } = "";
+    public string SalesAccount { get; set; } = "";
+    public string CogsAccount { get; set; } = "";
+    public string SalesReturnAccount { get; set; } = "";
+    public string VatApplicable { get; set; } = "نعم";
+    public string TaxAccount { get; set; } = "";
+    public decimal TaxSalesRate { get; set; } = 15;
+    public decimal TaxPurchaseRate { get; set; } = 15;
+    public bool PriceIncludesTax { get; set; }
+    public string DiscountTaxApplicable { get; set; } = "كما بالفاتورة";
+    public string DiscountTaxAccount { get; set; } = "";
+    public decimal DiscountTaxRate { get; set; }
+    public int MinLimit { get; set; } = 10;
+    public int MaxLimit { get; set; } = 50;
+    public int StagnationPeriod { get; set; } = 10;
+    public bool CashDiscountApplicable { get; set; }
+    public string DiscountMethod { get; set; } = "بالنسبة";
+    public decimal PurchaseDiscount { get; set; }
+    public decimal SalesDiscount { get; set; }
+    public string CostCenter { get; set; } = "";
+    public decimal AdditionalCost { get; set; }
+    public string SerialNumber { get; set; } = "24040";
+    public string Description { get; set; } = "";
+    public string LocationOne { get; set; } = "";
+    public string LocationTwo { get; set; } = "";
+    public string LocationThree { get; set; } = "";
+    public string Keywords { get; set; } = "";
+    public string GpcValue { get; set; } = "";
+    public string Manufacturer { get; set; } = "";
+    public string ActiveIngredient { get; set; } = "";
+    public DateTime ActiveFromDate { get; set; } = DateTime.Today;
+    public string TouchScreenSize { get; set; } = "";
+    public bool HideFromTouchScreen { get; set; }
+    public List<UnitRowModel> UnitsTableRows { get; set; } = new();
+    public List<EquationRowModel> EquationRows { get; set; } = new();
+}
 
-    public class UnitRowModel
-    {
-        public string Barcode { get; set; } = "";
-        public int PiecesCount { get; set; }
-        public string Unit { get; set; } = "";
-        public decimal PurchasePrice { get; set; }
-        public decimal SalePrice { get; set; }
-        public bool IsDefaultPurchase { get; set; }
-        public bool IsDefaultSale { get; set; }
-        public bool IsActive { get; set; }
-    }
+public class UnitRowModel
+{
+    public string Barcode { get; set; } = "";
+    public int PiecesCount { get; set; }
+    public string Unit { get; set; } = "";
+    public decimal PurchasePrice { get; set; }
+    public decimal SalePrice { get; set; }
+    public bool IsDefaultPurchase { get; set; }
+    public bool IsDefaultSale { get; set; }
+    public bool IsActive { get; set; }
+}
 
-    public class EquationRowModel
-    {
-        public string Field { get; set; } = "";
-        public string Equation { get; set; } = "";
-    }
+public class EquationRowModel
+{
+    public string Field { get; set; } = "";
+    public string Equation { get; set; } = "";
+}
 
-    public class OpeningBalanceModel
-    {
-        public decimal Quantity { get; set; }
-        public string Unit { get; set; } = "";
-        public string QuantityUnit { get; set; } = "";
-        public decimal UnitCost { get; set; }
-        public decimal TotalCost { get; set; }
-        public DateTime Date { get; set; } = DateTime.Today;
-        public string LedgerAccount { get; set; } = "";
-    }
+public class OpeningBalanceModel
+{
+    public decimal Quantity { get; set; }
+    public string Unit { get; set; } = "";
+    public string QuantityUnit { get; set; } = "";
+    public decimal UnitCost { get; set; }
+    public decimal TotalCost { get; set; }
+    public DateTime Date { get; set; } = DateTime.Today;
+    public string LedgerAccount { get; set; } = "";
+}
 }
 
 <style>
@@ -2339,6 +2338,7 @@
         padding: 30px 40px;
         box-sizing: border-box;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow:auto;
     }
 
     .main-canvas {
@@ -2480,11 +2480,11 @@
         width: 80px;
     }
 
-    .btn-qr-hover:hover {
-        background-color: #007bff;
-        color: #ffffff;
-        box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
-    }
+        .btn-qr-hover:hover {
+            background-color: #007bff;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
+        }
 
     .btn-trans-trigger {
         border: none;
@@ -2554,9 +2554,9 @@
         cursor: pointer;
     }
 
-    .btn-popup-icon:hover {
-        color: #007bff;
-    }
+        .btn-popup-icon:hover {
+            color: #007bff;
+        }
 
     .type-description-hint {
         font-size: 0.75rem;
@@ -2603,11 +2603,11 @@
         font-weight: 500;
     }
 
-    .strip-tab-btn.active {
-        background-color: #007bff;
-        color: #ffffff;
-        font-weight: bold;
-    }
+        .strip-tab-btn.active {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: bold;
+        }
 
     .tab-content-seamless {
         background-color: transparent;
@@ -2724,11 +2724,6 @@
         box-shadow: none;
     }
 
-    .combo-with-btn {
-        display: flex;
-        align-items: center;
-    }
-
     .barcode-control {
         display: flex;
         border: 1px solid #ced4da;
@@ -2803,9 +2798,9 @@
         transition: color 0.15s ease-in-out;
     }
 
-    .btn-inside-plus:hover {
-        color: #007bff;
-    }
+        .btn-inside-plus:hover {
+            color: #007bff;
+        }
 
     .combo-arrow {
         font-size: 0.6rem;
@@ -2851,9 +2846,9 @@
         font-size: 0.83rem;
     }
 
-    .panel-checkbox-row:hover {
-        background-color: #e9f2ff;
-    }
+        .panel-checkbox-row:hover {
+            background-color: #e9f2ff;
+        }
 
     .select-all-row {
         background-color: #f8f9fa;
@@ -2909,25 +2904,28 @@
         left: auto !important;
     }
 
-    /* Color Picker Dropdown styling attached locally to color field */
+    /* Color Picker Dropdown styling with badge inside on the left */
     .color-field-container {
         position: relative;
         display: flex;
         align-items: center;
-        gap: 4px;
         width: 260px;
     }
 
     .color-trigger-box {
         flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .color-preview-box {
+    .color-preview-badge {
         width: 28px;
-        height: 26px;
-        border: 1px solid #ced4da;
-        border-radius: 3px;
+        height: 18px;
+        border: 1px solid #333;
+        border-radius: 2px;
         flex-shrink: 0;
+        margin-left: auto;
     }
 
     .color-picker-dropdown-panel {
@@ -2963,11 +2961,11 @@
         color: #495057;
     }
 
-    .color-tab-btn.active {
-        background: #007bff;
-        color: #fff;
-        font-weight: bold;
-    }
+        .color-tab-btn.active {
+            background: #007bff;
+            color: #fff;
+            font-weight: bold;
+        }
 
     .color-picker-content {
         padding: 4px;
@@ -3005,9 +3003,9 @@
         border-radius: 2px;
     }
 
-    .color-row-item:hover {
-        background-color: #e9f2ff;
-    }
+        .color-row-item:hover {
+            background-color: #e9f2ff;
+        }
 
     .tree-grid-row {
         display: flex;
@@ -3018,9 +3016,9 @@
         border-bottom: 1px solid #f2f2f2;
     }
 
-    .tree-grid-row:hover {
-        background-color: #e9f2ff;
-    }
+        .tree-grid-row:hover {
+            background-color: #e9f2ff;
+        }
 
     .tree-child-row {
         background-color: #fafbfc;
@@ -3074,9 +3072,9 @@
         border-top: solid 1px #ddd;
     }
 
-    .table-popup-row:hover {
-        background-color: #e9f2ff;
-    }
+        .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
 
     .active-row {
         background-color: #d8e8fc !important;
@@ -3173,9 +3171,9 @@
         border-bottom: 1px solid #f2f2f2;
     }
 
-    .supplier-row:hover {
-        background-color: #e9f2ff;
-    }
+        .supplier-row:hover {
+            background-color: #e9f2ff;
+        }
 
     .opening-balance-modal-dialog {
         background: #f8f9fa;
@@ -3207,21 +3205,21 @@
         font-size: 0.85rem;
     }
 
-    .opening-balance-modal-table th {
-        background-color: #f8f9fa;
-        color: #495057;
-        font-weight: 600;
-        border-bottom: 1px solid #dee2e6;
-        border-left: 1px solid #dee2e6;
-        padding: 8px;
-    }
+        .opening-balance-modal-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 8px;
+        }
 
-    .opening-balance-modal-table td {
-        border-bottom: 1px solid #dee2e6;
-        border-left: 1px solid #dee2e6;
-        padding: 8px;
-        background-color: #ffffff;
-    }
+        .opening-balance-modal-table td {
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 8px;
+            background-color: #ffffff;
+        }
 
     .group-modal-layer {
         z-index: 3000 !important;
@@ -3289,25 +3287,25 @@
         border-radius: 20px;
     }
 
-    .switch-slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 2px;
-        bottom: 2px;
-        background-color: white;
-        transition: .2s;
-        border-radius: 50%;
-    }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
 
     .switch-input:checked + .switch-slider {
         background-color: #007bff;
     }
 
-    .switch-input:checked + .switch-slider:before {
-        transform: translateX(16px);
-    }
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
 
     .btn-topbar-close-flat {
         border: none;
@@ -3319,9 +3317,9 @@
         padding: 2px 6px;
     }
 
-    .btn-topbar-close-flat:hover {
-        color: #dc3545;
-    }
+        .btn-topbar-close-flat:hover {
+            color: #dc3545;
+        }
 
     .ico-info-circle {
         color: #6c757d;
@@ -3457,9 +3455,9 @@
         cursor: pointer;
     }
 
-    .modal-dropdown-row:hover {
-        background-color: #e9f2ff;
-    }
+        .modal-dropdown-row:hover {
+            background-color: #e9f2ff;
+        }
 
     .active-code-row {
         background-color: #e9f2ff;
@@ -3548,22 +3546,22 @@
         background-color: #ffffff;
     }
 
-    .item-details-table th {
-        background-color: #f8f9fa;
-        color: #495057;
-        font-weight: 600;
-        border-bottom: 1px solid #dee2e6;
-        border-left: 1px solid #dee2e6;
-        padding: 7px;
-    }
+        .item-details-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 7px;
+        }
 
-    .item-details-table td {
-        border-bottom: 1px solid #dee2e6;
-        border-left: 1px solid #dee2e6;
-        padding: 6px;
-        color: #333333;
-        background-color: #ffffff;
-    }
+        .item-details-table td {
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            padding: 6px;
+            color: #333333;
+            background-color: #ffffff;
+        }
 
     .delete-icon-btn {
         border: none;
@@ -3629,9 +3627,9 @@
         cursor: pointer;
     }
 
-    .dexef-close-btn:hover {
-        color: #fff;
-    }
+        .dexef-close-btn:hover {
+            color: #fff;
+        }
 
     .dexef-error-body {
         padding: 10px 24px 20px 24px;
@@ -3698,9 +3696,9 @@
         cursor: pointer;
     }
 
-    .dexef-ok-btn:hover {
-        background-color: #1084ef;
-    }
+        .dexef-ok-btn:hover {
+            background-color: #1084ef;
+        }
 
     .qr-modal-dialog {
         background: #ffffff;
@@ -3764,7 +3762,6 @@
     }
 
     .qr-modal-footer {
-        display: features;
         display: flex;
         gap: 10px;
     }
