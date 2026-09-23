@@ -604,19 +604,160 @@
 
                         <div class="section-block-title text-primary">التنبيهات</div>
                         <div class="section-with-blue-line">
-                            <div class="field-entry-line">
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">الحد الادنى</span>
-                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.MinLimit" />
+                                <div class="dropdown-anchor flex-1" style="max-width: 140px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleMinLimitCalc">
+                                        <span class="combo-display-text text-center">@itemData.MinLimit</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isMinLimitCalcOpen)
+                                    {
+                                        <div class="calc-popup-box" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                                 <span class="small text-muted">قطعة</span>
                             </div>
-                            <div class="field-entry-line">
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">الحد الأقصى</span>
-                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.MaxLimit" />
+                                <div class="dropdown-anchor flex-1" style="max-width: 140px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleMaxLimitCalc">
+                                        <span class="combo-display-text text-center">@itemData.MaxLimit</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isMaxLimitCalcOpen)
+                                    {
+                                        <div class="calc-popup-box" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                                 <span class="small text-muted">قطعة</span>
                             </div>
-                            <div class="field-entry-line">
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">فترة الركود</span>
-                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.StagnationPeriod" />
+                                <div class="dropdown-anchor flex-1" style="max-width: 140px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleStagnationCalc">
+                                        <span class="combo-display-text text-center">@itemData.StagnationPeriod</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isStagnationCalcOpen)
+                                    {
+                                        <div class="calc-popup-box" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                                 <span class="small text-muted">يوم</span>
                             </div>
                         </div>
@@ -761,9 +902,56 @@
                                     <option value="مركز تكلفة ب">مركز تكلفة ب</option>
                                 </select>
                             </div>
-                            <div class="field-entry-line">
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">تكلفة إضافية</span>
-                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.AdditionalCost" />
+                                <div class="dropdown-anchor flex-1" style="max-width: 140px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleAdditionalCostCalc">
+                                        <span class="combo-display-text text-center">@itemData.AdditionalCost</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isAdditionalCostCalcOpen)
+                                    {
+                                        <div class="calc-popup-box" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">رقم المسلسل</span>
@@ -2094,11 +2282,16 @@ private void SaveUnitsModal()
     isUnitsModalOpen = false;
 }
 
-// Calculator Popup State & Logic for Additional Fields (Tab 4)
+// Calculator Popup State & Logic for Additional Fields (Tab 4) and Accounts (Tab 2)
 private bool isLengthCalcOpen = false;
 private bool isWidthCalcOpen = false;
 private bool isHeightCalcOpen = false;
 private bool isPanelsCalcOpen = false;
+private bool isMinLimitCalcOpen = false;
+private bool isMaxLimitCalcOpen = false;
+private bool isStagnationCalcOpen = false;
+private bool isAdditionalCostCalcOpen = false;
+
 private string calcDisplay = "0";
 private string activeCalcTarget = "";
 
@@ -2106,6 +2299,10 @@ private void ToggleLengthCalc() { bool wasOpen = isLengthCalcOpen; CloseAllPopup
 private void ToggleWidthCalc() { bool wasOpen = isWidthCalcOpen; CloseAllPopups(); isWidthCalcOpen = !wasOpen; if (isWidthCalcOpen) { activeCalcTarget = "Width"; calcDisplay = string.IsNullOrEmpty(itemData.AdditionalWidth) || itemData.AdditionalWidth == "0" ? "0" : itemData.AdditionalWidth; } }
 private void ToggleHeightCalc() { bool wasOpen = isHeightCalcOpen; CloseAllPopups(); isHeightCalcOpen = !wasOpen; if (isHeightCalcOpen) { activeCalcTarget = "Height"; calcDisplay = string.IsNullOrEmpty(itemData.AdditionalHeight) || itemData.AdditionalHeight == "0" ? "0" : itemData.AdditionalHeight; } }
 private void TogglePanelsCalc() { bool wasOpen = isPanelsCalcOpen; CloseAllPopups(); isPanelsCalcOpen = !wasOpen; if (isPanelsCalcOpen) { activeCalcTarget = "Panels"; calcDisplay = string.IsNullOrEmpty(itemData.AdditionalPanels) || itemData.AdditionalPanels == "0" ? "0" : itemData.AdditionalPanels; } }
+private void ToggleMinLimitCalc() { bool wasOpen = isMinLimitCalcOpen; CloseAllPopups(); isMinLimitCalcOpen = !wasOpen; if (isMinLimitCalcOpen) { activeCalcTarget = "MinLimit"; calcDisplay = itemData.MinLimit.ToString(); } }
+private void ToggleMaxLimitCalc() { bool wasOpen = isMaxLimitCalcOpen; CloseAllPopups(); isMaxLimitCalcOpen = !wasOpen; if (isMaxLimitCalcOpen) { activeCalcTarget = "MaxLimit"; calcDisplay = itemData.MaxLimit.ToString(); } }
+private void ToggleStagnationCalc() { bool wasOpen = isStagnationCalcOpen; CloseAllPopups(); isStagnationCalcOpen = !wasOpen; if (isStagnationCalcOpen) { activeCalcTarget = "StagnationPeriod"; calcDisplay = itemData.StagnationPeriod.ToString(); } }
+private void ToggleAdditionalCostCalc() { bool wasOpen = isAdditionalCostCalcOpen; CloseAllPopups(); isAdditionalCostCalcOpen = !wasOpen; if (isAdditionalCostCalcOpen) { activeCalcTarget = "AdditionalCost"; calcDisplay = itemData.AdditionalCost.ToString(); } }
 
 private void CalcPress(string val)
 {
@@ -2134,6 +2331,10 @@ private void ApplyCalcResult()
     else if (activeCalcTarget == "Width") itemData.AdditionalWidth = calcDisplay;
     else if (activeCalcTarget == "Height") itemData.AdditionalHeight = calcDisplay;
     else if (activeCalcTarget == "Panels") itemData.AdditionalPanels = calcDisplay;
+    else if (activeCalcTarget == "MinLimit") { if (int.TryParse(calcDisplay, out var val)) itemData.MinLimit = val; }
+    else if (activeCalcTarget == "MaxLimit") { if (int.TryParse(calcDisplay, out var val)) itemData.MaxLimit = val; }
+    else if (activeCalcTarget == "StagnationPeriod") { if (int.TryParse(calcDisplay, out var val)) itemData.StagnationPeriod = val; }
+    else if (activeCalcTarget == "AdditionalCost") { if (decimal.TryParse(calcDisplay, out var val)) itemData.AdditionalCost = val; }
 }
 
 // Ledger Account Tree Popup State & Support matching Image #4
@@ -2488,6 +2689,10 @@ private void CloseAllPopups()
     isWidthCalcOpen = false;
     isHeightCalcOpen = false;
     isPanelsCalcOpen = false;
+    isMinLimitCalcOpen = false;
+    isMaxLimitCalcOpen = false;
+    isStagnationCalcOpen = false;
+    isAdditionalCostCalcOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
