@@ -47,6 +47,7 @@
                 <div class="illustration-graphic-box">
                     <span class="fs-1">🏢</span>
                 </div>
+                
             </div>
 
             <!-- 2. Middle-Right: Field Labels -->
@@ -520,17 +521,19 @@
     }
 
     /* 1b. Illustration + toggle: positioned absolutely relative to .section-master-row,
-           overlapping the accent column visually without being part of its box model. */
+           pushed out past the canvas's own 40px right padding (right: -40px cancels it)
+           so it sits flush with the window's outer edge, clear of the accent line. */
     .entity-illustration-block {
         position: absolute;
         top: 0;
-        right: 14px;
-        width: 80px;
+        right: -40px;
+        width: 88px;
         display: flex;
         flex-direction: column;
         align-items: center;
         user-select: none;
         z-index: 1;
+        margin-right: -80px;
     }
 
     .illustration-graphic-box {
