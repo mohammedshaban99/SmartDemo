@@ -15,10 +15,9 @@
     justify-content: space-between;
     align-items: center;
     background-color: #F1F3F8;
-    padding: 6px 16px;
+    padding: 0px 16px;
     border-radius: 6px 6px 0 0;
     border: 1px solid #dee2e6;
-    border-bottom: 1px solid #e9ecef;
     max-width: 1080px;
     margin: 0 auto;
     width: 100%;
@@ -34,7 +33,6 @@
 .btn-topbar-action {
     background: transparent;
     border: 1px solid #ced4da;
-    border-radius: 4px;
     padding: 3px 12px;
     font-size: 0.82rem;
     cursor: pointer;
@@ -43,12 +41,20 @@
     gap: 4px;
     color: #495057;
     font-weight: 500;
+    border-top: 0;
+    border-bottom: 0;
 }
 
-    .btn-topbar-action:hover {
-        background-color: #f8f9fa;
-        border-color: #adb5bd;
-    }
+
+.btn-topbar-action.btn-delete-action{
+    border-radius:0;
+     border-right:0;
+}
+
+.btn-topbar-action:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
 
 .btn-delete-action:hover {
     background-color: #fff5f5;
@@ -82,21 +88,22 @@
     font-size: 10px;
     color: white;
     cursor: pointer;
-    padding: 2px 6px;
 }
 
+.topbar-left-actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 /* Canvas Sheet */
 .company-canvas-sheet {
     max-width: 1080px;
     margin: 0 auto;
     width: 100%;
     background-color: #f1f3f6;
-    border-radius: 0 0 6px 6px;
-    border: 1px solid #dee2e6;
     border-top: none;
     padding: 30px 40px;
     box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 /* Master Row: Illustration (Right), Labels, Inputs, Logo (Left) */
@@ -311,7 +318,7 @@
 
     .clean-input:focus {
         border-color: #ced4da;
-        border-bottom: 2px solid #007bff !important;
+        border-bottom: 3px solid #007bff !important;
     }
 
 .req-star {

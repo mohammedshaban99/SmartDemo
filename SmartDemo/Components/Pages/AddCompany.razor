@@ -6,6 +6,13 @@
     <!-- Top Window Toolbar / Header -->
     <div class="company-window-topbar">
         <div class="topbar-right-actions">
+              <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
+                <i class="bi bi-arrow-left"></i>
+            </button>
             <button type="button" class="btn-topbar-action" @onclick="SaveCompany">
                 <span class="ico">💾</span>
                 <span>حفظ</span>
@@ -13,15 +20,7 @@
             <button type="button" class="btn-topbar-action btn-delete-action" @onclick="DeleteCompany">
                 <span class="ico text-danger">🗑️</span>
                 <span class="text-danger">حذف</span>
-            </button>
-
-            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
-                <i class="bi bi-arrow-right"></i>
-            </button>
-
-            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
-                <i class="bi bi-arrow-left"></i>
-            </button>
+            </button>   
         </div>
 
         <div class="topbar-left-actions">
