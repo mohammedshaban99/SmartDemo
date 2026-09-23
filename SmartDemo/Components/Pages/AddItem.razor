@@ -499,147 +499,294 @@
             </div>
         }
 
-        <!-- Tab 2: الحسابات -->
+        <!-- Tab 2: الحسابات (Updated exactly matching image_41dbf1.png & interactive popups) -->
         @if (activeTab == 2)
         {
             <div class="tab-content-seamless">
                 <div class="accounts-tab-grid">
+                    <!-- Column 1 (Right Side in RTL): الضرائب & التنبيهات -->
                     <div class="accounts-column-block">
                         <div class="section-block-title text-primary">الضرائب</div>
                         <div class="section-with-blue-line mb-4">
+                            <!-- يخضع القيمة المضافة ؟ -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">يخضع القيمة المضافة ؟</span>
                                 <select class="clean-input flex-1" @bind="itemData.VatApplicable">
-                                    <option value="نعم">كما بالفاتورة</option>
+                                    <option value="نعم">نعم</option>
                                     <option value="لا">لا</option>
                                 </select>
                             </div>
-                            <div class="field-entry-line">
+
+                            <!-- حساب الضريبة (with custom tree popup matching image_41dbd1.png) -->
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">حساب الضريبة</span>
-                                <select class="clean-input flex-1" @bind="itemData.TaxAccount">
-                                    <option></option>
-                                    @foreach (var t in taxAccounts)
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxAccountPopup">
+                                        <span class="combo-display-text">@itemData.TaxAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isTaxAccountPopupOpen)
                                     {
-                                        <option value="@t">@t</option>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-code text-center">المبيعات</div>
+                                                <div class="col-code text-center">المشتريات</div>
+                                                <div class="col-name text-right">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var tax in taxAccountsList)
+                                                {
+                                                    <div class="supplier-row @(itemData.TaxAccount == tax.Name ? "active-row" : "")"
+                                                         @onclick="() => SelectTaxAccount(tax.Name)">
+                                                        <div class="col-code">@tax.SalesRate</div>
+                                                        <div class="col-code">@tax.PurchaseRate</div>
+                                                        <div class="col-name">@tax.Name</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isTaxAccountPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
                                     }
-                                </select>
+                                </div>
                                 <span class="req-star me-1">*</span>
                             </div>
+
+                            <!-- نسبة الضريبة (المبيعات / المشتريات inputs) -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">نسبة الضريبة</span>
                                 <div class="d-flex align-items-center gap-2 flex-1">
-                                    <input type="number" class="clean-input text-center" style="width: 70px;" value="0" />
+                                    <input type="number" class="clean-input text-center" style="width: 70px;" @bind="itemData.TaxSalesRate" />
                                     <span class="small text-muted">المبيعات</span>
-                                    <input type="number" class="clean-input text-center" style="width: 70px;" value="0" />
+                                    <input type="number" class="clean-input text-center" style="width: 70px;" @bind="itemData.TaxPurchaseRate" />
                                     <span class="small text-muted">المشتريات</span>
                                 </div>
                                 <span class="req-star me-1">*</span>
                             </div>
+
+                            <!-- سعر الصنف يشمل الضريبة ؟ (Toggle Switch matching image_41dbb4.png) -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">سعر الصنف يشمل الضريبة ؟</span>
                                 <div class="d-flex align-items-center gap-2 flex-1">
-                                    <input type="checkbox" class="form-check-input m-0" />
                                     <span class="small text-muted">لا</span>
+                                    <label class="switch-toggle-label mb-0">
+                                        <input type="checkbox" class="switch-input" @bind="itemData.PriceIncludesTax" />
+                                        <span class="switch-slider"></span>
+                                    </label>
                                 </div>
                             </div>
+
+                            <!-- يخضع لضريبة الخصم -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">يخضع لضريبة الخصم</span>
-                                <select class="clean-input flex-1"><option>كما بالفاتورة</option></select>
+                                <select class="clean-input flex-1" @bind="itemData.DiscountTaxApplicable">
+                                    <option value="كما بالفاتورة">كما بالفاتورة</option>
+                                    <option value="نعم">نعم</option>
+                                    <option value="لا">لا</option>
+                                </select>
                             </div>
+
+                            <!-- حساب ضريبة الخصم -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">حساب ضريبة الخصم</span>
-                                <select class="clean-input flex-1"><option></option></select>
+                                <select class="clean-input flex-1" @bind="itemData.DiscountTaxAccount">
+                                    <option value=""></option>
+                                    @foreach (var acc in ledgerAccounts)
+                                    {
+                                        <option value="@acc">@acc</option>
+                                    }
+                                </select>
                             </div>
+
+                            <!-- نسبة الضريبة (الخصم) -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">نسبة الضريبة</span>
-                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.DiscountTaxRate" />
                             </div>
                         </div>
 
+                        <!-- التنبيهات Section -->
                         <div class="section-block-title text-primary">التنبيهات</div>
                         <div class="section-with-blue-line">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">الحد الادنى</span>
-                                <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MinLimit" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.MinLimit" />
                                 <span class="small text-muted">قطعة</span>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">الحد الأقصى</span>
-                                <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MaxLimit" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.MaxLimit" />
                                 <span class="small text-muted">قطعة</span>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">فترة الركود</span>
-                                <input type="number" class="clean-input" style="width: 90px;" value="10" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.StagnationPeriod" />
                                 <span class="small text-muted">يوم</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Column 2 (Left Side in RTL): الحسابات, الخصومات, اخرى -->
                     <div class="accounts-column-block">
                         <div class="section-block-title text-primary">الحسابات</div>
                         <div class="section-with-blue-line mb-4">
-                            <div class="field-entry-line">
+                            <!-- حساب المبيعات (with advanced tree popup matching image_41db58.png) -->
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title-wide">حساب المبيعات</span>
-                                <select class="clean-input flex-1" @bind="itemData.SalesAccount">
-                                    @foreach (var a in ledgerAccounts)
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleSalesAccountPopup">
+                                        <span class="combo-display-text">@itemData.SalesAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isSalesAccountPopupOpen)
                                     {
-                                        <option value="@a">@a</option>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="table-popup-header text-center">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var node in accountsTreeList)
+                                                {
+                                                    @RenderAccountsTreeDropdownNodeForSales(node, selectedName => { itemData.SalesAccount = selectedName; isSalesAccountPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isSalesAccountPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
                                     }
-                                </select>
+                                </div>
                                 <span class="req-star me-1">*</span>
                             </div>
-                            <div class="field-entry-line">
-                                <span class="field-title-wide">مرتجع المبيعات</span>
-                                <select class="clean-input flex-1" @bind="itemData.SalesReturnAccount">
-                                    @foreach (var a in ledgerAccounts)
+
+                            <!-- تكلفة البضاعة المباعة (with advanced tree popup matching image_41db3a.png) -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title-wide">تكلفة البضاعة المباعة</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCogsAccountPopup">
+                                        <span class="combo-display-text">@itemData.CogsAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isCogsAccountPopupOpen)
                                     {
-                                        <option value="@a">@a</option>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="table-popup-header text-center">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var node in accountsTreeList)
+                                                {
+                                                    @RenderAccountsTreeDropdownNodeForCogs(node, selectedName => { itemData.CogsAccount = selectedName; isCogsAccountPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isCogsAccountPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
                                     }
-                                </select>
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- مرتجع المبيعات (with advanced tree popup matching image_41db1e.png) -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title-wide">مرتجع المبيعات</span>
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleSalesReturnAccountPopup">
+                                        <span class="combo-display-text">@itemData.SalesReturnAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isSalesReturnAccountPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="table-popup-header text-center">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var node in accountsTreeList)
+                                                {
+                                                    @RenderAccountsTreeDropdownNodeForReturns(node, selectedName => { itemData.SalesReturnAccount = selectedName; isSalesReturnAccountPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isSalesReturnAccountPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                                 <span class="req-star me-1">*</span>
                             </div>
                         </div>
 
+                        <!-- الخصومات Section -->
                         <div class="section-block-title text-primary">الخصومات</div>
                         <div class="section-with-blue-line mb-4">
+                            <!-- يخضع للخصم النقدي (Toggle Switch matching image_41dafe.png) -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">يخضع للخصم النقدي</span>
                                 <div class="d-flex align-items-center gap-2 flex-1">
-                                    <input type="checkbox" class="form-check-input m-0" />
-                                    <span class="small text-muted">نعم</span>
+                                    <span class="small text-muted">لا</span>
+                                    <label class="switch-toggle-label mb-0">
+                                        <input type="checkbox" class="switch-input" @bind="itemData.CashDiscountApplicable" />
+                                        <span class="switch-slider"></span>
+                                    </label>
                                 </div>
                             </div>
+
+                            <!-- طريقة الخصم -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">طريقة الخصم</span>
-                                <select class="clean-input flex-1"><option>بالنسبة</option></select>
+                                <select class="clean-input flex-1" @bind="itemData.DiscountMethod">
+                                    <option value="بالنسبة">بالنسبة</option>
+                                    <option value="مبلغ ثابت">مبلغ ثابت</option>
+                                </select>
                                 <span class="req-star me-1">*</span>
                             </div>
+
+                            <!-- خصم المشتريات -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">خصم المشتريات</span>
-                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.PurchaseDiscount" />
                                 <span class="small text-muted">%</span>
                             </div>
+
+                            <!-- خصم المبيعات -->
                             <div class="field-entry-line">
                                 <span class="field-title-wide">خصم المبيعات</span>
-                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.SalesDiscount" />
                                 <span class="small text-muted">%</span>
                             </div>
                         </div>
 
+                        <!-- اخرى Section -->
                         <div class="section-block-title text-primary">اخرى</div>
                         <div class="section-with-blue-line">
                             <div class="field-entry-line">
                                 <span class="field-title-wide">مركز التكلفة</span>
-                                <select class="clean-input flex-1"><option></option></select>
+                                <select class="clean-input flex-1" @bind="itemData.CostCenter">
+                                    <option value=""></option>
+                                    <option value="مركز تكلفة أ">مركز تكلفة أ</option>
+                                    <option value="مركز تكلفة ب">مركز تكلفة ب</option>
+                                </select>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">تكلفة إضافية</span>
-                                <input type="number" class="clean-input" style="width: 90px;" value="0" />
+                                <input type="number" class="clean-input text-center" style="width: 90px;" @bind="itemData.AdditionalCost" />
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">رقم المسلسل</span>
-                                <input type="text" class="clean-input" style="width: 120px;" value="24040" />
+                                <input type="text" class="clean-input text-center" style="width: 120px;" @bind="itemData.SerialNumber" />
                             </div>
                         </div>
                     </div>
@@ -1611,6 +1758,123 @@ private RenderFragment RenderAccountsTreeDropdownNodeForLedger(AccountsTreeNode 
 }
 </text>;
 
+// Tab 2 Account Popups Logic matching images 4, 5, 6
+private bool isSalesAccountPopupOpen = false;
+private bool isCogsAccountPopupOpen = false;
+private bool isSalesReturnAccountPopupOpen = false;
+private bool isTaxAccountPopupOpen = false;
+
+private void ToggleSalesAccountPopup() { CloseAllPopups(); isSalesAccountPopupOpen = !isSalesAccountPopupOpen; }
+private void ToggleCogsAccountPopup() { CloseAllPopups(); isCogsAccountPopupOpen = !isCogsAccountPopupOpen; }
+private void ToggleSalesReturnAccountPopup() { CloseAllPopups(); isSalesReturnAccountPopupOpen = !isSalesReturnAccountPopupOpen; }
+private void ToggleTaxAccountPopup() { CloseAllPopups(); isTaxAccountPopupOpen = !isTaxAccountPopupOpen; }
+
+public class TaxAccountItem
+{
+    public string Name { get; set; } = "";
+    public string SalesRate { get; set; } = "";
+    public string PurchaseRate { get; set; } = "";
+    }
+
+    private List<TaxAccountItem> taxAccountsList = new()
+    {
+        new() { Name = "ضريبة القيمة المضافة 14 %", SalesRate = "14", PurchaseRate = "14" },
+        new() { Name = "ضريبة القيمة المضافة 15 %", SalesRate = "15", PurchaseRate = "15" },
+        new() { Name = "ضريبة القيمة المضافة 5 %", SalesRate = "5", PurchaseRate = "5" },
+        new() { Name = "ضريبة رسم التنمية", SalesRate = "2", PurchaseRate = "2" },
+        new() { Name = "ضريبة الجدول", SalesRate = "0.5", PurchaseRate = "0.5" }
+    };
+
+    private void SelectTaxAccount(string name)
+{
+    itemData.TaxAccount = name;
+    var found = taxAccountsList.FirstOrDefault(t => t.Name == name);
+    if (found != null)
+    {
+        if (decimal.TryParse(found.SalesRate, out var sr)) itemData.TaxSalesRate = sr;
+        if (decimal.TryParse(found.PurchaseRate, out var pr)) itemData.TaxPurchaseRate = pr;
+    }
+    isTaxAccountPopupOpen = false;
+}
+
+private RenderFragment RenderAccountsTreeDropdownNodeForSales(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(itemData.SalesAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
+            @node.Name
+        </span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderAccountsTreeDropdownNodeForSales(child, onSelected)
+    }
+}
+</text>;
+
+private RenderFragment RenderAccountsTreeDropdownNodeForCogs(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(itemData.CogsAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
+            @node.Name
+        </span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderAccountsTreeDropdownNodeForCogs(child, onSelected)
+    }
+}
+</text>;
+
+private RenderFragment RenderAccountsTreeDropdownNodeForReturns(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(itemData.SalesReturnAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
+            @node.Name
+        </span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderAccountsTreeDropdownNodeForReturns(child, onSelected)
+    }
+}
+</text>;
+
 // Opening Balance Modal State & Models
 private bool isOpeningBalanceModalOpen = false;
 private bool isOpeningBalanceAccountPopupOpen = false;
@@ -1653,18 +1917,36 @@ public class AccountsTreeNode
                     IsExpanded = true,
                     Children = new() {
                         new() { Name = "ودائع بالبنوك لأجل أو بإخطار ساب", Code = "EGP", Level = 2 },
-                        new() { Name = "غطاء حسابات ضمان", Code = "EGP", Level = 2 },
-                        new() { Name = "خخخخخ", Code = "EGP", Level = 2 }
+                        new() { Name = "غطاء حسابات ضمان", Code = "EGP", Level = 2 }
                     }
                 },
                 new() {
-                    Name = "مخزون",
+                    Name = "إيرادات النشاط الأخرى",
                     Code = "EGP",
                     Level = 1,
                     IsExpanded = true,
                     Children = new() {
-                        new() { Name = "مخزون البضاعة", Code = "EGP", Level = 2 },
-                        new() { Name = "مخزون إنتاج غير تام", Code = "EGP", Level = 2 }
+                        new() { Name = "فائض إغلاق اليومية", Code = "EGP", Level = 2 },
+                        new() { Name = "ايرادات التوصيل", Code = "EGP", Level = 2 }
+                    }
+                },
+                new() {
+                    Name = "مصروفات النشاط",
+                    Code = "EGP",
+                    Level = 1,
+                    IsExpanded = true,
+                    Children = new() {
+                        new() {
+                            Name = "مصروفات ادارية وعمومية",
+                            Code = "EGP",
+                            Level = 2,
+                            IsExpanded = true,
+                            Children = new() {
+                                new() { Name = "مواد ووقود وقطع غيار", Code = "EGP", Level = 3 },
+                                new() { Name = "مصروفات نثرية", Code = "EGP", Level = 3 },
+                                new() { Name = "أجور", Code = "EGP", Level = 3 }
+                            }
+                        }
                     }
                 }
             }
@@ -1735,6 +2017,10 @@ private void CloseAllPopups()
     isParentGroupDropdownOpen = false;
     isOpeningBalanceAccountPopupOpen = false;
     isLedgerAccountPopupOpen = false;
+    isSalesAccountPopupOpen = false;
+    isCogsAccountPopupOpen = false;
+    isSalesReturnAccountPopupOpen = false;
+    isTaxAccountPopupOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
@@ -1751,8 +2037,21 @@ private ItemModel itemData = new()
     DistributionPolicy = "توزيع مباشر",
     ValuationMethod = "الوارد أولاً صادر أولاً",
     GeneralLedgerAccount = "مخزون البضاعة",
-    SalesAccount = "مخزون البضاعة",
-    SalesReturnAccount = "مخزون البضاعة",
+    SalesAccount = "مبيعات بضائع مشتراة",
+    CogsAccount = "تكلفة البضاعة المباعة",
+    SalesReturnAccount = "مرتجع مبيعات (مدين)",
+    TaxAccount = "ضريبة القيمة المضافة 15 %",
+    TaxSalesRate = 15,
+    TaxPurchaseRate = 15,
+    PriceIncludesTax = false,
+    CashDiscountApplicable = false,
+    DiscountMethod = "بالنسبة",
+    PurchaseDiscount = 0,
+    SalesDiscount = 0,
+    MinLimit = 10,
+    MaxLimit = 50,
+    StagnationPeriod = 10,
+    SerialNumber = "24040",
     UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
     EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
 };
@@ -1779,11 +2078,26 @@ public class ItemModel
     public string ValuationMethod { get; set; } = "";
     public string OpeningBalance { get; set; } = "";
     public string SalesAccount { get; set; } = "";
+    public string CogsAccount { get; set; } = "";
     public string SalesReturnAccount { get; set; } = "";
-    public string VatApplicable { get; set; } = "";
+    public string VatApplicable { get; set; } = "نعم";
     public string TaxAccount { get; set; } = "";
+    public decimal TaxSalesRate { get; set; } = 15;
+    public decimal TaxPurchaseRate { get; set; } = 15;
+    public bool PriceIncludesTax { get; set; }
+    public string DiscountTaxApplicable { get; set; } = "كما بالفاتورة";
+    public string DiscountTaxAccount { get; set; } = "";
+    public decimal DiscountTaxRate { get; set; }
     public int MinLimit { get; set; } = 10;
     public int MaxLimit { get; set; } = 50;
+    public int StagnationPeriod { get; set; } = 10;
+    public bool CashDiscountApplicable { get; set; }
+    public string DiscountMethod { get; set; } = "بالنسبة";
+    public decimal PurchaseDiscount { get; set; }
+    public decimal SalesDiscount { get; set; }
+    public string CostCenter { get; set; } = "";
+    public decimal AdditionalCost { get; set; }
+    public string SerialNumber { get; set; } = "24040";
     public string Description { get; set; } = "";
     public string LocationOne { get; set; } = "";
     public string LocationTwo { get; set; } = "";
@@ -2310,16 +2624,6 @@ public class OpeningBalanceModel
         font-size: 0.6rem;
         color: #6c757d;
         line-height: 1;
-    }
-
-    .clean-select-overlay {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-        z-index: 1;
     }
 
     .dropdown-anchor {
