@@ -910,7 +910,7 @@
 
                             <div class="field-entry-line">
                                 <span class="field-title-wide">نشط من</span>
-                                <input type="date" class="clean-input" style="width: 140px;" @bind="itemData.ActiveFromDate" />
+                                <input type="date" class="clean-input text-center" style="width: 140px;" @bind="itemData.ActiveFromDate" />
                             </div>
                         </div>
                     </div>
@@ -1066,7 +1066,7 @@
             </div>
         }
 
-        <!-- Tab 5: المعادلة -->
+        <!-- Tab 5: المعادلة (Table columns reversed to match screenshot image_400dd7.png) -->
         @if (activeTab == 5)
         {
             <div class="tab-content-seamless">
@@ -1074,27 +1074,25 @@
                     <table class="item-details-table">
                         <thead>
                             <tr>
-                                <th style="width: 50px;"></th>
-                                <th>المعادلة</th>
+                                <th>الاسم</th>
                                 <th style="width: 220px;">الحقل</th>
-                                <th style="width: 220px;">الاسم</th>
-                                <th style="width: 40px; color: #f39c12;">☼</th>
+                                <th>المعادلة</th>
+                                <th style="width: 50px;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var eq in itemData.EquationRows)
                             {
                                 <tr>
-                                    <td><button class="delete-icon-btn" type="button">✖</button></td>
-                                    <td><input type="text" class="clean-input w-100" @bind="eq.Equation" /></td>
+                                    <td><input type="text" class="clean-input w-100" @bind="eq.Name" /></td>
                                     <td>
                                         <select class="clean-input w-100" @bind="eq.Field">
                                             <option value="سعر البيع الافتراضي">سعر البيع الافتراضي</option>
                                             <option value="سعر الشراء">سعر الشراء</option>
                                         </select>
                                     </td>
-                                    <td><input type="text" class="clean-input w-100" value="" /></td>
-                                    <td></td>
+                                    <td><input type="text" class="clean-input w-100" @bind="eq.Equation" /></td>
+                                    <td><button class="delete-icon-btn" type="button" @onclick="() => TryDeleteEquationRow(eq)">✖</button></td>
                                 </tr>
                             }
                         </tbody>
@@ -1209,7 +1207,27 @@
     </div>
 }
 
-<!-- DEXEF Error Modal Popup -->
+<!-- White Confirmation Delete Modal (image_400d5b.png) -->
+@if (isConfirmDeleteModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="confirm-delete-dialog bg-white rounded shadow-lg overflow-hidden" dir="rtl" style="width: 440px;" @onclick:stopPropagation>
+            <div class="bg-danger px-3 py-2 d-flex justify-content-end align-items-center">
+                <button type="button" class="btn-topbar-close-flat text-white" @onclick="CancelDeleteRow">✕</button>
+            </div>
+            <div class="p-4 text-center d-flex flex-column align-items-center gap-3">
+                <div class="fs-1 text-primary">🗑️</div>
+                <div class="fw-bold fs-6 text-dark">هل تريد الحذف ؟</div>
+            </div>
+            <div class="d-flex justify-content-center gap-2 p-3 border-top bg-light">
+                <button type="button" class="btn btn-primary px-4" @onclick="ConfirmDeleteRow">نعم</button>
+                <button type="button" class="btn btn-secondary px-4" @onclick="CancelDeleteRow">لا</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Dark DEXEF Error Modal Popup (image_400d20.png) -->
 @if (isErrorModalOpen)
 {
     <div class="modal-backdrop-blur dexef-error-backdrop">
@@ -1651,9 +1669,41 @@
     private string selectedBarcodeOption = "تلقائي";
     private bool isBarcodeTypePopupOpen = false;
     private bool isErrorModalOpen = false;
+    private bool isConfirmDeleteModalOpen = false;
+    private EquationRowModel? rowPendingDelete;
 
     private void ShowDeleteErrorModal() => isErrorModalOpen = true;
     private void CloseErrorModal() => isErrorModalOpen = false;
+
+    private void TryDeleteEquationRow(EquationRowModel eq)
+    {
+        bool isEmpty = string.IsNullOrWhiteSpace(eq.Name) && string.IsNullOrWhiteSpace(eq.Equation);
+        if (isEmpty)
+        {
+            rowPendingDelete = eq;
+            isConfirmDeleteModalOpen = true;
+        }
+        else
+        {
+            isErrorModalOpen = true;
+        }
+    }
+
+    private void ConfirmDeleteRow()
+    {
+        if (rowPendingDelete != null)
+        {
+            itemData.EquationRows.Remove(rowPendingDelete);
+            rowPendingDelete = null;
+        }
+        isConfirmDeleteModalOpen = false;
+    }
+
+    private void CancelDeleteRow()
+    {
+        rowPendingDelete = null;
+        isConfirmDeleteModalOpen = false;
+    }
 
     private string GetSelectedBarcodeIcon() => selectedBarcodeOption switch
     {
@@ -2240,7 +2290,7 @@ private ItemModel itemData = new()
     SerialNumber = "24040",
     ActiveFromDate = DateTime.Today,
     UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
-    EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
+    EquationRows = new List<EquationRowModel> { new() { Name = "معادلة الأرباح", Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
 };
 
 private void SaveData() { }
@@ -2314,6 +2364,7 @@ public class UnitRowModel
 
 public class EquationRowModel
 {
+    public string Name { get; set; } = "";
     public string Field { get; set; } = "";
     public string Equation { get; set; } = "";
 }
@@ -2338,7 +2389,6 @@ public class OpeningBalanceModel
         padding: 30px 40px;
         box-sizing: border-box;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        overflow:auto;
     }
 
     .main-canvas {
@@ -2904,7 +2954,7 @@ public class OpeningBalanceModel
         left: auto !important;
     }
 
-    /* Color Picker Dropdown styling with badge inside on the left */
+    /* Color Picker Dropdown styling attached locally to color field */
     .color-field-container {
         position: relative;
         display: flex;
@@ -2925,7 +2975,7 @@ public class OpeningBalanceModel
         border: 1px solid #333;
         border-radius: 2px;
         flex-shrink: 0;
-        margin-left: auto;
+        margin-left: 8px;
     }
 
     .color-picker-dropdown-panel {
