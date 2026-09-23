@@ -6,10 +6,9 @@
     <!-- Top Window Toolbar / Header -->
     <div class="company-window-topbar">
         <div class="topbar-right-actions">
-              <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
+            <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
                 <i class="bi bi-arrow-right"></i>
             </button>
-
             <button style="border:none; background-color:transparent;" type="button" class="nav-arrow-btn">
                 <i class="bi bi-arrow-left"></i>
             </button>
@@ -20,7 +19,7 @@
             <button type="button" class="btn-topbar-action btn-delete-action" @onclick="DeleteCompany">
                 <span class="ico text-danger">🗑️</span>
                 <span class="text-danger">حذف</span>
-            </button>   
+            </button>
         </div>
 
         <div class="topbar-left-actions">
@@ -381,3 +380,493 @@
         public bool IsActive { get; set; } = true;
     }
 }
+
+<style>
+    .company-desktop-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 15px 30px;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Top Window Toolbar */
+    .company-window-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #F1F3F8;
+        padding: 0px 16px;
+        border-radius: 6px 6px 0 0;
+        border: 1px solid #dee2e6;
+        max-width: 1080px;
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .topbar-right-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-topbar-action {
+        background: transparent;
+        border: 1px solid #ced4da;
+        padding: 3px 12px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: #495057;
+        font-weight: 500;
+        border-top: 0;
+        border-bottom: 0;
+    }
+
+        .btn-topbar-action.btn-delete-action {
+            border-radius: 0;
+            border-right: 0;
+        }
+
+        .btn-topbar-action:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+    .btn-delete-action:hover {
+        background-color: #fff5f5;
+        border-color: #f5c6cb;
+    }
+
+    .btn-topbar-close-red {
+        border: none;
+        background: red;
+        font-size: 10px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .topbar-left-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Canvas Sheet */
+    .company-canvas-sheet {
+        max-width: 1080px;
+        margin: 0 auto;
+        width: 100%;
+        background-color: #f1f3f6;
+        border-top: none;
+        padding: 30px 40px;
+        box-sizing: border-box;
+    }
+
+    /* Master Row: Illustration (Right), Labels, Inputs, Logo (Left) */
+    .section-master-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 16px;
+        position: relative;
+    }
+
+    /* 1. Illustration Block on Far Right */
+    .entity-illustration-block {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 14px;
+        user-select: none;
+        order: 1;
+    }
+
+    .illustration-graphic-box {
+        width: 80px;
+        height: 85px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 6px;
+    }
+
+    .orange-indicator-line {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    /* Switch Toggle Styling */
+    .active-toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .switch-toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 18px;
+        margin: 0;
+    }
+
+    .switch-input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .2s;
+        border-radius: 20px;
+    }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+    .switch-input:checked + .switch-slider {
+        background-color: #007bff;
+    }
+
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
+
+    /* 2. Labels Column */
+    .entity-labels-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 2px;
+        order: 2;
+    }
+
+    .label-cell {
+        height: 31px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-lbl {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #333333;
+        white-space: nowrap;
+    }
+
+    /* 3. Inputs Column */
+    .entity-inputs-column {
+        width: 440px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        order: 3;
+    }
+
+    .input-row-entry {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 31px;
+    }
+
+    .flex-1 {
+        flex: 1;
+    }
+
+    /* 4. Company Logo on Far Left */
+    .company-logo-upload-block {
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        order: 4;
+    }
+
+    .logo-square-preview {
+        width: 95px;
+        height: 95px;
+        border: 1px solid #ced4da;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        margin-bottom: 6px;
+    }
+
+    .logo-msg-text {
+        font-size: 0.72rem;
+        color: #868e96;
+        text-align: center;
+    }
+
+    .logo-caption-text {
+        font-size: 0.8rem;
+        color: #495057;
+    }
+
+    /* Unified Form Grid: Uniform 8px Gap across All Fields */
+    .section-form-grid {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        position: relative;
+        padding-right: 14px;
+    }
+
+    .form-grid-labels-col {
+        width: 110px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-grid-inputs-col {
+        width: 440px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .blue-indicator-line {
+        position: absolute;
+        right: 0; /* Changed from left: 0 to anchor correctly to the right side of the grid in RTL mode */
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #007bff;
+        border-radius: 2px;
+    }
+
+    /* Clean Form Inputs */
+    .clean-input {
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+        .clean-input:focus {
+            border-color: #ced4da;
+            border-bottom: 3px solid #007bff !important;
+        }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    /* Custom Dropdowns */
+    .dropdown-anchor {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+    }
+
+    /* Dual Currency Row */
+    .dual-currency-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .sub-currency-anchor {
+        width: 130px !important;
+    }
+
+    /* Table Popup Structure (Matching Desktop UI) */
+    .custom-table-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 1050;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .activity-popup-size {
+        width: 100%;
+        min-width: 360px;
+    }
+
+    .country-popup-size {
+        width: 100%;
+        min-width: 220px;
+    }
+
+    .currency-popup-size {
+        width: 100%;
+        min-width: 280px;
+    }
+
+    .table-popup-header {
+        display: flex;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.82rem;
+        color: #333;
+        padding: 0;
+    }
+
+    .table-popup-filter-bar {
+        display: flex;
+        background-color: #ffffff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .col-name {
+        flex: 1;
+        padding: 5px 8px;
+        text-align: right;
+        border-left: 1px solid #dee2e6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .col-code {
+        width: 80px;
+        padding: 5px 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .table-popup-row {
+        display: flex;
+        font-size: 0.82rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 3px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.8rem;
+    }
+
+    /* Footer Action Buttons */
+    .form-bottom-actions-bar {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 20px;
+    }
+
+    .btn-primary-custom {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .btn-primary-custom:hover {
+            background-color: #0069d9;
+        }
+</style>
