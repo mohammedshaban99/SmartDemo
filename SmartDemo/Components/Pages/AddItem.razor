@@ -1284,22 +1284,70 @@
     </div>
 }
 
-<!-- 5. Modal: الوحدات -->
+<!-- 5. Modal: الوحدات (Exact Desktop Layout matched via Image) -->
 @if (isUnitsModalOpen)
 {
     <div class="modal-backdrop-blur">
-        <div class="units-master-modal-dialog" dir="rtl">
+        <div class="units-master-modal-dialog" dir="rtl" @onclick:stopPropagation>
             <div class="master-modal-topbar">
                 <span class="modal-top-title">الوحدات</span>
-                <button type="button" class="btn-topbar-close-flat" @onclick="() => isUnitsModalOpen = false">✕</button>
+                <button type="button" class="btn-topbar-close-flat" @onclick="CloseUnitsModal">✕</button>
             </div>
             <div class="master-modal-body">
-                <div class="d-flex align-items-center justify-content-start gap-3 mb-4">
+                <!-- Top Name Input Section with Orange Bar & Document Icon -->
+                <div class="d-flex align-items-center justify-content-start gap-3 mb-4 position-relative">
                     <span class="fs-4">📄</span>
                     <div class="orange-bar-vert"></div>
                     <span class="fw-bold">الاسم</span>
-                    <input type="text" class="clean-input" style="width: 420px;" @bind="newUnitNameInput" />
+                    <div class="flex-1 position-relative">
+                        <input type="text" class="clean-input w-100" @bind="newUnitNameInput" />
+                        <span class="req-star" style="position: absolute; right: 10px; top: 6px;">*</span>
+                    </div>
                 </div>
+
+                <!-- Units Grid Table Matching Desktop Screenshot -->
+                <div class="table-scroll-wrapper mb-4">
+                    <table class="item-details-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; color: red;">*</th>
+                                <th>الكود</th>
+                                <th>الاسم</th>
+                                <th>عدد القطع</th>
+                                <th>العملة</th>
+                                <th>إفتراضي الشراء</th>
+                                <th>إفتراضي البيع</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var uRow in unitsModalRows)
+                            {
+                                <tr>
+                                    <td><button class="delete-icon-btn" type="button" @onclick="() => unitsModalRows.Remove(uRow)">✖</button></td>
+                                    <td><input type="text" class="clean-input w-100 text-center" @bind="uRow.Code" /></td>
+                                    <td><input type="text" class="clean-input w-100 text-center" @bind="uRow.Name" /></td>
+                                    <td><input type="number" class="clean-input w-100 text-center" @bind="uRow.PiecesCount" /></td>
+                                    <td>
+                                        <select class="clean-input w-100" @bind="uRow.Currency">
+                                            <option value="جنية">جنية</option>
+                                            <option value="دولار">دولار</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" @bind="uRow.IsDefaultPurchase" /></td>
+                                    <td><input type="checkbox" @bind="uRow.IsDefaultSale" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="text-muted text-center py-2 bg-white border-top small" style="cursor:pointer;" @onclick="AddUnitsModalRow">
+                        Click here to add a new row
+                    </div>
+                </div>
+            </div>
+
+            <div class="master-modal-footer d-flex justify-content-center gap-2 bg-white py-3 border-top">
+                <button type="button" class="btn btn-primary px-5" @onclick="SaveUnitsModal">حفظ</button>
+                <button type="button" class="btn btn-secondary px-5" @onclick="CloseUnitsModal">إغلاق</button>
             </div>
         </div>
     </div>
@@ -1496,6 +1544,29 @@ private IEnumerable<string> FilteredUnitList => string.IsNullOrWhiteSpace(unitSe
 private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopupOpen; }
 private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
 private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
+private void CloseUnitsModal() => isUnitsModalOpen = false;
+
+// Units Modal Advanced Row Model matching Desktop layout
+public class UnitMasterRowModel
+{
+    public string Code { get; set; } = "";
+    public string Name { get; set; } = "";
+    public int PiecesCount { get; set; } = 1;
+    public string Currency { get; set; } = "جنية";
+    public bool IsDefaultPurchase { get; set; }
+    public bool IsDefaultSale { get; set; }
+    }
+    private List<UnitMasterRowModel> unitsModalRows = new() { new() { Code = "1", Name = "قطعة", PiecesCount = 1, Currency = "جنية", IsDefaultPurchase = true, IsDefaultSale = true } };
+    private void AddUnitsModalRow() => unitsModalRows.Add(new() { Code = (unitsModalRows.Count + 1).ToString(), Name = "", PiecesCount = 1, Currency = "جنية" });
+private void SaveUnitsModal()
+{
+    if (!string.IsNullOrWhiteSpace(newUnitNameInput) && !unitList.Contains(newUnitNameInput))
+    {
+        unitList.Add(newUnitNameInput);
+        itemData.MeasurementUnit = newUnitNameInput;
+    }
+    isUnitsModalOpen = false;
+}
 
 // Opening Balance Modal State & Models
 private bool isOpeningBalanceModalOpen = false;
@@ -1740,6 +1811,13 @@ public class OpeningBalanceModel
         top: 0;
         width: 3px;
         height: 112px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .orange-bar-vert {
+        width: 3px;
+        height: 24px;
         background-color: #e67e22;
         border-radius: 2px;
     }
@@ -2811,7 +2889,7 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        width: 700px;
+        width: 780px;
     }
 
     .table-scroll-wrapper {
