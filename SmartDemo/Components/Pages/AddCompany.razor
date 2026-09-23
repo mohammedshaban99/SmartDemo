@@ -136,7 +136,6 @@
                 <div class="label-cell"><span class="form-lbl">الشارع</span></div>
                 <div class="label-cell"><span class="form-lbl">رقم المبنى</span></div>
                 <div class="label-cell"><span class="form-lbl">الرقم البريدي</span></div>
-                <div class="label-cell"><span class="form-lbl">الرقم المميز</span></div>
                 <div class="label-cell"><span class="form-lbl">المعالم الرئيسية</span></div>
             </div>
 
@@ -265,10 +264,12 @@
                     <input type="text" class="clean-input flex-1" @bind="companyData.ApartmentNo" />
                 </div>
 
-                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.PostalCode" /></div>
-
-                <!-- Unique Number Field Added Here -->
-                <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.UniqueNumber" /></div>
+                <!-- Postal Code & Unique Number Combined Row -->
+                <div class="input-row-entry building-row">
+                    <input type="text" class="clean-input flex-1" @bind="companyData.PostalCode" />
+                    <span class="building-sub-label">الرقم المميز</span>
+                    <input type="text" class="clean-input flex-1" @bind="companyData.UniqueNumber" />
+                </div>
 
                 <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.Landmarks" /></div>
             </div>
@@ -563,15 +564,14 @@
         align-items: center;
         gap: 6px;
         min-height: 31px;
-        width:60%;
+        width: 60%;
     }
 
     .entity-inputs-column .input-row-entry,
-    .section-form-grid  .email,
+    .section-form-grid .email,
     .section-form-grid .street {
-        width:100%;
+        width: 100%;
     }
-
 
     .flex-1 {
         flex: 1;
@@ -856,10 +856,11 @@
 
     .form-bottom-actions-bar {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 12px;
         margin-top: 35px;
         padding-top: 20px;
+        margin-right: 220px;
     }
 
     .btn-primary-custom {
