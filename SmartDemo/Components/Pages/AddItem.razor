@@ -400,21 +400,31 @@
                             <!-- 8. حساب الاستاذ -->
                             <div class="field-entry-line">
                                 <span class="field-title">حساب الاستاذ</span>
-                                <div class="dropdown-anchor flex-1 field-fixed-width">
-                                    <div class="custom-combo-trigger">
-                                        <select class="clean-select-overlay" @bind="itemData.GeneralLedgerAccount">
-                                            <option value=""></option>
-                                            @foreach (var a in ledgerAccounts)
-                                            {
-                                                <option value="@a">@a</option>
-                                            }
-                                        </select>
+                                <div class="dropdown-anchor flex-1 field-fixed-width pos-relative">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerAccountPopup">
                                         <span class="combo-display-text">@itemData.GeneralLedgerAccount</span>
                                         <div class="combo-icons-inside">
                                             <button class="btn-inside-plus" type="button" title="إضافة حساب">+</button>
                                             <span class="combo-arrow">▼</span>
                                         </div>
                                     </div>
+
+                                    @if (isLedgerAccountPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var node in accountsTreeList)
+                                                {
+                                                    @RenderAccountsTreeDropdownNodeForLedger(node, selectedName => { itemData.GeneralLedgerAccount = selectedName; isLedgerAccountPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isLedgerAccountPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
 
@@ -1284,7 +1294,7 @@
     </div>
 }
 
-<!-- 5. Modal: الوحدات (Exact Desktop Layout matched via Image) -->
+<!-- 5. Modal: الوحدات -->
 @if (isUnitsModalOpen)
 {
     <div class="modal-backdrop-blur">
@@ -1294,7 +1304,6 @@
                 <button type="button" class="btn-topbar-close-flat" @onclick="CloseUnitsModal">✕</button>
             </div>
             <div class="master-modal-body">
-                <!-- Top Name Input Section with Orange Bar & Document Icon -->
                 <div class="d-flex align-items-center justify-content-start gap-3 mb-4 position-relative">
                     <span class="fs-4">📄</span>
                     <div class="orange-bar-vert"></div>
@@ -1305,7 +1314,6 @@
                     </div>
                 </div>
 
-                <!-- Units Grid Table Matching Desktop Screenshot -->
                 <div class="table-scroll-wrapper mb-4">
                     <table class="item-details-table">
                         <thead>
@@ -1546,7 +1554,6 @@ private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpe
 private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
 private void CloseUnitsModal() => isUnitsModalOpen = false;
 
-// Units Modal Advanced Row Model matching Desktop layout
 public class UnitMasterRowModel
 {
     public string Code { get; set; } = "";
@@ -1567,6 +1574,42 @@ private void SaveUnitsModal()
     }
     isUnitsModalOpen = false;
 }
+
+// Ledger Account Tree Popup State & Support matching Image #4
+private bool isLedgerAccountPopupOpen = false;
+private void ToggleLedgerAccountPopup()
+{
+    bool wasOpen = isLedgerAccountPopupOpen;
+    CloseAllPopups();
+    isLedgerAccountPopupOpen = !wasOpen;
+}
+
+private RenderFragment RenderAccountsTreeDropdownNodeForLedger(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(itemData.GeneralLedgerAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
+            @node.Name
+        </span>
+    </div>
+
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderAccountsTreeDropdownNodeForLedger(child, onSelected)
+    }
+}
+</text>;
 
 // Opening Balance Modal State & Models
 private bool isOpeningBalanceModalOpen = false;
@@ -1597,25 +1640,31 @@ public class AccountsTreeNode
 
     private List<AccountsTreeNode> accountsTreeList = new()
     {
-        new() { Name = "الأرصدة الإفتتاحية", Code = "EGP", Level = 0 },
         new() {
-            Name = "المصروفات",
+            Name = "الأصول المتداولة",
             Code = "EGP",
             Level = 0,
             IsExpanded = true,
             Children = new() {
-                new() { Name = "تكلفة البضاعة المباعة", Code = "EGP", Level = 1 },
                 new() {
-                    Name = "مصروفات النشاط",
+                    Name = "نقدية بالخزينة و البنوك",
                     Code = "EGP",
                     Level = 1,
                     IsExpanded = true,
                     Children = new() {
-                        new() { Name = "مصروفات ادارية وعمومية", Code = "EGP", Level = 2 },
-                        new() { Name = "مواد ووقود وقطع غيار", Code = "EGP", Level = 2, Children = new() {
-                            new() { Name = "وقود وزيوت", Code = "EGP", Level = 3 }
-                        }},
-                        new() { Name = "مصروفات نثرية", Code = "EGP", Level = 2 }
+                        new() { Name = "ودائع بالبنوك لأجل أو بإخطار ساب", Code = "EGP", Level = 2 },
+                        new() { Name = "غطاء حسابات ضمان", Code = "EGP", Level = 2 },
+                        new() { Name = "خخخخخ", Code = "EGP", Level = 2 }
+                    }
+                },
+                new() {
+                    Name = "مخزون",
+                    Code = "EGP",
+                    Level = 1,
+                    IsExpanded = true,
+                    Children = new() {
+                        new() { Name = "مخزون البضاعة", Code = "EGP", Level = 2 },
+                        new() { Name = "مخزون إنتاج غير تام", Code = "EGP", Level = 2 }
                     }
                 }
             }
@@ -1685,9 +1734,10 @@ private void CloseAllPopups()
     isGroupTypeDropdownOpen = false;
     isParentGroupDropdownOpen = false;
     isOpeningBalanceAccountPopupOpen = false;
+    isLedgerAccountPopupOpen = false;
 }
 
-private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "حساب المخزون الفرعي - 103" };
+private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
 private List<string> valuationMethods = new() { "الوارد أولاً صادر أولاً", "متوسط التكلفة", "الوارد أخيراً صادر أولاً" };
 private List<string> taxAccounts = new() { "ضريبة القيمة المضافة 15 %", "ضريبة القيمة المضافة 14 %" };
 
@@ -1700,9 +1750,9 @@ private ItemModel itemData = new()
     SupplierName = "تهامي",
     DistributionPolicy = "توزيع مباشر",
     ValuationMethod = "الوارد أولاً صادر أولاً",
-    GeneralLedgerAccount = "حساب المخزون الرئيسي - 102",
-    SalesAccount = "حساب المخزون الرئيسي - 102",
-    SalesReturnAccount = "حساب المخزون الرئيسي - 102",
+    GeneralLedgerAccount = "مخزون البضاعة",
+    SalesAccount = "مخزون البضاعة",
+    SalesReturnAccount = "مخزون البضاعة",
     UnitsTableRows = new List<UnitRowModel> { new() { Barcode = "88520841105028", PiecesCount = 1, Unit = "قطعه", PurchasePrice = 120, SalePrice = 150, IsDefaultPurchase = true, IsDefaultSale = true, IsActive = true } },
     EquationRows = new List<EquationRowModel> { new() { Field = "سعر البيع الافتراضي", Equation = "سعر الشراء * 1.25" } }
 };
@@ -2360,8 +2410,8 @@ public class OpeningBalanceModel
     }
 
     .accounts-tree-dropdown-panel {
-        width: 100% !important;
-        min-width: 100% !important;
+        width: 380px !important;
+        min-width: 380px !important;
         right: 0 !important;
         left: auto !important;
     }
