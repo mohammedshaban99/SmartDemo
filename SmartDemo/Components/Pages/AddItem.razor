@@ -234,7 +234,7 @@
                                 <span class="req-star me-1">*</span>
                             </div>
 
-                            <!-- 3. المجموعة (Tree Dropdown Popup) -->
+                            <!-- 3. المجموعة -->
                             <div class="field-entry-line">
                                 <span class="field-title">المجموعة</span>
                                 <div class="dropdown-anchor flex-1 field-fixed-width">
@@ -464,7 +464,7 @@
                                         <td><input type="checkbox" @bind="row.IsDefaultPurchase" /></td>
                                         <td><input type="checkbox" @bind="row.IsDefaultSale" /></td>
                                         <td><input type="checkbox" @bind="row.IsActive" /></td>
-                                        <td><button class="delete-icon-btn" type="button" @onclick="() => DeleteRow(row)">✖</button></td>
+                                        <td><button class="delete-icon-btn" type="button" @onclick="() => ShowDeleteErrorModal()">✖</button></td>
                                     </tr>
                                 }
                             </tbody>
@@ -809,6 +809,33 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
+<!-- DEXEF Error Modal Popup -->
+@if (isErrorModalOpen)
+{
+    <div class="modal-backdrop-blur dexef-error-backdrop">
+        <div class="dexef-error-dialog" dir="rtl" @onclick:stopPropagation>
+            <div class="dexef-error-topbar">
+                <button type="button" class="dexef-close-btn" @onclick="CloseErrorModal">✕</button>
+            </div>
+            <div class="dexef-error-body">
+                <div class="dexef-logo-area">
+                    <span class="dexef-logo-text">DEXEF</span>
+                </div>
+                <div class="dexef-error-content">
+                    <div class="dexef-error-title-row">هناك خطأ في :</div>
+                    <div class="dexef-error-subtitle-row">سبب الخطأ :</div>
+                    <div class="dexef-error-message-box">
+                        لا يمكنك حذف هذا السطر .. يمكنك التعديل عليه فقط
+                    </div>
+                </div>
+            </div>
+            <div class="dexef-error-footer">
+                <button type="button" class="dexef-ok-btn" @onclick="CloseErrorModal">موافق</button>
+            </div>
+        </div>
+    </div>
+}
+
 <!-- 1. QR Modal -->
 @if (isQrModalOpen)
 {
@@ -1177,6 +1204,10 @@
 
     private string selectedBarcodeOption = "تلقائي";
     private bool isBarcodeTypePopupOpen = false;
+    private bool isErrorModalOpen = false;
+
+    private void ShowDeleteErrorModal() => isErrorModalOpen = true;
+    private void CloseErrorModal() => isErrorModalOpen = false;
 
     private string GetSelectedBarcodeIcon() => selectedBarcodeOption switch
     {
@@ -1379,14 +1410,6 @@ private bool isPolicyPopupOpen = false;
 private List<string> policyList = new() { "توزيع مباشر", "توزيع جملة", "توزيع تجزئة" };
 private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
 private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
-
-private void DeleteRow(UnitRowModel row)
-{
-    if (itemData.UnitsTableRows.Count > 1)
-    {
-        itemData.UnitsTableRows.Remove(row);
-    }
-}
 
 private void CloseAllPopups()
 {
@@ -2727,6 +2750,111 @@ public class EquationRowModel
         justify-content: center;
         z-index: 2500;
     }
+
+    /* DEXEF Error Modal Styling */
+    .dexef-error-backdrop {
+        z-index: 6000 !important;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .dexef-error-dialog {
+        background: #2b2b2b;
+        color: #ffffff;
+        width: 500px;
+        border-radius: 4px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        border: 1px solid #444;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .dexef-error-topbar {
+        display: flex;
+        justify-content: flex-end;
+        background-color: #2b2b2b;
+        padding: 6px 10px;
+    }
+
+    .dexef-close-btn {
+        background: transparent;
+        border: none;
+        color: #aaa;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+        .dexef-close-btn:hover {
+            color: #fff;
+        }
+
+    .dexef-error-body {
+        padding: 10px 24px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .dexef-logo-area {
+        display: flex;
+        align-items: center;
+    }
+
+    .dexef-logo-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007acc;
+        letter-spacing: 1px;
+    }
+
+    .dexef-error-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .dexef-error-title-row {
+        color: #fff;
+        font-size: 0.9rem;
+    }
+
+    .dexef-error-subtitle-row {
+        color: #d35400;
+        font-size: 0.9rem;
+    }
+
+    .dexef-error-message-box {
+        background-color: #2b2b2b;
+        border: 1px solid #444;
+        padding: 20px 15px;
+        text-align: center;
+        font-size: 0.95rem;
+        color: #ffffff;
+        border-radius: 3px;
+    }
+
+    .dexef-error-footer {
+        display: flex;
+        justify-content: center;
+        background-color: #2b2b2b;
+        padding: 12px;
+        border-top: 1px solid #383838;
+    }
+
+    .dexef-ok-btn {
+        background-color: #0078d7;
+        color: #ffffff;
+        border: none;
+        border-radius: 2px;
+        padding: 6px 36px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .dexef-ok-btn:hover {
+            background-color: #1084ef;
+        }
 
     .qr-modal-dialog {
         background: #ffffff;
