@@ -547,17 +547,17 @@
                             <div class="field-entry-line">
                                 <span class="field-title-wide">الحد الادنى</span>
                                 <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MinLimit" />
-                                <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                <span class="small text-muted">قطعة</span>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">الحد الأقصى</span>
                                 <input type="number" class="clean-input" style="width: 90px;" @bind="itemData.MaxLimit" />
-                                <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                <span class="small text-muted">قطعة</span>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title-wide">فترة الركود</span>
                                 <input type="number" class="clean-input" style="width: 90px;" value="10" />
-                                <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                                <span class="small text-muted">يوم</span>
                             </div>
                         </div>
                     </div>
@@ -839,7 +839,7 @@
                        Languages="availableLanguages"
                        OnSave="SaveLanguages" />
 
-<!-- 3. Modal: مجموعات الاصناف (Item Groups Modal matching exact reference layout) -->
+<!-- 3. Modal: مجموعات الاصناف -->
 @if (isGroupModalOpen)
 {
     <div class="modal-backdrop-blur group-modal-layer">
@@ -1044,7 +1044,6 @@
                                 </div>
                             </div>
 
-                            <!-- Additional Touch Screen Section for Groups matching image_d94223.png -->
                             <div class="section-block-title text-primary">شاشة اللمس</div>
                             <div class="section-with-blue-line">
                                 <div class="field-entry-line mb-2">
@@ -1111,23 +1110,27 @@
                             <div class="section-with-blue-line">
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">الحد الادنى</span>
-                                    <input type="number" class="clean-input" style="width: 90px;" />
-                                    <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                    <div class="flex-1">
+                                        <CalcInputControl UnitLabel="قطعة" />
+                                    </div>
                                 </div>
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">الحد الأقصى</span>
-                                    <input type="number" class="clean-input" style="width: 90px;" />
-                                    <select class="clean-input" style="width: 80px;"><option>قطعة</option></select>
+                                    <div class="flex-1">
+                                        <CalcInputControl UnitLabel="قطعة" />
+                                    </div>
                                 </div>
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">فترة الركود</span>
-                                    <input type="number" class="clean-input" style="width: 90px;" />
-                                    <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                                    <div class="flex-1">
+                                        <CalcInputControl UnitLabel="يوم" />
+                                    </div>
                                 </div>
                                 <div class="field-entry-line">
                                     <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
-                                    <input type="number" class="clean-input" style="width: 90px;" />
-                                    <select class="clean-input" style="width: 80px;"><option>يوم</option></select>
+                                    <div class="flex-1">
+                                        <CalcInputControl UnitLabel="يوم" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
