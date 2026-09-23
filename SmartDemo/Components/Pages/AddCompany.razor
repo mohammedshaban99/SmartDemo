@@ -1,5 +1,6 @@
 ﻿@page "/AddCompany"
 @rendermode InteractiveServer
+@using System.Linq
 
 <div class="company-desktop-viewport" dir="rtl" @onclick="CloseAllPopups">
 
@@ -33,19 +34,19 @@
         <!-- ================= SECTION 1: BASIC INFO & LOGO ================= -->
         <div class="section-master-row">
 
-            <!-- 1. Far Right: Illustration & Status -->
+            <!-- 1a. Accent column: identical width/anchor to the grid's spacer below,
+                 so this line and the blue one land on the exact same vertical line -->
+            <div class="entity-accent-spacer">
+                <div class="orange-indicator-line"></div>
+            </div>
+
+            <!-- 1b. Illustration & status toggle: a free-floating sibling. It is taken
+                 out of the accent column's flow on purpose, so nothing about its size
+                 can ever shift the accent column's width and misalign the divider. -->
             <div class="entity-illustration-block">
                 <div class="illustration-graphic-box">
                     <span class="fs-1">🏢</span>
                 </div>
-                <div class="active-toggle-group">
-                    <label class="switch-toggle-label">
-                        <input type="checkbox" class="switch-input" @bind="companyData.IsActive" />
-                        <span class="switch-slider"></span>
-                    </label>
-                    <span class="small text-muted fw-bold">نشط</span>
-                </div>
-                <div class="orange-indicator-line"></div>
             </div>
 
             <!-- 2. Middle-Right: Field Labels -->
@@ -81,11 +82,12 @@
                                     <div class="col-code">الكود</div>
                                 </div>
                                 <div class="table-popup-filter-bar">
-                                    <div class="col-name text-center text-muted small">🔤</div>
-                                    <div class="col-code text-center text-muted small">🔤</div>
+                                    <input type="text" class="filter-search-input col-name" placeholder="بحث..."
+                                           @bind="activityFilter" @bind:event="oninput" @onclick:stopPropagation />
+                                    <div class="col-code"></div>
                                 </div>
                                 <div class="table-popup-list">
-                                    @foreach (var act in mockActivities)
+                                    @foreach (var act in FilteredActivities)
                                     {
                                         <div class="table-popup-row @(companyData.Activity == act.Name ? "active-row" : "")"
                                              @onclick="() => SelectActivity(act.Name)">
@@ -124,6 +126,11 @@
 
         <!-- ================= UNIFIED FORM GRID: CONTINUOUS ROWS & CONTINUOUS BLUE LINE ================= -->
         <div class="section-form-grid">
+            <!-- Spacer block mirroring top illustration block width -->
+            <div class="form-grid-spacer-block">
+                <div class="blue-indicator-line"></div>
+            </div>
+
             <div class="form-grid-labels-col">
                 <div class="label-cell"><span class="form-lbl">البلد</span></div>
                 <div class="label-cell"><span class="form-lbl">العملة</span></div>
@@ -156,8 +163,12 @@
                                 <div class="table-popup-header">
                                     <div class="col-name">الاسم</div>
                                 </div>
+                                <div class="table-popup-filter-bar">
+                                    <input type="text" class="filter-search-input col-name" placeholder="بحث..."
+                                           @bind="countryFilter" @bind:event="oninput" @onclick:stopPropagation />
+                                </div>
                                 <div class="table-popup-list">
-                                    @foreach (var c in mockCountries)
+                                    @foreach (var c in FilteredCountries)
                                     {
                                         <div class="table-popup-row @(companyData.Country == c ? "active-row" : "")"
                                              @onclick="() => SelectCountry(c)">
@@ -191,8 +202,13 @@
                                         <div class="col-name">الاسم</div>
                                         <div class="col-code">الكود</div>
                                     </div>
+                                    <div class="table-popup-filter-bar">
+                                        <input type="text" class="filter-search-input col-name" placeholder="بحث..."
+                                               @bind="currencyFilter" @bind:event="oninput" @onclick:stopPropagation />
+                                        <div class="col-code"></div>
+                                    </div>
                                     <div class="table-popup-list">
-                                        @foreach (var cur in mockCurrencies)
+                                        @foreach (var cur in FilteredCurrencies)
                                         {
                                             <div class="table-popup-row @(companyData.Currency == cur.Name ? "active-row" : "")"
                                                  @onclick="() => SelectCurrency(cur.Name, cur.SubCurrency)">
@@ -260,7 +276,6 @@
                 <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.PostalCode" /></div>
                 <div class="input-row-entry"><input type="text" class="clean-input flex-1" @bind="companyData.Landmarks" /></div>
             </div>
-            <div class="blue-indicator-line"></div>
         </div>
 
         <!-- Bottom Action Buttons -->
@@ -306,34 +321,36 @@
         new() { Code = "MAD", Name = "الدرهم المغربي", SubCurrency = "سنتيم" }
     };
 
+    // "Add Company" starts blank (matches the empty-field state in the target design).
+    // Populate this only when editing an existing record.
     private CompanyModel companyData = new()
     {
-        CompanyName = "مجموعة الاستثمار الذكي",
-        Activity = "زراعة الحبوب والمحاصيل ( فيما عدا الارز ) والبقوليات والـ...",
-        Slogan = "نبني مستقبل التجارة الحديثة",
-        Country = "مصر",
-        Currency = "أرياري مدغشقري",
-        SubCurrency = "إيرايمبيلانجا",
-        TaxNumber = "100293847",
-        CommercialRegister = "EG-554433",
-        Landline = "0223456789",
-        Mobile = "01098765432",
-        Fax = "0223456780",
-        Email = "contact@smartinvest.com",
-        Governorate = "القاهرة",
-        City = "التجمع الخامس",
-        District = "المنطقة التجارية",
-        Street = "شارع التسعين الشمالي",
-        BuildingNo = "برج الماس 4",
-        ApartmentNo = "مكتب 502",
-        PostalCode = "11835",
-        Landmarks = "بجوار الجامعة الأمريكية",
         IsActive = true
     };
 
-    private void ToggleActivityPopup() { CloseAllPopups(); isActivityPopupOpen = !isActivityPopupOpen; }
-    private void ToggleCountryPopup() { CloseAllPopups(); isCountryPopupOpen = !isCountryPopupOpen; }
-    private void ToggleCurrencyPopup() { CloseAllPopups(); isCurrencyPopupOpen = !isCurrencyPopupOpen; }
+    // Live search text for each dropdown's filter row.
+    private string activityFilter = "";
+    private string countryFilter = "";
+    private string currencyFilter = "";
+
+    private IEnumerable<ActivityItem> FilteredActivities =>
+        string.IsNullOrWhiteSpace(activityFilter)
+            ? mockActivities
+            : mockActivities.Where(a => a.Name.Contains(activityFilter) || a.Code.Contains(activityFilter));
+
+    private IEnumerable<string> FilteredCountries =>
+        string.IsNullOrWhiteSpace(countryFilter)
+            ? mockCountries
+            : mockCountries.Where(c => c.Contains(countryFilter));
+
+    private IEnumerable<CurrencyItem> FilteredCurrencies =>
+        string.IsNullOrWhiteSpace(currencyFilter)
+            ? mockCurrencies
+            : mockCurrencies.Where(c => c.Name.Contains(currencyFilter) || c.Code.Contains(currencyFilter));
+
+    private void ToggleActivityPopup() { CloseAllPopups(); activityFilter = ""; isActivityPopupOpen = !isActivityPopupOpen; }
+    private void ToggleCountryPopup() { CloseAllPopups(); countryFilter = ""; isCountryPopupOpen = !isCountryPopupOpen; }
+    private void ToggleCurrencyPopup() { CloseAllPopups(); currencyFilter = ""; isCurrencyPopupOpen = !isCurrencyPopupOpen; }
 
     private void SelectActivity(string name) { companyData.Activity = name; isActivityPopupOpen = false; }
     private void SelectCountry(string name) { companyData.Country = name; isCountryPopupOpen = false; }
@@ -382,10 +399,15 @@
 }
 
 <style>
+    /* Desktop-fixed layout: this design targets desktop screens specifically,
+           so we pin a minimum width and let the page scroll horizontally on
+           narrower viewports instead of reflowing the fixed-position columns. */
     .company-desktop-viewport {
         background-color: #f1f3f6;
         min-height: 100vh;
         width: 100%;
+        min-width: 1180px;
+        overflow-x: auto;
         padding: 15px 30px;
         box-sizing: border-box;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -472,21 +494,43 @@
     /* Master Row: Illustration (Right), Labels, Inputs, Logo (Left) */
     .section-master-row {
         display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         justify-content: flex-start;
         gap: 16px;
         position: relative;
     }
 
-    /* 1. Illustration Block on Far Right */
-    .entity-illustration-block {
+    /* 1a. Accent column: same width/order/anchor as .form-grid-spacer-block below,
+           so the orange line here and the blue line there sit on the same vertical line. */
+    .entity-accent-spacer {
+        width: 80px;
         position: relative;
+        flex-shrink: 0;
+        order: 1;
+    }
+
+    .orange-indicator-line {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    /* 1b. Illustration + toggle: positioned absolutely relative to .section-master-row,
+           overlapping the accent column visually without being part of its box model. */
+    .entity-illustration-block {
+        position: absolute;
+        top: 0;
+        right: 14px;
+        width: 80px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding-left: 14px;
         user-select: none;
-        order: 1;
+        z-index: 1;
     }
 
     .illustration-graphic-box {
@@ -499,16 +543,6 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 6px;
-    }
-
-    .orange-indicator-line {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 3px;
-        height: 100px;
-        background-color: #e67e22;
-        border-radius: 2px;
     }
 
     /* Switch Toggle Styling */
@@ -638,10 +672,20 @@
     /* Unified Form Grid: Uniform 8px Gap across All Fields */
     .section-form-grid {
         display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 16px;
         position: relative;
-        padding-right: 14px;
+    }
+
+    /* Spacer block matching top illustration block width.
+           No explicit height here: align-items:stretch on the parent makes it
+           match the tallest column (labels/inputs) automatically, which is what
+           the blue-indicator-line (top:0; bottom:0;) needs to actually be visible. */
+    .form-grid-spacer-block {
+        width: 80px;
+        position: relative;
+        flex-shrink: 0;
+        order: 1;
     }
 
     .form-grid-labels-col {
@@ -649,6 +693,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        order: 2;
     }
 
     .form-grid-inputs-col {
@@ -656,14 +701,15 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        order: 3;
     }
 
     .blue-indicator-line {
         position: absolute;
-        right: 0; /* Changed from left: 0 to anchor correctly to the right side of the grid in RTL mode */
+        right: 0;
         top: 0;
         bottom: 0;
-        width: 2px;
+        width: 3px;
         background-color: #007bff;
         border-radius: 2px;
     }
@@ -790,12 +836,30 @@
     .col-name {
         flex: 1;
         padding: 5px 8px;
-        text-align: right;
+        text-align: right !important;
         border-left: 1px solid #dee2e6;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    /* Real search box inside each dropdown's filter row (replaces the old
+           placeholder icons). Reuses .col-name for width/border so it lines up
+           exactly under the "الاسم" header column. */
+    .filter-search-input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 0.82rem;
+        color: #333333;
+        text-align: right !important;
+        direction: rtl;
+    }
+
+        .filter-search-input::placeholder {
+            color: #adb5bd;
+        }
 
     .col-code {
         width: 80px;
