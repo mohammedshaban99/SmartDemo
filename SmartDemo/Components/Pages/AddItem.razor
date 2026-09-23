@@ -476,10 +476,14 @@
                 <div class="section-with-blue-line">
                     <div class="opening-balance-section">
                         <span class="opening-balance-lbl">الرصيد الإفتتاحي</span>
-                        <select class="clean-input" style="width: 170px;" @bind="itemData.OpeningBalance">
-                            <option value=""></option>
-                            <option value="رصيد أولي 1">رصيد أولي 1</option>
-                        </select>
+                        <div class="dropdown-anchor" style="width: 170px;">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleOpeningBalanceModal">
+                                <span class="combo-display-text">@(string.IsNullOrEmpty(itemData.OpeningBalance) ? "" : itemData.OpeningBalance)</span>
+                                <div class="combo-icons-inside">
+                                    <span class="combo-arrow">▼</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -809,6 +813,98 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
+<!-- Opening Balance Modal Popup -->
+@if (isOpeningBalanceModalOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="opening-balance-modal-dialog" dir="rtl" @onclick:stopPropagation>
+            <div class="master-modal-topbar">
+                <span class="modal-top-title">الرصيد افتتاحي</span>
+                <button type="button" class="btn-topbar-close-flat" @onclick="CloseOpeningBalanceModal">✕</button>
+            </div>
+            <div class="master-modal-body">
+                <div class="opening-balance-modal-grid">
+                    <div class="ob-col">
+                        <label class="ob-label">الكمية</label>
+                        <div class="ob-input-row">
+                            <input type="number" class="clean-input text-center flex-1" @bind="openingBalanceData.Quantity" />
+                            <select class="clean-input ob-mini-select" @bind="openingBalanceData.QuantityUnit">
+                                @foreach (var u in unitList)
+                                {
+                                    <option value="@u">@u</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ob-col">
+                        <label class="ob-label">الوحدة</label>
+                        <select class="clean-input" @bind="openingBalanceData.Unit">
+                            @foreach (var u in unitList)
+                            {
+                                <option value="@u">@u</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="ob-col">
+                        <label class="ob-label">تكلفة الوحدة</label>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="fw-bold">X</span>
+                            <input type="number" class="clean-input text-center flex-1" @bind="openingBalanceData.UnitCost" />
+                        </div>
+                    </div>
+                    <div class="ob-col">
+                        <label class="ob-label">إجمالي التكلفة</label>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="fw-bold">=</span>
+                            <input type="number" class="clean-input text-center flex-1" @bind="openingBalanceData.TotalCost" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ob-bottom-row mt-4">
+                    <div class="field-entry-line mb-3">
+                        <span class="field-title">في تاريخ</span>
+                        <div class="d-flex align-items-center gap-2 flex-1" style="max-width: 250px;">
+                            <input type="date" class="clean-input flex-1 text-center" @bind="openingBalanceData.Date" />
+                        </div>
+                        <span class="req-star me-1">*</span>
+                    </div>
+
+                    <div class="field-entry-line pos-relative">
+                        <span class="field-title">حساب الأستاذ</span>
+                        <div class="dropdown-anchor flex-1" style="max-width: 350px;">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleOpeningBalanceAccountPopup">
+                                <span class="combo-display-text">@openingBalanceData.LedgerAccount</span>
+                                <div class="combo-icons-inside">
+                                    <span class="combo-arrow">▼</span>
+                                </div>
+                            </div>
+
+                            @if (isOpeningBalanceAccountPopupOpen)
+                            {
+                                <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                    <div class="table-popup-header">الاسم</div>
+                                    <div class="table-popup-list">
+                                        @foreach (var node in accountsTreeList)
+                                        {
+                                            @RenderAccountsTreeDropdownNode(node, selectedName => { openingBalanceData.LedgerAccount = selectedName; isOpeningBalanceAccountPopupOpen = false; })
+                                        }
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isOpeningBalanceAccountPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <span class="req-star me-1">*</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <!-- DEXEF Error Modal Popup -->
 @if (isErrorModalOpen)
 {
@@ -1391,6 +1487,87 @@ private void ToggleUnitPopup() { CloseAllPopups(); isUnitPopupOpen = !isUnitPopu
 private void SelectUnit(string u) { itemData.MeasurementUnit = u; isUnitPopupOpen = false; }
 private void OpenUnitsModal() { CloseAllPopups(); isUnitsModalOpen = true; }
 
+// Opening Balance Modal State & Models
+private bool isOpeningBalanceModalOpen = false;
+private bool isOpeningBalanceAccountPopupOpen = false;
+private OpeningBalanceModel openingBalanceData = new()
+{
+    Quantity = 0,
+    Unit = "قطعه",
+    QuantityUnit = "قطعه",
+    UnitCost = 0,
+    TotalCost = 0,
+    Date = new DateTime(2026, 9, 23),
+    LedgerAccount = "الأرصدة الإفتتاحية"
+};
+
+private void ToggleOpeningBalanceModal() { CloseAllPopups(); isOpeningBalanceModalOpen = !isOpeningBalanceModalOpen; }
+private void CloseOpeningBalanceModal() => isOpeningBalanceModalOpen = false;
+private void ToggleOpeningBalanceAccountPopup() => isOpeningBalanceAccountPopupOpen = !isOpeningBalanceAccountPopupOpen;
+
+public class AccountsTreeNode
+{
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Level { get; set; } = 0;
+    public bool IsExpanded { get; set; } = true;
+    public List<AccountsTreeNode> Children { get; set; } = new();
+    }
+
+    private List<AccountsTreeNode> accountsTreeList = new()
+    {
+        new() { Name = "الأرصدة الإفتتاحية", Code = "EGP", Level = 0 },
+        new() {
+            Name = "المصروفات",
+            Code = "EGP",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "تكلفة البضاعة المباعة", Code = "EGP", Level = 1 },
+                new() {
+                    Name = "مصروفات النشاط",
+                    Code = "EGP",
+                    Level = 1,
+                    IsExpanded = true,
+                    Children = new() {
+                        new() { Name = "مصروفات ادارية وعمومية", Code = "EGP", Level = 2 },
+                        new() { Name = "مواد ووقود وقطع غيار", Code = "EGP", Level = 2, Children = new() {
+                            new() { Name = "وقود وزيوت", Code = "EGP", Level = 3 }
+                        }},
+                        new() { Name = "مصروفات نثرية", Code = "EGP", Level = 2 }
+                    }
+                }
+            }
+        }
+    };
+
+    private RenderFragment RenderAccountsTreeDropdownNode(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(openingBalanceData.LedgerAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-name col-name text-right">
+            @node.Name
+        </span>
+        <span class="tree-node-code col-code text-left text-muted">
+            @if (node.Children.Any())
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
+            @node.Code
+        </span>
+    </div>
+
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderAccountsTreeDropdownNode(child, onSelected)
+    }
+}
+</text>;
+
 public class SupplierGridItem
 {
     public string Code { get; set; } = "";
@@ -1426,6 +1603,7 @@ private void CloseAllPopups()
     isModalTransPopupOpen = false;
     isGroupTypeDropdownOpen = false;
     isParentGroupDropdownOpen = false;
+    isOpeningBalanceAccountPopupOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "حساب المخزون الرئيسي - 102", "حساب المخزون الفرعي - 103" };
@@ -1498,6 +1676,17 @@ public class EquationRowModel
 {
     public string Field { get; set; } = "";
     public string Equation { get; set; } = "";
+}
+
+public class OpeningBalanceModel
+{
+    public decimal Quantity { get; set; }
+    public string Unit { get; set; } = "";
+    public string QuantityUnit { get; set; } = "";
+    public decimal UnitCost { get; set; }
+    public decimal TotalCost { get; set; }
+    public DateTime Date { get; set; } = DateTime.Today;
+    public string LedgerAccount { get; set; } = "";
 }
 }
 
@@ -2082,6 +2271,13 @@ public class EquationRowModel
         min-width: 380px !important;
     }
 
+    .accounts-tree-dropdown-panel {
+        width: 380px !important;
+        min-width: 380px !important;
+        right: auto !important;
+        left: 0 !important;
+    }
+
     .tree-grid-row {
         display: flex;
         justify-content: space-between;
@@ -2250,132 +2446,44 @@ public class EquationRowModel
             background-color: #e9f2ff;
         }
 
-    .accounts-tree-modal-layer {
-        z-index: 5000 !important;
-    }
-
-    .accounts-tree-dialog {
-        background: #ffffff;
-        border-radius: 4px;
-        width: 440px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        border: 1px solid #ced4da;
+    .opening-balance-modal-dialog {
+        background: #f8f9fa;
+        border-radius: 6px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        position: relative;
-        z-index: 5001;
     }
 
-    .accounts-tree-topbar {
+    .opening-balance-modal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        background: #ffffff;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+
+    .ob-col {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #f8f9fa;
-        padding: 6px 12px;
-        border-bottom: 1px solid #dee2e6;
+        flex-direction: column;
+        gap: 6px;
     }
 
-    .accounts-tree-title {
-        font-size: 0.95rem;
-        font-weight: bold;
-        color: #0d6efd;
+    .ob-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #495057;
     }
 
-    .accounts-topbar-actions {
+    .ob-input-row {
         display: flex;
         align-items: center;
         gap: 4px;
     }
 
-    .btn-acc-win {
-        border: none;
-        background: transparent;
-        color: #6c757d;
-        cursor: pointer;
-        font-size: 0.85rem;
-        padding: 2px 6px;
-        line-height: 1;
-    }
-
-    .accounts-search-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background-color: #fdfdfd;
-        border-bottom: 1px solid #eee;
-    }
-
-    .acc-search-lbl {
-        font-size: 0.85rem;
-        color: #495057;
-        font-weight: bold;
-    }
-
-    .acc-search-input {
-        height: 28px;
-        font-size: 0.82rem;
-        text-align: left;
-        direction: ltr;
-    }
-
-    .accounts-tree-table-header {
-        display: flex;
-        background-color: #f1f3f6;
-        border-bottom: 1px solid #dee2e6;
-        font-weight: bold;
-        font-size: 0.83rem;
-        color: #333;
-        padding: 6px 12px;
-    }
-
-    .acc-col-name {
-        flex: 1;
-        text-align: right;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .acc-col-code {
+    .ob-mini-select {
         width: 80px;
-        text-align: center;
-        font-weight: bold;
-    }
-
-    .accounts-tree-body {
-        max-height: 240px;
-        overflow-y: auto;
-        background-color: #ffffff;
-    }
-
-    .acc-row {
-        display: flex;
-        align-items: center;
-        padding: 5px 12px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        border-bottom: 1px solid #f8f9fa;
-        user-select: none;
-    }
-
-        .acc-row:hover {
-            background-color: #f0f7ff;
-        }
-
-    .acc-selected-row {
-        background-color: #fff3cd !important;
-        border-right: 3px solid #ffc107;
-    }
-
-    .acc-arrow-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 14px;
-        color: #495057;
-        cursor: pointer;
     }
 
     .group-modal-layer {
@@ -2798,7 +2906,7 @@ public class EquationRowModel
     .dexef-logo-area {
         display: flex;
         align-items: center;
-        justify-content:flex-end;
+        justify-content: flex-end;
     }
 
     .dexef-logo-text {
