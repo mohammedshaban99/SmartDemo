@@ -1,33 +1,70 @@
 ﻿@using SmartDemo.Components.Models
 
-<div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
-    <div class="table-popup-header d-flex justify-content-between">
-        <span class="col-code text-right">الرقم</span>
-        <span class="col-name text-left">الاسم</span>
+<div class="dropdown-anchor">
+    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDropdown">
+        <span class="combo-display-text">@(string.IsNullOrEmpty(SelectedValue) ? Placeholder : SelectedValue)</span>
+        <div class="combo-icons-inside">
+            @if (ShowAddButton)
+            {
+                <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OnAddClicked" title="إضافة">+</button>
+            }
+            <span class="combo-arrow">▼</span>
+        </div>
     </div>
-    <div class="table-popup-list">
-        @foreach (var node in Nodes)
-        {
-            @RenderTreeNode(node)
-        }
-    </div>
-    <div class="table-popup-footer">
-        <button type="button" class="btn-table-close" @onclick="OnClose">✕</button>
-        <span class="resizer-dots">⠿</span>
-    </div>
+
+    @if (isOpen)
+    {
+        <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
+            <div class="table-popup-header d-flex justify-content-between">
+                <span class="col-name text-right">الاسم</span>
+                <span class="col-code text-left">الرقم</span>
+            </div>
+            <div class="table-popup-list">
+                @foreach (var node in Nodes)
+                {
+                    @RenderTreeNode(node)
+                }
+            </div>
+            <div class="table-popup-footer">
+                <button type="button" class="btn-table-close" @onclick="Close">✕</button>
+                <span class="resizer-dots">⠿</span>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter] public List<TreeTypeNode> Nodes { get; set; } = new();
     [Parameter] public string SelectedValue { get; set; } = "";
-    [Parameter] public EventCallback<TreeTypeNode> OnNodeSelected { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "اختر المجموعة...";
+    [Parameter] public bool ShowAddButton { get; set; } = false;
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+    [Parameter] public EventCallback OnAddClick { get; set; }
+
+    private bool isOpen = false;
+
+    private void ToggleDropdown() => isOpen = !isOpen;
+    public void Close() => isOpen = false;
+
+    private async Task SelectNode(TreeTypeNode node)
+    {
+        SelectedValue = node.Name;
+        isOpen = false;
+        await SelectedValueChanged.InvokeAsync(node.Name);
+    }
+
+    private async Task OnAddClicked()
+    {
+        isOpen = false;
+        await OnAddClick.InvokeAsync();
+    }
 
     private RenderFragment RenderTreeNode(TreeTypeNode node) => @<text>
     <div class="tree-grid-row @(SelectedValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
-         style="@($"padding-right: {node.Level * 16 + 12}px;")"
-         @onclick="() => OnNodeSelected.InvokeAsync(node)">
-        <span class="tree-node-code col-code text-right text-muted">
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => SelectNode(node)">
+        <span class="tree-node-name col-name text-right">@node.Name</span>
+        <span class="tree-node-code col-code text-left text-muted">
             @if (node.Children.Any())
                         {
             <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
@@ -35,9 +72,6 @@
             </span>
                         }
             @node.Code
-        </span>
-        <span class="tree-node-name col-name text-left">
-            @node.Name
         </span>
     </div>
 
@@ -89,6 +123,7 @@
         font-size: 0.83rem;
         cursor: pointer;
         border-bottom: 1px solid #f2f2f2;
+        padding: 5px 8px;
     }
 
         .tree-grid-row:hover {
@@ -101,12 +136,12 @@
 
     .tree-node-name {
         flex: 1;
-        text-align: left;
+        text-align: right;
     }
 
     .tree-node-code {
         width: 80px;
-        text-align: right;
+        text-align: left;
     }
 
     .active-row {

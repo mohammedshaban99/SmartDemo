@@ -435,7 +435,7 @@
                     </div>
                 </div>
 
-                <!-- Table Section -->
+                <!-- Table Section with Inline Inputs -->
                 <div class="section-with-blue-line mb-4">
                     <div class="table-scroll-wrapper">
                         <table class="item-details-table">
@@ -456,15 +456,15 @@
                                 @foreach (var row in itemData.UnitsTableRows)
                                 {
                                     <tr>
-                                        <td>@row.Barcode</td>
-                                        <td>@row.PiecesCount</td>
-                                        <td>@row.Unit</td>
-                                        <td>@row.PurchasePrice</td>
-                                        <td>@row.SalePrice</td>
+                                        <td><input type="text" class="clean-input w-100 text-center" @bind="row.Barcode" /></td>
+                                        <td><input type="number" class="clean-input w-100 text-center" @bind="row.PiecesCount" /></td>
+                                        <td><input type="text" class="clean-input w-100 text-center" @bind="row.Unit" /></td>
+                                        <td><input type="number" class="clean-input w-100 text-center" @bind="row.PurchasePrice" /></td>
+                                        <td><input type="number" class="clean-input w-100 text-center" @bind="row.SalePrice" /></td>
                                         <td><input type="checkbox" @bind="row.IsDefaultPurchase" /></td>
                                         <td><input type="checkbox" @bind="row.IsDefaultSale" /></td>
                                         <td><input type="checkbox" @bind="row.IsActive" /></td>
-                                        <td><button class="delete-icon-btn" type="button">✖</button></td>
+                                        <td><button class="delete-icon-btn" type="button" @onclick="() => DeleteRow(row)">✖</button></td>
                                     </tr>
                                 }
                             </tbody>
@@ -1105,90 +1105,6 @@
                                     <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
                                 </div>
                             </div>
-
-                            <div class="section-block-title text-primary">التنبيهات</div>
-                            <div class="section-with-blue-line">
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">الحد الادنى</span>
-                                    <div class="flex-1">
-                                        <CalcInputControl UnitLabel="قطعة" />
-                                    </div>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">الحد الأقصى</span>
-                                    <div class="flex-1">
-                                        <CalcInputControl UnitLabel="قطعة" />
-                                    </div>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">فترة الركود</span>
-                                    <div class="flex-1">
-                                        <CalcInputControl UnitLabel="يوم" />
-                                    </div>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">التنبيه قبل انتهاء الصلاحية بـ</span>
-                                    <div class="flex-1">
-                                        <CalcInputControl UnitLabel="يوم" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accounts-column-block">
-                            <div class="section-block-title text-primary">الحسابات</div>
-                            <div class="section-with-blue-line mb-4">
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب المخزون</span>
-                                    <select class="clean-input flex-1"><option>...</option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب المبيعات</span>
-                                    <select class="clean-input flex-1"><option>...</option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب تكلفة المبيعات</span>
-                                    <select class="clean-input flex-1"><option>...</option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب مرتجع المبيعات</span>
-                                    <select class="clean-input flex-1"><option>...</option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">حساب تحت التشغيل</span>
-                                    <select class="clean-input flex-1"><option>...</option></select>
-                                </div>
-                            </div>
-
-                            <div class="section-block-title text-primary">الخصم</div>
-                            <div class="section-with-blue-line mb-4">
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">طريقة الخصم</span>
-                                    <select class="clean-input flex-1"><option>بالنسبة</option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">يخضع خصم التعجيل</span>
-                                    <select class="clean-input flex-1"><option></option></select>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">خصم المشتريات</span>
-                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
-                                    <span class="small text-muted">%</span>
-                                </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">خصم المبيعات</span>
-                                    <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
-                                    <span class="small text-muted">%</span>
-                                </div>
-                            </div>
-
-                            <div class="section-block-title text-primary">الخصم</div>
-                            <div class="section-with-blue-line">
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">مصعية التركيب</span>
-                                    <select class="clean-input flex-1"><option></option></select>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 }
@@ -1230,49 +1146,6 @@
                     <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">حفظ</button>
                     <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">إغلاق</button>
                 </div>
-            </div>
-        </div>
-    </div>
-}
-
-<!-- 4. Modal: شجرة الحسابات المنبثقة التفاعلية -->
-@if (isAccountsModalOpen)
-{
-    <div class="modal-backdrop-blur accounts-tree-modal-layer">
-        <div class="accounts-tree-dialog" dir="rtl" @onclick:stopPropagation>
-            <div class="accounts-tree-topbar">
-                <span class="accounts-tree-title">الحسابات</span>
-                <div class="accounts-topbar-actions">
-                    <button type="button" class="btn-acc-win" @onclick="() => isAccountsModalOpen = false">✕</button>
-                </div>
-            </div>
-            <div class="accounts-search-bar">
-                <span class="acc-search-lbl">بحث</span>
-                <input type="text" class="clean-input flex-1 acc-search-input" placeholder="...Enter text to search" @bind="accountSearchTerm" @bind:event="oninput" />
-            </div>
-            <div class="accounts-tree-table-header">
-                <div class="acc-col-name">الاسم</div>
-                <div class="acc-col-code">رقم الحساب</div>
-            </div>
-            <div class="accounts-tree-body">
-                @foreach (var acc in FilteredAccountNodes)
-                {
-                    <div class="acc-row @(selectedAccountId == acc.Code ? "acc-selected-row" : "")"
-                         style="padding-right: @(acc.Level * 18 + 8)px;"
-                         @onclick="() => SelectAccountNode(acc)"
-                         @ondblclick="() => ApplySelectedAccount(acc)">
-                        <div class="acc-col-name">
-                            @if (acc.Children.Any())
-                            {
-                                <span class="acc-arrow-toggle" @onclick:stopPropagation @onclick="() => acc.IsExpanded = !acc.IsExpanded">
-                                    <i class="bi @(acc.IsExpanded ? "bi-caret-down-fill" : "bi-caret-left-fill")"></i>
-                                </span>
-                            }
-                            <span>@acc.Name</span>
-                        </div>
-                        <div class="acc-col-code">@acc.Code</div>
-                    </div>
-                }
             </div>
         </div>
     </div>
@@ -1507,25 +1380,13 @@ private List<string> policyList = new() { "توزيع مباشر", "توزيع �
 private void TogglePolicyPopup() { CloseAllPopups(); isPolicyPopupOpen = !isPolicyPopupOpen; }
 private void SelectPolicy(string p) { itemData.DistributionPolicy = p; isPolicyPopupOpen = false; }
 
-private bool isAccountsModalOpen = false;
-private string accountSearchTerm = "";
-private string selectedAccountId = "102";
-public class AccountNodeItem
+private void DeleteRow(UnitRowModel row)
 {
-    public string Name { get; set; } = "";
-    public string Code { get; set; } = "";
-    public int Level { get; set; } = 0;
-    public bool IsExpanded { get; set; } = true;
-    public List<AccountNodeItem> Children { get; set; } = new();
+    if (itemData.UnitsTableRows.Count > 1)
+    {
+        itemData.UnitsTableRows.Remove(row);
     }
-    private List<AccountNodeItem> accountTreeData = new() {
-        new() { Name = "الأصول المتداولة", Code = "100", Level = 0, Children = new() {
-            new() { Name = "حساب المخزون الرئيسي", Code = "102", Level = 1 }
-        }}
-    };
-    private IEnumerable<AccountNodeItem> FilteredAccountNodes => string.IsNullOrWhiteSpace(accountSearchTerm) ? accountTreeData : accountTreeData.Where(a => a.Name.Contains(accountSearchTerm));
-    private void SelectAccountNode(AccountNodeItem node) { selectedAccountId = node.Code; }
-private void ApplySelectedAccount(AccountNodeItem node) { isAccountsModalOpen = false; }
+}
 
 private void CloseAllPopups()
 {
@@ -2777,18 +2638,6 @@ public class EquationRowModel
         line-height: 1;
         padding: 2px 4px;
         cursor: pointer;
-    }
-
-    .group-tab-accounts-layout {
-        display: flex;
-        flex-direction: row;
-        gap: 32px;
-    }
-
-    .modal-accounts-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
     }
 
     .master-modal-footer {
