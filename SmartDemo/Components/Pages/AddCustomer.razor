@@ -460,14 +460,44 @@
                         </select>
                         <span class="req-star me-1">*</span>
                     </div>
-                    <div class="field-entry-line mb-3">
+
+                    <!-- حقل الضريبة المحدث ليطابق الديسكتوب تماماً -->
+                    <div class="field-entry-line mb-3 pos-relative">
                         <span class="field-title-wide">الضريبة</span>
-                        <select class="clean-input flex-1" @bind="customerData.TaxType">
-                            <option value="ضريبة القيمة المضافة 15 %">ضريبة القيمة المضافة 15 %</option>
-                            <option value="معفي من الضريبة">معفي من الضريبة</option>
-                        </select>
+                        <div class="dropdown-anchor flex-1">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxDropdownPopup">
+                                <span class="combo-display-text">@customerData.TaxType</span>
+                                <div class="combo-icons-inside">
+                                    <button class="btn-inside-plus" type="button">+</button>
+                                    <span class="combo-arrow">▼</span>
+                                </div>
+                            </div>
+                            @if (isTaxDropdownPopupOpen)
+                            {
+                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                    <div class="supplier-grid-header">
+                                        <div class="col-code" style="width: 100px;">النسبة</div>
+                                        <div class="col-name">الاسم</div>
+                                    </div>
+                                    <div class="supplier-grid-rows" style="max-height: 220px;">
+                                        @foreach (var tax in mockTaxList)
+                                        {
+                                            <div class="supplier-row @(customerData.TaxType == tax.Name ? "active-row" : "")" @onclick="() => SelectTax(tax)">
+                                                <div class="col-code" style="width: 100px;">@tax.Rate</div>
+                                                <div class="col-name">@tax.Name</div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isTaxDropdownPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                         <span class="req-star me-1">*</span>
                     </div>
+
                     <div class="field-entry-line mb-3">
                         <span class="field-title-wide">رقم التسجيل</span>
                         <input type="text" class="clean-input flex-1" @bind="customerData.TaxRegistrationNumber" />
@@ -628,6 +658,7 @@
     private bool isCompPopupOpen = false;
     private bool isOpeningBalanceDatePopupOpen = false;
     private bool isCreditCalcOpen = false;
+    private bool isTaxDropdownPopupOpen = false;
 
     private string calcDisplay = "80000";
 
@@ -640,6 +671,7 @@
     private void ToggleCompPopup() { CloseAllPopups(); isCompPopupOpen = !isCompPopupOpen; }
     private void ToggleOpeningBalanceDatePopup() { CloseAllPopups(); isOpeningBalanceDatePopupOpen = !isOpeningBalanceDatePopupOpen; }
     private void ToggleCreditCalc() { CloseAllPopups(); isCreditCalcOpen = !isCreditCalcOpen; }
+    private void ToggleTaxDropdownPopup() { CloseAllPopups(); isTaxDropdownPopupOpen = !isTaxDropdownPopupOpen; }
 
     private void OpenNestedModal() { }
     private void CloseAllPopups()
@@ -653,6 +685,7 @@
         isCompPopupOpen = false;
         isOpeningBalanceDatePopupOpen = false;
         isCreditCalcOpen = false;
+        isTaxDropdownPopupOpen = false;
     }
 
     private void SaveData() { }
@@ -681,6 +714,19 @@
         new() { Code = "LBP", Name = "ليرة لبنانية", Rate = 890 }
     };
     private void SelectCurrency(CurrencyItem item) { customerData.Currency = item.Code; customerData.ExchangeRate = item.Rate; isCurrencyPopupOpen = false; }
+
+    public class TaxItem { public string Name { get; set; } = ""; public string Rate { get; set; } = ""; }
+    private List<TaxItem> mockTaxList = new()
+    {
+        new() { Name = "ضريبة القيمة المضافة 14%", Rate = "14" },
+        new() { Name = "ضريبة القيمة المضافة 15 %", Rate = "15" },
+        new() { Name = "ضريبة القيمة المضافة 5%", Rate = "5" },
+        new() { Name = "ضريبة رسم خدمة 2%", Rate = "2" },
+        new() { Name = "ضريبة المقاولات والتوريد .5%", Rate = "0.5" },
+        new() { Name = "ضريبة استقطاع المعاملات عبر الحدود...", Rate = "20" },
+        new() { Name = "الضريبة العقارية", Rate = "10" }
+    };
+    private void SelectTax(TaxItem item) { customerData.TaxType = item.Name; isTaxDropdownPopupOpen = false; }
 
     public class TreeNodeModel
     {
@@ -779,7 +825,7 @@ private CustomerModel customerData = new()
     InsuranceNo = "",
     TaxEnabled = true,
     TaxAccountType = "شركة محلية",
-    TaxType = "ضريبة القيمة المضافة 15 %",
+    TaxType = "ضريبة رسم خدمة 2%",
     TaxRegistrationNumber = "99887766-5",
     TaxCard = "554433-2",
     TaxAuthorityOffice = "مأمورية ضرائب الاستثمار",
@@ -1392,10 +1438,13 @@ public class CustomerModel
     }
 
     .insurance-card-box {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
         border-radius: 4px;
         padding: 12px 14px;
         position: relative;
         width: 100%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .insurance-card-header {
