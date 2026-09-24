@@ -44,9 +44,9 @@
                 </div>
 
                 <!-- Row 3: Opening Balance Date & Value -->
-                <div class="form-row-compact">
+                <div class="form-row-compact pos-relative">
                     <span class="small text-muted ms-1">في</span>
-                    <input type="text" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" placeholder="2026-09-21" />
+                    <input type="date" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" />
                     <span class="small text-muted ms-1 me-2">المبلغ</span>
                     <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
                 </div>
@@ -72,131 +72,299 @@
         @if (activeTab == 1)
         {
             <div class="tab-content-seamless">
-                <div class="section-title-header mb-3">
-                    <span class="fw-bold fs-6 text-dark">التصنيف</span>
+
+                <!-- 1. التصنيف -->
+                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <span class="fw-bold fs-6 text-dark section-header-title">التصنيف</span>
                 </div>
 
                 <div class="section-with-blue-line mb-4">
-                    <div class="two-column-form-grid">
-                        <div class="form-side-column">
-                            <!-- اسم الفرع -->
-                            <div class="field-entry-line">
-                                <span class="field-title">اسم الفرع</span>
+                    <div class="full-width-stack">
+                        <!-- اسم الفرع -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">اسم الفرع</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
+                                    <span class="combo-display-text">@customerData.Branch</span>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isBranchPopupOpen)
+                                {
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                            <div class="col-code">الكود</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            @foreach (var b in mockBranchList)
+                                            {
+                                                <div class="supplier-row @(customerData.Branch == b.Name ? "active-row" : "")" @onclick="() => SelectBranch(b.Name)">
+                                                    <div class="col-name">@b.Name</div>
+                                                    <div class="col-code">@b.Code</div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isBranchPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span class="req-star me-1">*</span>
+                            <div class="d-flex align-items-center gap-1 ms-3">
+                                <input type="checkbox" id="chkAllBranches" class="chk-box" />
+                                <label for="chkAllBranches" class="small text-muted" style="white-space: nowrap;">كل الفروع</label>
+                            </div>
+                        </div>
+
+                        <!-- يوجد بداخل -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">يوجد بداخل</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleNestedPopup">
+                                    <span class="combo-display-text">@customerData.NestedWithin</span>
+                                    <div class="combo-icons-inside">
+                                        <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenNestedModal">+</button>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+                                @if (isNestedPopupOpen)
+                                {
+                                    <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            @foreach (var node in mockNestedTree)
+                                            {
+                                                @RenderNestedTreeNode(node, name => { customerData.NestedWithin = name; isNestedPopupOpen = false; })
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isNestedPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- العملة الافتراضية -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">العملة الافتراضية</span>
+                            <div class="d-flex align-items-center gap-2" style="max-width: 620px; width: 100%;">
+                                <input type="number" class="clean-input text-center" style="width: 80px;" @bind="customerData.ExchangeRate" />
                                 <div class="dropdown-anchor flex-1">
-                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
-                                        <span class="combo-display-text">@customerData.Branch</span>
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                        <span class="combo-display-text">@customerData.Currency</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                     </div>
-                                    @if (isBranchPopupOpen)
+                                    @if (isCurrencyPopupOpen)
                                     {
-                                        <div class="custom-dropdown-panel" @onclick:stopPropagation>
-                                            <div class="panel-scroll-content">
-                                                @foreach (var branch in mockBranches)
+                                        <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-code">الكود</div>
+                                                <div class="col-name">الاسم</div>
+                                                <div class="col-code">المعامل</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var c in mockCurrencyList)
                                                 {
-                                                    <div class="panel-checkbox-row" @onclick="() => SelectBranch(branch)">@branch</div>
+                                                    <div class="supplier-row @(customerData.Currency == c.Code ? "active-row" : "")" @onclick="() => SelectCurrency(c)">
+                                                        <div class="col-code">@c.Code</div>
+                                                        <div class="col-name">@c.Name</div>
+                                                        <div class="col-code">@c.Rate</div>
+                                                    </div>
                                                 }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
                                             </div>
                                         </div>
                                     }
                                 </div>
-                                <span class="req-star me-1">*</span>
-                            </div>
-
-                            <!-- يوجد بداخل -->
-                            <div class="field-entry-line">
-                                <span class="field-title">يوجد بداخل</span>
-                                <div class="dropdown-anchor flex-1">
-                                    <div class="custom-combo-trigger">
-                                        <span class="combo-display-text">@customerData.NestedWithin</span>
-                                        <div class="combo-icons-inside">
-                                            <button class="btn-inside-plus" type="button">+</button>
-                                            <span class="combo-arrow">▼</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- العملة الافتراضية -->
-                            <div class="field-entry-line">
-                                <span class="field-title">العملة الافتراضية</span>
-                                <div class="d-flex align-items-center gap-2 flex-1">
-                                    <input type="number" class="clean-input text-center" style="width: 80px;" @bind="customerData.ExchangeRate" />
-                                    <select class="clean-input flex-1" @bind="customerData.Currency">
-                                        @foreach (var cur in mockCurrencies)
-                                        {
-                                            <option value="@cur">@cur</option>
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- حساب الاستاذ -->
-                            <div class="field-entry-line">
-                                <span class="field-title">حساب الاستاذ</span>
-                                <select class="clean-input flex-1" @bind="customerData.LedgerAccount">
-                                    @foreach (var acc in mockLedgerAccounts)
-                                    {
-                                        <option value="@acc">@acc</option>
-                                    }
-                                </select>
-                                <span class="req-star me-1">*</span>
                             </div>
                         </div>
 
-                        <div class="form-side-column">
-                            <div class="section-title-header mb-1 text-muted small fw-bold">سياسة التعامل</div>
-
-                            <!-- التعامل الافتراضي -->
-                            <div class="field-entry-line">
-                                <span class="field-title">التعامل الافتراضي</span>
-                                <select class="clean-input flex-1" @bind="customerData.DefaultDealType">
-                                    <option value="قسط">قسط</option>
-                                    <option value="نقدي">نقدي</option>
-                                    <option value="آجل">آجل</option>
-                                </select>
-                                <select class="clean-input" style="width: 120px;"><option>الدخل الشهري</option></select>
-                            </div>
-
-                            <!-- حد الإئتمان -->
-                            <div class="field-entry-line">
-                                <span class="field-title">حد الإئتمان</span>
-                                <input type="number" class="clean-input flex-1" @bind="customerData.CreditLimit" />
-                            </div>
-
-                            <!-- جهة التعامل -->
-                            <div class="field-entry-line">
-                                <span class="field-title">جهة التعامل</span>
-                                <div class="dropdown-anchor flex-1">
-                                    <div class="custom-combo-trigger">
-                                        <span class="combo-display-text">@customerData.DealSide</span>
-                                        <div class="combo-icons-inside">
-                                            <button class="btn-inside-plus" type="button">+</button>
-                                            <span class="combo-arrow">▼</span>
+                        <!-- حساب الاستاذ -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">حساب الاستاذ</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerPopup">
+                                    <span class="combo-display-text">@customerData.LedgerAccount</span>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isLedgerPopupOpen)
+                                {
+                                    <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            @foreach (var node in mockLedgerTree)
+                                            {
+                                                @RenderLedgerTreeNode(node, name => { customerData.LedgerAccount = name; isLedgerPopupOpen = false; })
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isLedgerPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
                                         </div>
                                     </div>
-                                </div>
-                                <span class="req-star me-1">*</span>
+                                }
                             </div>
-
-                            <!-- الحساب المكمل -->
-                            <div class="field-entry-line">
-                                <span class="field-title">الحساب المكمل</span>
-                                <select class="clean-input flex-1" @bind="customerData.ComplementaryAccount">
-                                    <option value="الأرصدة الإفتتاحية">الأرصدة الإفتتاحية</option>
-                                    <option value="حساب الأرباح والخسائر">حساب الأرباح والخسائر</option>
-                                </select>
-                                <span class="req-star me-1">*</span>
-                            </div>
+                            <span class="req-star me-1">*</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- الاضافات -->
-                <div class="section-title-header mb-3">
-                    <span class="fw-bold fs-6 text-dark">الاضافات</span>
+                <!-- 2. سياسة التعامل -->
+                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <span class="fw-bold fs-6 text-dark section-header-title">سياسة التعامل</span>
                 </div>
+
+                <div class="section-with-blue-line mb-4">
+                    <div class="full-width-stack">
+                        <!-- التعامل الافتراضي -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">التعامل الافتراضي</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealTypePopup">
+                                    <div class="d-flex align-items-center gap-2 flex-1">
+                                        <span class="combo-display-text text-start">@customerData.DefaultDealType</span>
+                                        <span class="badge-signal-bars">📶</span>
+                                    </div>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isDealTypePopupOpen)
+                                {
+                                    <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="panel-scroll-content">
+                                            @foreach (var dt in new[] { "كاش", "أجل", "قسط" })
+                                            {
+                                                <div class="panel-checkbox-row justify-content-between" @onclick="() => { customerData.DefaultDealType = dt; isDealTypePopupOpen = false; }">
+                                                    <span>@dt</span>
+                                                    <span>📶</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- حد الإئتمان -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">حد الإئتمان</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCreditCalc">
+                                    <span class="combo-display-text text-center">@customerData.CreditLimit</span>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isCreditCalcOpen)
+                                {
+                                    <div class="calc-popup-box calc-desktop-popup" style="left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="calc-screen">@calcDisplay</div>
+                                        <div class="calc-grid">
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                            <button type="button" class="calc-btn calc-op"></button>
+                                            <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                            <button type="button" class="calc-btn calc-mem">MC</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                            <button type="button" class="calc-btn calc-mem">MR</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                            <button type="button" class="calc-btn calc-mem">MS</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                            <button type="button" class="calc-btn calc-mem span-col-2"></button>
+                                            <button type="button" class="calc-btn calc-mem">+M</button>
+                                            <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                            <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- جهة التعامل -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">جهة التعامل</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealSidePopup">
+                                    <span class="combo-display-text">@customerData.DealSide</span>
+                                    <div class="combo-icons-inside">
+                                        <button class="btn-inside-plus" type="button">+</button>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+                                @if (isDealSidePopupOpen)
+                                {
+                                    <div class="custom-table-popup" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="table-popup-header">الاسم</div>
+                                        <div class="table-popup-list">
+                                            @foreach (var ds in new[] { "موردين بضريبة", "عملاء جملة", "عملاء قطاعي" })
+                                            {
+                                                <div class="table-popup-row @(customerData.DealSide == ds ? "active-row" : "")" @onclick="() => { customerData.DealSide = ds; isDealSidePopupOpen = false; }">@ds</div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isDealSidePopupOpen = false">✕</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span class="req-star me-1">*</span>
+                        </div>
+
+                        <!-- الحساب المكمل -->
+                        <div class="field-entry-line pos-relative">
+                            <span class="field-title">الحساب المكمل</span>
+                            <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCompPopup">
+                                    <span class="combo-display-text">@customerData.ComplementaryAccount</span>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isCompPopupOpen)
+                                {
+                                    <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="panel-scroll-content">
+                                            @foreach (var comp in new[] { "الأرصدة الإفتتاحية", "حساب الأرباح والخسائر" })
+                                            {
+                                                <div class="panel-checkbox-row" @onclick="() => { customerData.ComplementaryAccount = comp; isCompPopupOpen = false; }">@comp</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span class="req-star me-1">*</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. الاضافات -->
+                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <span class="fw-bold fs-6 text-dark section-header-title">الاضافات</span>
+                </div>
+
                 <div class="section-with-blue-line">
-                    <div class="two-column-form-grid">
+                    <div class="two-column-form-grid align-items-start">
                         <div class="form-side-column">
                             <div class="field-entry-line">
                                 <span class="field-title">شريحة الاسعار</span>
@@ -235,14 +403,31 @@
                             </div>
                         </div>
 
-                        <div class="form-side-column justify-content-center">
-                            <div class="d-flex align-items-center gap-3 p-3 bg-white border rounded">
-                                <span class="fw-bold text-dark">شركات التأمين مؤمن عليه ؟</span>
-                                <label class="switch-toggle-label">
-                                    <input type="checkbox" class="switch-input" @bind="customerData.IsInsured" />
-                                    <span class="switch-slider"></span>
-                                </label>
-                                <span class="text-muted small">@(customerData.IsInsured ? "نعم" : "لا")</span>
+                        <!-- الشركات التأمين Section Layout -->
+                        <div class="form-side-column justify-content-start" style="position: relative;">
+                            <div class="insurance-card-box">
+                                <div class="insurance-card-header">
+                                    <span>شركات التأمين</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="small text-muted">مؤمن عليه ؟</span>
+                                        <label class="switch-toggle-label">
+                                            <input type="checkbox" class="switch-input" @bind="customerData.IsInsured" />
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                        <span class="small text-muted">لا</span>
+                                    </div>
+                                </div>
+                                <div class="insurance-card-body">
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title" style="width: 90px;">شركة التأمين</span>
+                                        <select class="clean-input flex-1" disabled="@(!customerData.IsInsured)"><option></option></select>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 90px;">الرقم التأميني /</span>
+                                        <input type="text" class="clean-input flex-1" @bind="customerData.InsuranceNo" disabled="@(!customerData.IsInsured)" />
+                                    </div>
+                                </div>
+                                <div class="insurance-blue-bar"></div>
                             </div>
                         </div>
                     </div>
@@ -333,7 +518,7 @@
                     </div>
                     <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="customerData.Governorate" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="customerData.City" /></div>
-                    <div class="field-entry-line mb-2 street"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
+                    <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="customerData.Landmark" /></div>
                     <div class="field-entry-line mb-2">
                         <span class="field-title">رقم المبنى</span>
@@ -435,130 +620,807 @@
 @code {
     private int activeTab = 1;
     private bool isBranchPopupOpen = false;
-    private void ToggleBranchPopup() => isBranchPopupOpen = !isBranchPopupOpen;
-    private void CloseAllPopups() => isBranchPopupOpen = false;
+    private bool isNestedPopupOpen = false;
+    private bool isCurrencyPopupOpen = false;
+    private bool isLedgerPopupOpen = false;
+    private bool isDealTypePopupOpen = false;
+    private bool isDealSidePopupOpen = false;
+    private bool isCompPopupOpen = false;
+    private bool isOpeningBalanceDatePopupOpen = false;
+    private bool isCreditCalcOpen = false;
+
+    private string calcDisplay = "80000";
+
+    private void ToggleBranchPopup() { CloseAllPopups(); isBranchPopupOpen = !isBranchPopupOpen; }
+    private void ToggleNestedPopup() { CloseAllPopups(); isNestedPopupOpen = !isNestedPopupOpen; }
+    private void ToggleCurrencyPopup() { CloseAllPopups(); isCurrencyPopupOpen = !isCurrencyPopupOpen; }
+    private void ToggleLedgerPopup() { CloseAllPopups(); isLedgerPopupOpen = !isLedgerPopupOpen; }
+    private void ToggleDealTypePopup() { CloseAllPopups(); isDealTypePopupOpen = !isDealTypePopupOpen; }
+    private void ToggleDealSidePopup() { CloseAllPopups(); isDealSidePopupOpen = !isDealSidePopupOpen; }
+    private void ToggleCompPopup() { CloseAllPopups(); isCompPopupOpen = !isCompPopupOpen; }
+    private void ToggleOpeningBalanceDatePopup() { CloseAllPopups(); isOpeningBalanceDatePopupOpen = !isOpeningBalanceDatePopupOpen; }
+    private void ToggleCreditCalc() { CloseAllPopups(); isCreditCalcOpen = !isCreditCalcOpen; }
+
+    private void OpenNestedModal() { }
+    private void CloseAllPopups()
+    {
+        isBranchPopupOpen = false;
+        isNestedPopupOpen = false;
+        isCurrencyPopupOpen = false;
+        isLedgerPopupOpen = false;
+        isDealTypePopupOpen = false;
+        isDealSidePopupOpen = false;
+        isCompPopupOpen = false;
+        isOpeningBalanceDatePopupOpen = false;
+        isCreditCalcOpen = false;
+    }
+
     private void SaveData() { }
 
-    private List<string> mockBranches = new() { "الفرع الرئيسي", "فرع قويسنا", "فرع القاهرة", "فرع الإسكندرية" };
-    private List<string> mockCurrencies = new() { "EGP", "USD", "SAR", "AED", "EUR" };
-    private List<string> mockLedgerAccounts = new() { "موردون", "عملاء", "أوراق قبض", "أوراق دفع" };
-    private List<string> mockPriceTiers = new() { "سعر البيع", "سعر الجملة", "سعر نصف الجملة" };
-    private List<string> mockPaymentTerms = new() { "نقدي فوراً", "أجل 30 يوم", "أجل 60 يوم" };
-    private List<string> mockSalesReps = new() { "أحمد محمد", "محمود إبراهيم", "عمرو دياب" };
-
-    private void SelectBranch(string branch)
+    public class BranchItem { public string Name { get; set; } = ""; public string Code { get; set; } = ""; }
+    private List<BranchItem> mockBranchList = new()
     {
-        customerData.Branch = branch;
-        isBranchPopupOpen = false;
+        new() { Name = "فرع قويسنا", Code = "1" },
+        new() { Name = "DEXEF", Code = "2" },
+        new() { Name = "Woo Branch", Code = "3" },
+        new() { Name = "فرع القاهرة الرئيسي", Code = "4" },
+        new() { Name = "فرع الإسكندرية", Code = "5" },
+        new() { Name = "فرع الجيزة", Code = "6" }
+    };
+    private void SelectBranch(string name) { customerData.Branch = name; isBranchPopupOpen = false; }
+
+    public class CurrencyItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public decimal Rate { get; set; } }
+    private List<CurrencyItem> mockCurrencyList = new()
+    {
+        new() { Code = "BHD", Name = "دينار بحريني", Rate = 82 },
+        new() { Code = "EGP", Name = "جنيه مصري", Rate = 1 },
+        new() { Code = "IRR", Name = "ريال إيراني", Rate = 1300 },
+        new() { Code = "IQD", Name = "دينار عراقي", Rate = 1500 },
+        new() { Code = "JOD", Name = "دينار أردني", Rate = 43 },
+        new() { Code = "KWD", Name = "دينار كويتي", Rate = 100 },
+        new() { Code = "LBP", Name = "ليرة لبنانية", Rate = 890 }
+    };
+    private void SelectCurrency(CurrencyItem item) { customerData.Currency = item.Code; customerData.ExchangeRate = item.Rate; isCurrencyPopupOpen = false; }
+
+    public class TreeNodeModel
+    {
+        public string Name { get; set; } = "";
+        public bool IsExpanded { get; set; } = true;
+        public List<TreeNodeModel> Children { get; set; } = new();
     }
 
-    private CustomerModel customerData = new()
+    private List<TreeNodeModel> mockNestedTree = new()
     {
-        CustomerCode = "10109",
-        Name = "شركة التكنولوجيا المتقدمة للتجارة",
-        IsActive = true,
-        OpeningBalanceDate = "2026-09-21",
-        OpeningBalanceAmount = 15400.00m,
-        Branch = "الفرع الرئيسي",
-        NestedWithin = "القسم التجاري الأول",
-        Currency = "EGP",
-        ExchangeRate = 1,
-        LedgerAccount = "موردون",
-        DefaultDealType = "قسط",
-        CreditLimit = 80000.00m,
-        DealSide = "موردين بصريّة",
-        ComplementaryAccount = "الأرصدة الإفتتاحية",
-        PriceTier = "سعر البيع",
-        PaymentTerms = "أجل 30 يوم",
-        SalesRepresentative = "أحمد محمد",
-        IsInsured = false,
-        TaxEnabled = true,
-        TaxAccountType = "شركة محلية",
-        TaxType = "ضريبة القيمة المضافة 15 %",
-        TaxRegistrationNumber = "99887766-5",
-        TaxCard = "554433-2",
-        TaxAuthorityOffice = "مأمورية ضرائب الاستثمار",
-        CommercialRegister = "123456 تجاري عام",
-        Phone1 = "01012345678",
-        Phone2 = "0482345678",
-        Mobile = "01198765432",
-        Email = "info@advancedtech.eg",
-        Governorate = "المنوفية",
-        City = "قويسنا",
-        Street = "شارع الجيش الرئيسي",
-        Landmark = "بجوار البنك الأهلي",
-        BuildingNo = "14",
-        FloorNo = "الثالث",
-        ApartmentNo = "302",
-        FullAddress = "شارع الجيش، برج الأمل، الدور الثالث",
-        HasSerial = false,
-        IsDualRole = true,
-        UsesPoints = false,
-        NationalId = "29501011234567",
-        Employer = "القطاع الخاص",
-        Guarantor1 = "إبراهيم حسن",
-        Guarantor2 = "خالد عبد الله",
-        BankAccountNo = "EG1000030000000123456789",
-        BankName = "بنك مصر - فرع قويسنا",
-        Notes = "عميل مميز ومنتظم في السداد",
-        EnableInternetAccess = true,
-        InternetUsername = "adv_tech_user",
-        InternetPassword = "securePassword123",
-        InternetDisplayName = "مجموعة التقنية المتقدمة"
+        new() { Name = "القسم التجاري الأول", Children = new() { new() { Name = "الفرع التجاري الفرعي" } } }
     };
 
-    public class CustomerModel
+    private List<TreeNodeModel> mockLedgerTree = new()
     {
-        public string CustomerCode { get; set; } = "";
-        public string Name { get; set; } = "";
-        public bool IsActive { get; set; }
-        public string OpeningBalanceDate { get; set; } = "";
-        public decimal OpeningBalanceAmount { get; set; }
-        public string Branch { get; set; } = "";
-        public string NestedWithin { get; set; } = "";
-        public string Currency { get; set; } = "";
-        public decimal ExchangeRate { get; set; }
-        public string LedgerAccount { get; set; } = "";
-        public string DefaultDealType { get; set; } = "";
-        public decimal CreditLimit { get; set; }
-        public string DealSide { get; set; } = "";
-        public string ComplementaryAccount { get; set; } = "";
-        public string PriceTier { get; set; } = "";
-        public string PaymentTerms { get; set; } = "";
-        public string SalesRepresentative { get; set; } = "";
-        public bool IsInsured { get; set; }
-        public bool TaxEnabled { get; set; }
-        public string TaxAccountType { get; set; } = "";
-        public string TaxType { get; set; } = "";
-        public string TaxRegistrationNumber { get; set; } = "";
-        public string TaxCard { get; set; } = "";
-        public string TaxAuthorityOffice { get; set; } = "";
-        public string CommercialRegister { get; set; } = "";
-        public string Phone1 { get; set; } = "";
-        public string Phone2 { get; set; } = "";
-        public string Mobile { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Governorate { get; set; } = "";
-        public string City { get; set; } = "";
-        public string Street { get; set; } = "";
-        public string Landmark { get; set; } = "";
-        public string BuildingNo { get; set; } = "";
-        public string FloorNo { get; set; } = "";
-        public string ApartmentNo { get; set; } = "";
-        public string FullAddress { get; set; } = "";
-        public bool HasSerial { get; set; }
-        public bool IsDualRole { get; set; }
-        public bool UsesPoints { get; set; }
-        public string NationalId { get; set; } = "";
-        public string Employer { get; set; } = "";
-        public string Guarantor1 { get; set; } = "";
-        public string Guarantor2 { get; set; } = "";
-        public string BankAccountNo { get; set; } = "";
-        public string BankName { get; set; } = "";
-        public string Notes { get; set; } = "";
-        public bool EnableInternetAccess { get; set; }
-        public string InternetUsername { get; set; } = "";
-        public string InternetPassword { get; set; } = "";
-        public string InternetDisplayName { get; set; } = "";
+        new() {
+            Name = "الذمم الدائنة",
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "مصروفات مستحقة السداد" },
+                new() { Name = "مرتبات مستحقة السداد" },
+                new() { Name = "إيرادات محصلة مقدما" },
+                new() { Name = "حسابات دائنة أخرى" },
+                new() { Name = "حسابات دائنة للمصالح والهيئات" }
+            }
+        }
+    };
+
+    private RenderFragment RenderNestedTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
+        <span class="col-name text-right">@node.Name</span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+    {
+@foreach (var child in node.Children)
+    {
+@RenderNestedTreeNode(child, onSelected)
+    }
+    }
+</text>;
+
+private RenderFragment RenderLedgerTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
+        <span class="col-name text-right">@node.Name</span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderLedgerTreeNode(child, onSelected)
     }
 }
+</text>;
+
+private List<string> mockPriceTiers = new() { "سعر البيع", "سعر الجملة", "سعر نصف الجملة" };
+private List<string> mockPaymentTerms = new() { "نقدي فوراً", "أجل 30 يوم", "أجل 60 يوم" };
+private List<string> mockSalesReps = new() { "أحمد محمد", "محمود إبراهيم", "عمرو دياب" };
+
+private void CalcPress(string val) { if (calcDisplay == "0" && val != ".") calcDisplay = val; else calcDisplay += val; }
+private void CalcClear() { calcDisplay = "0"; }
+private void CalcClearEntry() { calcDisplay = "0"; }
+private void CalcBack() { if (calcDisplay.Length > 1) calcDisplay = calcDisplay.Substring(0, calcDisplay.Length - 1); else calcDisplay = "0"; }
+private void CalcToggleSign() { if (calcDisplay.StartsWith("-")) calcDisplay = calcDisplay.Substring(1); else if (calcDisplay != "0") calcDisplay = "-" + calcDisplay; }
+private void CalcEquals()
+{
+    try
+    {
+        var dt = new System.Data.DataTable();
+        var res = dt.Compute(calcDisplay.Replace("x", "*"), "");
+        calcDisplay = res?.ToString() ?? "0";
+        if (decimal.TryParse(calcDisplay, out var d)) customerData.CreditLimit = d;
+    }
+    catch { }
+}
+
+private CustomerModel customerData = new()
+{
+    CustomerCode = "10110",
+    Name = "شركة التكنولوجيا المتقدمة للتجارة",
+    IsActive = true,
+    OpeningBalanceDate = new DateTime(2026, 9, 24),
+    OpeningBalanceAmount = 15400.00m,
+    Branch = "الفرع الرئيسي",
+    NestedWithin = "القسم التجاري الأول",
+    Currency = "EGP",
+    ExchangeRate = 1,
+    LedgerAccount = "موردون",
+    DefaultDealType = "كاش",
+    CreditLimit = 80000.00m,
+    DealSide = "موردين بضريبة",
+    ComplementaryAccount = "الأرصدة الإفتتاحية",
+    PriceTier = "سعر البيع",
+    PaymentTerms = "أجل 30 يوم",
+    SalesRepresentative = "أحمد محمد",
+    IsInsured = false,
+    InsuranceNo = "",
+    TaxEnabled = true,
+    TaxAccountType = "شركة محلية",
+    TaxType = "ضريبة القيمة المضافة 15 %",
+    TaxRegistrationNumber = "99887766-5",
+    TaxCard = "554433-2",
+    TaxAuthorityOffice = "مأمورية ضرائب الاستثمار",
+    CommercialRegister = "123456 تجاري عام",
+    Phone1 = "01012345678",
+    Phone2 = "0482345678",
+    Mobile = "01198765432",
+    Email = "info@advancedtech.eg",
+    Governorate = "المنوفية",
+    City = "قويسنا",
+    Street = "شارع الجيش الرئيسي",
+    Landmark = "بجوار البنك الأهلي",
+    BuildingNo = "14",
+    FloorNo = "الثالث",
+    ApartmentNo = "302",
+    FullAddress = "شارع الجيش، برج الأمل، الدور الثالث",
+    HasSerial = false,
+    IsDualRole = true,
+    UsesPoints = false,
+    NationalId = "29501011234567",
+    Employer = "القطاع الخاص",
+    Guarantor1 = "إبراهيم حسن",
+    Guarantor2 = "خالد عبد الله",
+    BankAccountNo = "EG1000030000000123456789",
+    BankName = "بنك مصر - فرع قويسنا",
+    Notes = "عميل مميز ومنتظم في السداد",
+    EnableInternetAccess = true,
+    InternetUsername = "adv_tech_user",
+    InternetPassword = "securePassword123",
+    InternetDisplayName = "مجموعة التقنية المتقدمة"
+};
+
+public class CustomerModel
+{
+    public string CustomerCode { get; set; } = "";
+    public string Name { get; set; } = "";
+    public bool IsActive { get; set; }
+    public DateTime OpeningBalanceDate { get; set; } = DateTime.Today;
+    public decimal OpeningBalanceAmount { get; set; }
+    public string Branch { get; set; } = "";
+    public string NestedWithin { get; set; } = "";
+    public string Currency { get; set; } = "";
+    public decimal ExchangeRate { get; set; }
+    public string LedgerAccount { get; set; } = "";
+    public string DefaultDealType { get; set; } = "";
+    public decimal CreditLimit { get; set; }
+    public string DealSide { get; set; } = "";
+    public string ComplementaryAccount { get; set; } = "";
+    public string PriceTier { get; set; } = "";
+    public string PaymentTerms { get; set; } = "";
+    public string SalesRepresentative { get; set; } = "";
+    public bool IsInsured { get; set; }
+    public string InsuranceNo { get; set; } = "";
+    public bool TaxEnabled { get; set; }
+    public string TaxAccountType { get; set; } = "";
+    public string TaxType { get; set; } = "";
+    public string TaxRegistrationNumber { get; set; } = "";
+    public string TaxCard { get; set; } = "";
+    public string TaxAuthorityOffice { get; set; } = "";
+    public string CommercialRegister { get; set; } = "";
+    public string Phone1 { get; set; } = "";
+    public string Phone2 { get; set; } = "";
+    public string Mobile { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Governorate { get; set; } = "";
+    public string City { get; set; } = "";
+    public string Street { get; set; } = "";
+    public string Landmark { get; set; } = "";
+    public string BuildingNo { get; set; } = "";
+    public string FloorNo { get; set; } = "";
+    public string ApartmentNo { get; set; } = "";
+    public string FullAddress { get; set; } = "";
+    public bool HasSerial { get; set; }
+    public bool IsDualRole { get; set; }
+    public bool UsesPoints { get; set; }
+    public string NationalId { get; set; } = "";
+    public string Employer { get; set; } = "";
+    public string Guarantor1 { get; set; } = "";
+    public string Guarantor2 { get; set; } = "";
+    public string BankAccountNo { get; set; } = "";
+    public string BankName { get; set; } = "";
+    public string Notes { get; set; } = "";
+    public bool EnableInternetAccess { get; set; }
+    public string InternetUsername { get; set; } = "";
+    public string InternetPassword { get; set; } = "";
+    public string InternetDisplayName { get; set; } = "";
+}
+}
+
+<style>
+    .page-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 30px 40px;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: auto;
+    }
+
+    .main-canvas {
+        max-width: 1040px;
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .header-master-grid {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .image-right-block {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 15px;
+        user-select: none;
+    }
+
+    .orange-divider-line {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 112px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .image-square {
+        width: 75px;
+        height: 75px;
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2px;
+        margin-bottom: 6px;
+    }
+
+    .user-avatar-icon {
+        font-size: 2.2rem;
+        color: #007bff;
+    }
+
+    .active-check-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .small-chk-label {
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .chk-box {
+        cursor: pointer;
+    }
+
+    .labels-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 2px;
+    }
+
+    .label-row-cell {
+        height: 31px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .hdr-lbl {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .controls-column {
+        width: 530px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .customer-controls-width {
+        width: 580px !important;
+    }
+
+    .form-row-compact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 31px;
+    }
+
+    .name-field-relative {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .barcode-main-input {
+        width: 250px;
+    }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .save-cell {
+        margin-right: 40px;
+        padding-top: 40px;
+    }
+
+    .btn-primary-custom {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 120px;
+    }
+
+    .tab-strip-bar {
+        display: flex;
+        justify-content: flex-start;
+        gap: 6px;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+
+    .strip-tab-btn {
+        border: none;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 5px 18px;
+        font-size: 0.85rem;
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .strip-tab-btn.active {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+    .tab-content-seamless {
+        background-color: transparent;
+        padding: 10px 0;
+        min-height: 480px;
+        box-sizing: border-box;
+    }
+
+    .section-with-blue-line {
+        border-right: 3px solid #007bff;
+        padding-right: 14px;
+    }
+
+    .section-block-title {
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #0d6efd !important;
+        margin-bottom: 6px;
+        margin-top: 14px;
+    }
+
+    .section-title-header {
+        font-weight: bold;
+        color: #333333;
+    }
+
+    .section-header-title {
+        width: 100%;
+        text-align: right;
+    }
+
+    .two-column-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 40px;
+        row-gap: 12px;
+    }
+
+    .full-width-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 720px;
+    }
+
+    .form-side-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .field-entry-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        margin-bottom: 10px;
+    }
+
+    .field-title {
+        width: 125px;
+        min-width: 125px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .field-title-wide {
+        width: 140px;
+        min-width: 140px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .flex-1 {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .clean-input {
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    input.clean-input:focus, textarea.clean-input:focus {
+        border-color: #ced4da;
+        border-bottom: 3px solid #007bff !important;
+        box-shadow: none;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+        user-select: none;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        flex: 1;
+        text-align: right;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: auto;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .btn-inside-plus {
+        border: none;
+        background: transparent;
+        color: #495057;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+    }
+
+    .dropdown-anchor {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .custom-dropdown-panel, .custom-supplier-grid-panel-advanced, .custom-table-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        border-radius: 4px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .panel-scroll-content, .supplier-grid-rows, .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .panel-checkbox-row, .supplier-row, .table-popup-row {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .panel-checkbox-row:hover, .supplier-row:hover, .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .supplier-grid-header, .table-popup-header {
+        display: flex;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.82rem;
+        color: #333;
+        padding: 6px 8px;
+    }
+
+    .col-code {
+        width: 90px;
+        padding: 4px;
+        text-align: center;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .col-name {
+        flex: 1;
+        padding: 4px;
+        text-align: right;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 4px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .calc-desktop-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 300px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        border-radius: 6px;
+        z-index: 4000;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        direction: ltr;
+    }
+
+    .calc-screen {
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: left;
+        color: #333;
+    }
+
+    .calc-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+    }
+
+    .calc-btn {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        .calc-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .calc-op, .calc-mem {
+        background-color: #007bff;
+    }
+
+    .span-col-2 {
+        grid-column: span 2;
+    }
+
+    .switch-toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+        margin: 0;
+    }
+
+    .switch-input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .2s;
+        border-radius: 20px;
+    }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+    .switch-input:checked + .switch-slider {
+        background-color: #007bff;
+    }
+
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
+
+    .badge-signal-bars {
+        font-size: 0.9rem;
+        margin-right: auto;
+        color: #b01078;
+    }
+
+    .insurance-card-box {
+        border-radius: 4px;
+        padding: 12px 14px;
+        position: relative;
+        width: 100%;
+    }
+
+    .insurance-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+    .insurance-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .insurance-blue-bar {
+        position: absolute;
+        right: 0;
+        top: 12px;
+        bottom: 12px;
+        width: 3px;
+        background-color: #007bff;
+        border-radius: 2px;
+    }
+</style>
