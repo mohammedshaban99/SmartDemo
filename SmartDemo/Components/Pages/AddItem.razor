@@ -1513,7 +1513,7 @@
             </div>
         }
 
-        <!-- Tab 5: المعادلة -->
+        <!-- Tab 5: المعادلة (Reversed Column Order: الاسم, الحقل, المعادلة) -->
         @if (activeTab == 5)
         {
             <div class="tab-content-seamless">
@@ -1521,16 +1521,18 @@
                     <table class="item-details-table">
                         <thead>
                             <tr>
+                                <th style="width: 40px; color: #f39c12;">☼</th>
                                 <th>الاسم</th>
                                 <th style="width: 220px;">الحقل</th>
                                 <th>المعادلة</th>
-                                <th style="width: 50px;"></th>
+                                <th style="width: 40px; color: red;">✖</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var eq in itemData.EquationRows)
                             {
                                 <tr>
+                                    <td></td>
                                     <td><input type="text" class="clean-input w-100" @bind="eq.Name" /></td>
                                     <td>
                                         <select class="clean-input w-100" @bind="eq.Field">
@@ -1552,12 +1554,12 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
-<!-- White Confirmation Delete Modal -->
+<!-- White Confirmation Delete Modal (Light window for empty rows) -->
 @if (isConfirmDeleteModalOpen)
 {
     <div class="modal-backdrop-blur">
         <div class="confirm-delete-dialog bg-white rounded shadow-lg overflow-hidden" dir="rtl" style="width: 440px;" @onclick:stopPropagation>
-            <div class="bg-danger px-3 py-2 d-flex justify-content-end align-items-center">
+            <div class="bg-primary px-3 py-2 d-flex justify-content-end align-items-center">
                 <button type="button" class="btn-topbar-close-flat text-white" @onclick="CancelDeleteRow">✕</button>
             </div>
             <div class="p-4 text-center d-flex flex-column align-items-center gap-3">
@@ -1572,7 +1574,7 @@
     </div>
 }
 
-<!-- Dark DEXEF Error Modal Popup -->
+<!-- Dark DEXEF Error Modal Popup (Dark window when deleting rows containing data) -->
 @if (isErrorModalOpen)
 {
     <div class="modal-backdrop-blur dexef-error-backdrop">
@@ -1825,7 +1827,7 @@
                                     </select>
                                 </div>
 
-                                <!-- Updated اسم المورد field inside modal matching advanced popup layout -->
+                                <!-- اسم المورد field inside modal matching advanced popup layout -->
                                 <div class="field-entry-line pos-relative">
                                     <span class="field-title-wide">اسم المورد</span>
                                     <div class="dropdown-anchor flex-1">
@@ -1939,32 +1941,36 @@
                     </div>
                 }
 
+                <!-- Group Modal Tab 3: المعادلة (Reversed Column Order: الاسم, الحقل, المعادلة) -->
                 @if (groupModalTab == 3)
                 {
                     <div class="table-scroll-wrapper">
                         <table class="item-details-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 40px; color: red;">✕</th>
-                                    <th>المعادلة</th>
-                                    <th style="width: 220px;">الحقل</th>
-                                    <th style="width: 220px;">الاسم</th>
                                     <th style="width: 40px; color: #f39c12;">☼</th>
+                                    <th>الاسم</th>
+                                    <th style="width: 220px;">الحقل</th>
+                                    <th>المعادلة</th>
+                                    <th style="width: 40px; color: red;">✖</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><button class="delete-icon-btn">✖</button></td>
-                                    <td><input type="text" class="clean-input w-100" value="سعر التكلفة * 1.2" /></td>
-                                    <td>
-                                        <select class="clean-input w-100">
-                                            <option value="سعر البيع الافتراضي">سعر البيع الافتراضي</option>
-                                            <option value="سعر الشراء">سعر الشراء</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="text" class="clean-input w-100" value="معادلة الأرباح" /></td>
-                                    <td></td>
-                                </tr>
+                                @foreach (var eq in itemData.EquationRows)
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="text" class="clean-input w-100" @bind="eq.Name" /></td>
+                                        <td>
+                                            <select class="clean-input w-100" @bind="eq.Field">
+                                                <option value="سعر البيع الافتراضي">سعر البيع الافتراضي</option>
+                                                <option value="سعر الشراء">سعر الشراء</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="clean-input w-100" @bind="eq.Equation" /></td>
+                                        <td><button class="delete-icon-btn" type="button" @onclick="() => TryDeleteEquationRow(eq)">✖</button></td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -2661,7 +2667,6 @@ public class SupplierGridItem
     private void ToggleSupplierPopup() { CloseAllPopups(); isSupplierPopupOpen = !isSupplierPopupOpen; }
 private void SelectSupplier(string name) { itemData.SupplierName = name; isSupplierPopupOpen = false; }
 
-// Modal state for group dialog supplier dropdown
 private bool isModalSupplierPopupOpen = false;
 private string modalSelectedSupplier = "Cust and vend";
 private void ToggleModalSupplierPopup() => isModalSupplierPopupOpen = !isModalSupplierPopupOpen;
