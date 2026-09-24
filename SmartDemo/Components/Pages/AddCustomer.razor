@@ -625,7 +625,7 @@
             </div>
         }
 
-        <!-- Tab 4: بيانات إضافية (طابق الصورة تماماً) -->
+        <!-- Tab 4: بيانات إضافية -->
         @if (activeTab == 4)
         {
             <div class="tab-content-seamless">
@@ -731,7 +731,7 @@
             </div>
         }
 
-        <!-- Tab 5: الانترنت -->
+        <!-- Tab 5: الانترنت (Updated to precisely match the target desktop screen layout) -->
         @if (activeTab == 5)
         {
             <div class="tab-content-seamless">
@@ -758,6 +758,52 @@
                         <input type="text" class="clean-input flex-1" @bind="customerData.InternetDisplayName" disabled="@(!customerData.EnableInternetAccess)" />
                         <span class="req-star me-1">*</span>
                     </div>
+
+                    <!-- Additional Options matching target screenshot layout[cite: 1, 2] -->
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessAvailableStock" />
+                            <span class="text-dark small">الاطلاع على أرصدة المخزون المتاحة</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessItemPrices" />
+                            <span class="text-dark small">الاطلاع على أسعار الأصناف الموجودة</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessPendingOrders" />
+                            <span class="text-dark small">الاطلاع على الطلبيات التي قامت بها الشركة ولم تأتي</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessCreditLimit" />
+                            <span class="text-dark small">الاطلاع على حد الإئتمان له</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.SendComplaintsToCompany" />
+                            <span class="text-dark small">إرسال شكوى الى الشركة</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.EditOwnContactInfo" />
+                            <span class="text-dark small">إمكانية تعديل بيانات الاتصال الخاصه به</span>
+                        </div>
+                    </div>
+                    <div class="field-entry-line mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.LimitDailyPurchaseOrders" />
+                            <span class="text-dark small">عدد طلبيات الشراء التي يقوم بها في اليوم</span>
+                            <input type="number" class="clean-input text-center ms-2" style="width: 60px;" @bind="customerData.MaxDailyPurchaseOrders" />
+                            <span class="text-muted small">طلبية</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         }
@@ -766,7 +812,7 @@
 </div>
 
 @code {
-    private int activeTab = 4;
+    private int activeTab = 5;
     private bool isBranchPopupOpen = false;
     private bool isNestedPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
@@ -988,7 +1034,15 @@ private CustomerModel customerData = new()
     EnableInternetAccess = true,
     InternetUsername = "adv_tech_user",
     InternetPassword = "securePassword123",
-    InternetDisplayName = "مجموعة التقنية المتقدمة"
+    InternetDisplayName = "مجموعة التقنية المتقدمة",
+    AccessAvailableStock = true,
+    AccessItemPrices = true,
+    AccessPendingOrders = true,
+    AccessCreditLimit = true,
+    SendComplaintsToCompany = true,
+    EditOwnContactInfo = true,
+    LimitDailyPurchaseOrders = true,
+    MaxDailyPurchaseOrders = 5
 };
 
 public class CustomerModel
@@ -1051,6 +1105,14 @@ public class CustomerModel
     public string InternetUsername { get; set; } = "";
     public string InternetPassword { get; set; } = "";
     public string InternetDisplayName { get; set; } = "";
+    public bool AccessAvailableStock { get; set; }
+    public bool AccessItemPrices { get; set; }
+    public bool AccessPendingOrders { get; set; }
+    public bool AccessCreditLimit { get; set; }
+    public bool SendComplaintsToCompany { get; set; }
+    public bool EditOwnContactInfo { get; set; }
+    public bool LimitDailyPurchaseOrders { get; set; }
+    public int MaxDailyPurchaseOrders { get; set; }
 }
 }
 
@@ -1578,12 +1640,9 @@ public class CustomerModel
 
     .insurance-card-box {
         background: #ffffff;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
         padding: 12px 14px;
         position: relative;
         width: 100%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .insurance-card-header {
