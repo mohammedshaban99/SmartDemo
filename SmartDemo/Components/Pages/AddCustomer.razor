@@ -625,53 +625,109 @@
             </div>
         }
 
-        <!-- Tab 4: بيانات إضافية -->
+        <!-- Tab 4: بيانات إضافية (طابق الصورة تماماً) -->
         @if (activeTab == 4)
         {
             <div class="tab-content-seamless">
-                <div class="d-flex gap-4 mb-4">
-                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
-                        <span>له مسلسل</span>
-                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.HasSerial" /><span class="switch-slider"></span></label>
-                        <span class="text-muted small">@(customerData.HasSerial ? "نعم" : "لا")</span>
+
+                <!-- المفاتيح العلوية جهة اليمين -->
+                <div class="d-flex flex-column align-items-end gap-2 mb-4 me-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="small text-muted">لا</span>
+                        <label class="switch-toggle-label">
+                            <input type="checkbox" class="switch-input" @bind="customerData.HasSerial" />
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="field-title text-end" style="width: 110px;">له مسلسل</span>
                     </div>
-                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
-                        <span>يتعامل ك عميل و</span>
-                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.IsDualRole" /><span class="switch-slider"></span></label>
-                        <span class="text-muted small">@(customerData.IsDualRole ? "نعم" : "لا")</span>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="small text-muted">لا</span>
+                        <label class="switch-toggle-label">
+                            <input type="checkbox" class="switch-input" @bind="customerData.IsDualRole" />
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="field-title text-end" style="width: 110px;">يتعامل ك عميل و</span>
                     </div>
-                    <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded">
-                        <span>يتعامل بنقاط</span>
-                        <label class="switch-toggle-label"><input type="checkbox" class="switch-input" @bind="customerData.UsesPoints" /><span class="switch-slider"></span></label>
-                        <span class="text-muted small">@(customerData.UsesPoints ? "نعم" : "لا")</span>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="small text-muted">لا</span>
+                        <label class="switch-toggle-label">
+                            <input type="checkbox" class="switch-input" @bind="customerData.UsesPoints" />
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="field-title text-end" style="width: 110px;">يتعامل بنقاط</span>
                     </div>
                 </div>
 
-                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">اخري</span></div>
-                <div class="section-with-blue-line">
-                    <div class="two-column-form-grid">
-                        <div class="form-side-column">
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">رقم الهوية</span><input type="text" class="clean-input flex-1" @bind="customerData.NationalId" /></div>
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">جهة العمل</span><input type="text" class="clean-input flex-1" @bind="customerData.Employer" /></div>
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">الضامن الأول</span><input type="text" class="clean-input flex-1" @bind="customerData.Guarantor1" /></div>
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">الضامن الثاني</span><input type="text" class="clean-input flex-1" @bind="customerData.Guarantor2" /></div>
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">رقم الحساب البنكي</span><input type="text" class="clean-input flex-1" @bind="customerData.BankAccountNo" /></div>
-                            <div class="field-entry-line mb-2"><span class="field-title-wide">اسم البنك</span><input type="text" class="clean-input flex-1" @bind="customerData.BankName" /></div>
-                            <div class="field-entry-line"><span class="field-title-wide">الملاحظات</span><textarea class="clean-input flex-1" rows="3" @bind="customerData.Notes"></textarea></div>
-                        </div>
+                <!-- تقسيم الحقول أسفل المفاتيح: اخري على اليمين وحقول اضافية على اليسار -->
+                <div class="two-column-form-grid" style="column-gap: 50px;">
 
-                        <div class="form-side-column">
-                            <div class="section-block-title text-center mb-2">حقول اضافية</div>
+                    <!-- العمود الأيمن: اخري مع الخط الأزرق -->
+                    <div>
+                        <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                            <span class="fw-bold fs-6 text-dark section-header-title">اخري</span>
+                        </div>
+                        <div class="section-with-blue-line">
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">رقم الهوية</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.NationalId" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">جهة العمل</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.Employer" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">الضامن الأول</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor1" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">الضامن الثاني</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor2" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">رقم الحساب البنكي</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.BankAccountNo" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">اسم البنك</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.BankName" />
+                            </div>
+                            <div class="field-entry-line mb-2">
+                                <span class="field-title">رقم الصفحة</span>
+                                <input type="text" class="clean-input flex-1" @bind="customerData.PageNo" />
+                            </div>
+                            <div class="field-entry-line align-items-start mb-2">
+                                <span class="field-title pt-1">الملاحظات</span>
+                                <textarea class="clean-input flex-1" rows="4" @bind="customerData.Notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- العمود الأيسر: حقول اضافية مع الخط الأزرق -->
+                    <div>
+                        <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                            <span class="fw-bold fs-6 text-dark section-header-title">حقول اضافية</span>
+                        </div>
+                        <div class="section-with-blue-line">
                             @for (int i = 1; i <= 8; i++)
                             {
+                                int idx = i;
                                 <div class="field-entry-line mb-2">
-                                    <span class="small text-muted" style="width: 50px;">الحقل @i</span>
-                                    <select class="clean-input flex-1"><option>قيمة افتراضية @i</option></select>
+                                    <span class="field-title">الحقل @idx</span>
+                                    <div class="dropdown-anchor flex-1">
+                                        <div class="custom-combo-trigger">
+                                            <span class="combo-display-text"></span>
+                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         </div>
                     </div>
+
                 </div>
+
             </div>
         }
 
@@ -710,7 +766,7 @@
 </div>
 
 @code {
-    private int activeTab = 3;
+    private int activeTab = 4;
     private bool isBranchPopupOpen = false;
     private bool isNestedPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
@@ -919,15 +975,16 @@ private CustomerModel customerData = new()
     FullAddress = "",
     GlobalSiteNo = "",
     HasSerial = false,
-    IsDualRole = true,
+    IsDualRole = false,
     UsesPoints = false,
-    NationalId = "29501011234567",
-    Employer = "القطاع الخاص",
-    Guarantor1 = "إبراهيم حسن",
-    Guarantor2 = "خالد عبد الله",
-    BankAccountNo = "EG1000030000000123456789",
-    BankName = "بنك مصر - فرع قويسنا",
-    Notes = "عميل مميز ومنتظم في السداد",
+    NationalId = "",
+    Employer = "",
+    Guarantor1 = "",
+    Guarantor2 = "",
+    BankAccountNo = "",
+    BankName = "",
+    PageNo = "",
+    Notes = "",
     EnableInternetAccess = true,
     InternetUsername = "adv_tech_user",
     InternetPassword = "securePassword123",
@@ -988,6 +1045,7 @@ public class CustomerModel
     public string Guarantor2 { get; set; } = "";
     public string BankAccountNo { get; set; } = "";
     public string BankName { get; set; } = "";
+    public string PageNo { get; set; } = "";
     public string Notes { get; set; } = "";
     public bool EnableInternetAccess { get; set; }
     public string InternetUsername { get; set; } = "";
