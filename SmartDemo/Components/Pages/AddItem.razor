@@ -1754,7 +1754,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-start gap-2 mb-3 pb-2">
+                <div class="d-flex justify-content-start gap-2">
                     <button type="button" class="strip-tab-btn @(groupModalTab == 1 ? "active" : "")" @onclick="() => groupModalTab = 1">عام</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 2 ? "active" : "")" @onclick="() => groupModalTab = 2">الحسابات</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 3 ? "active" : "")" @onclick="() => groupModalTab = 3">المعادلة</button>
@@ -1901,129 +1901,52 @@
                 @if (groupModalTab == 2)
                 {
                     <div class="tab-content-seamless">
-                        <div class="accounts-tab-grid" style="grid-template-columns: 1fr 1fr 1fr; column-gap: 20px;">
+                        <div class="accounts-tab-grid" style="grid-template-columns: 1fr 1fr; column-gap: 20px;">
 
                             <!-- Column 1: حسابات أخرى وتفصيلية (مع أزرار الـ ...) -->
-                            <div class="accounts-column-block">
-                                <div class="section-block-title text-primary">الحسابات</div>
-                                <div class="section-with-blue-line mb-4">
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">حساب المخزون</span>
-                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <input type="text" class="clean-input flex-1" />
-                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
-                                        </div>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">حساب المبيعات</span>
-                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <input type="text" class="clean-input flex-1" />
-                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
-                                        </div>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">حساب تكلفة المبيعات</span>
-                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <input type="text" class="clean-input flex-1" />
-                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
-                                        </div>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">حساب مرتجع المبيعات</span>
-                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <input type="text" class="clean-input flex-1" />
-                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
-                                        </div>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">حساب تحت التشغيل</span>
-                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <input type="text" class="clean-input flex-1" />
-                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="section-block-title text-primary">الخصم</div>
+                            <div class="accounts-column-block accounts-column-block-width">
+                                <div class="section-block-title text-primary">الضرائب</div>
                                 <div class="section-with-blue-line">
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 110px;">مصنعية التركيب</span>
-                                        <div class="dropdown-anchor flex-1 pos-relative">
-                                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleModalتركيبCalc">
-                                                <span class="combo-display-text text-center">@modalتركيبVal</span>
-                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                                            </div>
-                                            @if (isModalتركيبCalcOpen)
-                                            {
-                                                <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
-                                                    <div class="calc-screen">@calcDisplay</div>
-                                                    <div class="calc-grid">
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
-                                                        <button type="button" class="calc-btn calc-op"></button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
-                                                        <button type="button" class="calc-btn calc-mem">MC</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
-                                                        <button type="button" class="calc-btn calc-mem">MR</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
-                                                        <button type="button" class="calc-btn calc-mem">MS</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
-                                                        <button type="button" class="calc-btn calc-mem span-col-2"></button>
-                                                        <button type="button" class="calc-btn calc-mem">+M</button>
-                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
-                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
-                                                    </div>
-                                                </div>
-                                            }
+                                        <span class="field-title" style="width: 130px;">يخضع للضريبة</span>
+                                        <select class="clean-input flex-1"><option>نعم</option><option>لا</option></select>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 130px;">حساب الضريبة</span>
+                                        <select class="clean-input flex-1"><option></option></select>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 130px;">نسبة الضريبة المبيعات</span>
+                                        <div class="d-flex align-items-center gap-1 flex-1">
+                                            <span class="small text-muted">%</span>
+                                            <input type="number" class="clean-input text-center flex-1" value="0" />
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Column 2: خيارات الخصم والنسب -->
-                            <div class="accounts-column-block">
-                                <div class="section-block-title text-primary" style="visibility:hidden;">الخصم</div>
-                                <div class="section-with-blue-line mb-4">
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 100px;">طريقة الخصم</span>
-                                        <select class="clean-input flex-1"><option>بالنسبة</option><option>مبلغ ثابت</option></select>
+                                        <span class="field-title" style="width: 130px;">نسبة الضريبة المشتريات</span>
+                                        <div class="d-flex align-items-center gap-1 flex-1">
+                                            <span class="small text-muted">%</span>
+                                            <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        </div>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 100px;">يخضع خصم التعجيل</span>
+                                        <span class="field-title" style="width: 130px;">هل السعر يشمل الضريبة ؟</span>
                                         <select class="clean-input flex-1"><option>لا</option><option>نعم</option></select>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 100px;">خصم المشتريات</span>
-                                        <div class="d-flex align-items-center gap-1 flex-1">
-                                            <span class="small text-muted">%</span>
-                                            <input type="number" class="clean-input text-center flex-1" value="0" />
-                                        </div>
+                                        <span class="field-title" style="width: 130px;">يخضع لضريبة الخصم والإضافة</span>
+                                        <select class="clean-input flex-1"><option>كما بالفاتورة</option><option>نعم</option><option>لا</option></select>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 100px;">خصم المبيعات</span>
-                                        <div class="d-flex align-items-center gap-1 flex-1">
-                                            <span class="small text-muted">%</span>
-                                            <input type="number" class="clean-input text-center flex-1" value="0" />
-                                        </div>
+                                        <span class="field-title" style="width: 130px;">حساب ضريبة الخصم</span>
+                                        <select class="clean-input flex-1"><option></option></select>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 130px;">نسبة الضريبة</span>
+                                        <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
                                     </div>
                                 </div>
-
-                                <div class="section-block-title text-primary" style="visibility:hidden;">التنبيهات</div>
+                                <div class="section-block-title text-primary">التنبيهات</div>
                                 <div class="section-with-blue-line">
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">الحد الادنى</span>
@@ -2214,52 +2137,125 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
 
-                            <!-- Column 3: الضرائب والالتزامات -->
-                            <div class="accounts-column-block">
-                                <div class="section-block-title text-primary">الضرائب</div>
-                                <div class="section-with-blue-line">
+                            <!-- Column 2: خيارات الخصم والنسب -->
+                            <div class="accounts-column-block accounts-column-block-width">
+                                <div class="section-block-title text-primary">الحسابات</div>
+                                <div class="section-with-blue-line mb-4">
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">يخضع للضريبة</span>
-                                        <select class="clean-input flex-1"><option>نعم</option><option>لا</option></select>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">حساب الضريبة</span>
-                                        <select class="clean-input flex-1"><option></option></select>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">نسبة الضريبة المبيعات</span>
-                                        <div class="d-flex align-items-center gap-1 flex-1">
-                                            <span class="small text-muted">%</span>
-                                            <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="field-title" style="width: 110px;">حساب المخزون</span>
+                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
+                                            <input type="text" class="clean-input flex-1" />
+                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
                                         </div>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">نسبة الضريبة المشتريات</span>
-                                        <div class="d-flex align-items-center gap-1 flex-1">
-                                            <span class="small text-muted">%</span>
-                                            <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        <span class="field-title" style="width: 110px;">حساب المبيعات</span>
+                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
+                                            <input type="text" class="clean-input flex-1" />
+                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
                                         </div>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">هل السعر يشمل الضريبة ؟</span>
+                                        <span class="field-title" style="width: 110px;">حساب تكلفة المبيعات</span>
+                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
+                                            <input type="text" class="clean-input flex-1" />
+                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
+                                        </div>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 110px;">حساب مرتجع المبيعات</span>
+                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
+                                            <input type="text" class="clean-input flex-1" />
+                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
+                                        </div>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 110px;">حساب تحت التشغيل</span>
+                                        <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
+                                            <input type="text" class="clean-input flex-1" />
+                                            <button type="button" class="btn btn-light border px-2 py-0" style="font-size:0.8rem;">...</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section-block-title text-primary">الخصم</div>
+                                <div class="section-with-blue-line mb-4">
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 100px;">طريقة الخصم</span>
+                                        <select class="clean-input flex-1"><option>بالنسبة</option><option>مبلغ ثابت</option></select>
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title" style="width: 100px;">يخضع خصم التعجيل</span>
                                         <select class="clean-input flex-1"><option>لا</option><option>نعم</option></select>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">يخضع لضريبة الخصم والإضافة</span>
-                                        <select class="clean-input flex-1"><option>كما بالفاتورة</option><option>نعم</option><option>لا</option></select>
+                                        <span class="field-title" style="width: 100px;">خصم المشتريات</span>
+                                        <div class="d-flex align-items-center gap-1 flex-1">
+                                            <span class="small text-muted">%</span>
+                                            <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        </div>
                                     </div>
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">حساب ضريبة الخصم</span>
-                                        <select class="clean-input flex-1"><option></option></select>
+                                        <span class="field-title" style="width: 100px;">خصم المبيعات</span>
+                                        <div class="d-flex align-items-center gap-1 flex-1">
+                                            <span class="small text-muted">%</span>
+                                            <input type="number" class="clean-input text-center flex-1" value="0" />
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="section-block-title text-primary">الخصم</div>
+                                <div class="section-with-blue-line">
                                     <div class="field-entry-line">
-                                        <span class="field-title" style="width: 130px;">نسبة الضريبة</span>
-                                        <input type="number" class="clean-input text-center" style="width: 90px;" value="0" />
+                                        <span class="field-title" style="width: 110px;">مصنعية التركيب</span>
+                                        <div class="dropdown-anchor flex-1 pos-relative">
+                                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleModalتركيبCalc">
+                                                <span class="combo-display-text text-center">@modalتركيبVal</span>
+                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                            </div>
+                                            @if (isModalتركيبCalcOpen)
+                                            {
+                                                <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
+                                                    <div class="calc-screen">@calcDisplay</div>
+                                                    <div class="calc-grid">
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                        <button type="button" class="calc-btn calc-op"></button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                        <button type="button" class="calc-btn calc-mem">MC</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                        <button type="button" class="calc-btn calc-mem">MR</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                        <button type="button" class="calc-btn calc-mem">MS</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                        <button type="button" class="calc-btn calc-mem span-col-2"></button>
+                                                        <button type="button" class="calc-btn calc-mem">+M</button>
+                                                        <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                        <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -3548,6 +3544,10 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
     }
+    
+    .accounts-column-block-width{
+        width: 40vw;
+    }
 
     .flex-1 {
         flex: 1;
@@ -4168,7 +4168,7 @@ public class OpeningBalanceModel
         overflow: hidden;
         direction: rtl !important;
         min-height: 99vh;
-        min-width: 60vw;
+        min-width: 86vw;
         position: relative;
         z-index: 3001;
     }
@@ -4269,7 +4269,7 @@ public class OpeningBalanceModel
         align-items: flex-start;
         justify-content: flex-start;
         gap: 16px;
-        padding: 16px 20px;
+        padding: 0px 20px;
         position: relative;
     }
 
