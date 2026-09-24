@@ -461,7 +461,7 @@
                         <span class="req-star me-1">*</span>
                     </div>
 
-                    <!-- حقل الضريبة المحدث ليطابق الديسكتوب تماماً -->
+                    <!-- حقل الضريبة -->
                     <div class="field-entry-line mb-3 pos-relative">
                         <span class="field-title-wide">الضريبة</span>
                         <div class="dropdown-anchor flex-1">
@@ -524,41 +524,103 @@
         {
             <div class="tab-content-seamless">
                 <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">بيانات الاتصال</span></div>
-                <div class="section-with-blue-line mb-4">
+                <div class="section-with-blue-line mb-4" style="max-width: 750px;">
                     <div class="field-entry-line mb-3">
                         <span class="field-title">التليفون</span>
-                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Phone1" placeholder="رقم رئيسي" />
-                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Phone2" placeholder="رقم إضافي" />
-                        <input type="text" class="clean-input" style="width: 180px;" @bind="customerData.Mobile" placeholder="الهاتف المحمول" />
+                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone1" />
+                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone2" />
+                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Mobile" />
                         <span class="req-star me-1">*</span>
                     </div>
                     <div class="field-entry-line">
                         <span class="field-title">البريد الإلكتروني</span>
-                        <input type="email" class="clean-input flex-1" @bind="customerData.Email" placeholder="info@domain.com" />
+                        <input type="email" class="clean-input flex-1" @bind="customerData.Email" />
                     </div>
                 </div>
 
                 <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
-                <div class="section-with-blue-line" style="max-width: 650px;">
-                    <div class="field-entry-line mb-2"><span class="field-title">البلد</span><select class="clean-input flex-1"><option>مصر</option><option>المملكة العربية السعودية</option></select><span class="req-star me-1">*</span></div>
-                    <div class="field-entry-line mb-2">
-                        <span class="field-title">المنطقة</span>
-                        <select class="clean-input flex-1"><option>القاهرة الكبرى</option><option>الدلتا</option></select>
-                        <button class="btn-addon-square" type="button">+</button>
+                <div class="section-with-blue-line" style="max-width: 750px;">
+                    <!-- البلد -->
+                    <div class="field-entry-line mb-2 pos-relative">
+                        <span class="field-title">البلد</span>
+                        <div class="dropdown-anchor flex-1">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCountryPopup">
+                                <span class="combo-display-text">@customerData.Country</span>
+                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                            </div>
+                            @if (isCountryPopupOpen)
+                            {
+                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                    <div class="supplier-grid-header">
+                                        <div class="col-name">الاسم</div>
+                                    </div>
+                                    <div class="supplier-grid-rows" style="max-height: 220px;">
+                                        @foreach (var c in mockCountryList)
+                                        {
+                                            <div class="supplier-row @(customerData.Country == c ? "active-row" : "")" @onclick="() => { customerData.Country = c; isCountryPopupOpen = false; }">
+                                                <div class="col-name">@c</div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isCountryPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <span class="req-star me-1">*</span>
                     </div>
+
+                    <!-- المنطقة -->
+                    <div class="field-entry-line mb-2 pos-relative">
+                        <span class="field-title">المنطقة</span>
+                        <div class="dropdown-anchor flex-1">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleRegionPopup">
+                                <span class="combo-display-text">@customerData.Region</span>
+                                <div class="combo-icons-inside">
+                                    <button class="btn-inside-plus" type="button">+</button>
+                                    <span class="combo-arrow">▼</span>
+                                </div>
+                            </div>
+                            @if (isRegionPopupOpen)
+                            {
+                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                    <div class="supplier-grid-header">
+                                        <div class="col-name">الاسم</div>
+                                    </div>
+                                    <div class="supplier-grid-rows" style="max-height: 200px;">
+                                        @foreach (var r in mockRegionList)
+                                        {
+                                            <div class="supplier-row @(customerData.Region == r ? "active-row" : "")" @onclick="() => { customerData.Region = r; isRegionPopupOpen = false; }">
+                                                <div class="col-name">@r</div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isRegionPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
                     <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="customerData.Governorate" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="customerData.City" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="customerData.Landmark" /></div>
                     <div class="field-entry-line mb-2">
                         <span class="field-title">رقم المبنى</span>
-                        <input type="text" class="clean-input" style="width: 100px;" @bind="customerData.BuildingNo" />
+                        <input type="text" class="clean-input flex-1" @bind="customerData.BuildingNo" />
                         <span class="small text-muted ms-2">الدور</span>
-                        <input type="text" class="clean-input" style="width: 80px;" @bind="customerData.FloorNo" />
+                        <input type="text" class="clean-input flex-1" @bind="customerData.FloorNo" />
                         <span class="small text-muted ms-2">الشقة</span>
-                        <input type="text" class="clean-input" style="width: 80px;" @bind="customerData.ApartmentNo" />
+                        <input type="text" class="clean-input flex-1" @bind="customerData.ApartmentNo" />
                     </div>
+                    <div class="field-entry-line mb-2"><span class="field-title">الرقم المميز</span><input type="text" class="clean-input" style="width: 200px;" @bind="customerData.UniqueNo" /><span class="small text-muted ms-2 me-2">الرقم البريدي</span><input type="text" class="clean-input flex-1" @bind="customerData.PostalCode" /></div>
                     <div class="field-entry-line mb-2"><span class="field-title">العنوان</span><input type="text" class="clean-input flex-1" @bind="customerData.FullAddress" /></div>
+                    <div class="field-entry-line mb-2"><span class="field-title">رقم الموقع العالمي</span><input type="text" class="clean-input flex-1" @bind="customerData.GlobalSiteNo" /></div>
                 </div>
             </div>
         }
@@ -648,7 +710,7 @@
 </div>
 
 @code {
-    private int activeTab = 1;
+    private int activeTab = 3;
     private bool isBranchPopupOpen = false;
     private bool isNestedPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
@@ -659,6 +721,8 @@
     private bool isOpeningBalanceDatePopupOpen = false;
     private bool isCreditCalcOpen = false;
     private bool isTaxDropdownPopupOpen = false;
+    private bool isCountryPopupOpen = false;
+    private bool isRegionPopupOpen = false;
 
     private string calcDisplay = "80000";
 
@@ -672,6 +736,8 @@
     private void ToggleOpeningBalanceDatePopup() { CloseAllPopups(); isOpeningBalanceDatePopupOpen = !isOpeningBalanceDatePopupOpen; }
     private void ToggleCreditCalc() { CloseAllPopups(); isCreditCalcOpen = !isCreditCalcOpen; }
     private void ToggleTaxDropdownPopup() { CloseAllPopups(); isTaxDropdownPopupOpen = !isTaxDropdownPopupOpen; }
+    private void ToggleCountryPopup() { CloseAllPopups(); isCountryPopupOpen = !isCountryPopupOpen; }
+    private void ToggleRegionPopup() { CloseAllPopups(); isRegionPopupOpen = !isRegionPopupOpen; }
 
     private void OpenNestedModal() { }
     private void CloseAllPopups()
@@ -686,6 +752,8 @@
         isOpeningBalanceDatePopupOpen = false;
         isCreditCalcOpen = false;
         isTaxDropdownPopupOpen = false;
+        isCountryPopupOpen = false;
+        isRegionPopupOpen = false;
     }
 
     private void SaveData() { }
@@ -727,6 +795,9 @@
         new() { Name = "الضريبة العقارية", Rate = "10" }
     };
     private void SelectTax(TaxItem item) { customerData.TaxType = item.Name; isTaxDropdownPopupOpen = false; }
+
+    private List<string> mockCountryList = new() { "مصر", "أرمينيا", "الإمارات", "أستراليا", "الولايات المتحدة", "بلِيز", "برِيادوس", "جزر برمُودا", "بروناي" };
+    private List<string> mockRegionList = new() { "القاهرة 1", "بنها", "قويسنا - شبين" };
 
     public class TreeNodeModel
     {
@@ -830,18 +901,23 @@ private CustomerModel customerData = new()
     TaxCard = "554433-2",
     TaxAuthorityOffice = "مأمورية ضرائب الاستثمار",
     CommercialRegister = "123456 تجاري عام",
-    Phone1 = "01012345678",
-    Phone2 = "0482345678",
-    Mobile = "01198765432",
-    Email = "info@advancedtech.eg",
-    Governorate = "المنوفية",
-    City = "قويسنا",
-    Street = "شارع الجيش الرئيسي",
-    Landmark = "بجوار البنك الأهلي",
-    BuildingNo = "14",
-    FloorNo = "الثالث",
-    ApartmentNo = "302",
-    FullAddress = "شارع الجيش، برج الأمل، الدور الثالث",
+    Phone1 = "",
+    Phone2 = "",
+    Mobile = "",
+    Email = "",
+    Country = "مصر",
+    Region = "القاهرة 1",
+    Governorate = "",
+    City = "",
+    Street = "",
+    Landmark = "",
+    BuildingNo = "",
+    FloorNo = "",
+    ApartmentNo = "",
+    UniqueNo = "",
+    PostalCode = "",
+    FullAddress = "",
+    GlobalSiteNo = "",
     HasSerial = false,
     IsDualRole = true,
     UsesPoints = false,
@@ -890,6 +966,8 @@ public class CustomerModel
     public string Phone2 { get; set; } = "";
     public string Mobile { get; set; } = "";
     public string Email { get; set; } = "";
+    public string Country { get; set; } = "";
+    public string Region { get; set; } = "";
     public string Governorate { get; set; } = "";
     public string City { get; set; } = "";
     public string Street { get; set; } = "";
@@ -897,7 +975,10 @@ public class CustomerModel
     public string BuildingNo { get; set; } = "";
     public string FloorNo { get; set; } = "";
     public string ApartmentNo { get; set; } = "";
+    public string UniqueNo { get; set; } = "";
+    public string PostalCode { get; set; } = "";
     public string FullAddress { get; set; } = "";
+    public string GlobalSiteNo { get; set; } = "";
     public bool HasSerial { get; set; }
     public bool IsDualRole { get; set; }
     public bool UsesPoints { get; set; }
