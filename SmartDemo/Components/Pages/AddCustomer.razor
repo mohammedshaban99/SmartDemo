@@ -3,213 +3,494 @@
 
 <div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
     <div class="main-canvas" @onclick:stopPropagation>
+        <!-- 1. Far Right: Avatar/Image Box & Active Status with Orange Bar -->
+        <div class="image-right-block">
+            <div class="image-square avatar-square">
+                <span class="user-avatar-icon">👤</span>
+            </div>
+            <div class="active-check-group">
+                <input type="checkbox" id="chkActive" class="chk-box" @bind="customerData.IsActive" />
+                <label for="chkActive" class="small-chk-label">نشط</label>
+            </div>
+        </div>
+        <div class="custom">
+            <!-- Top Header Area -->
+            <div class="header-master-grid">
 
-        <!-- Top Header Area -->
-        <div class="header-master-grid">
-
-            <!-- 1. Far Right: Avatar/Image Box & Active Status with Orange Bar -->
-            <div class="image-right-block">
-                <div class="image-square avatar-square">
-                    <span class="user-avatar-icon">👤</span>
-                </div>
-                <div class="active-check-group">
-                    <input type="checkbox" id="chkActive" class="chk-box" @bind="customerData.IsActive" />
-                    <label for="chkActive" class="small-chk-label">نشط</label>
-                </div>
+      
                 <div class="orange-divider-line"></div>
-            </div>
 
-            <!-- 2. Section Labels -->
-            <div class="labels-column">
-                <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
-                <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
-                <div class="label-row-cell"><span class="hdr-lbl">الرصيد الإفتتاحي</span></div>
-            </div>
-
-            <!-- 3. Form Input Controls -->
-            <div class="controls-column customer-controls-width">
-                <!-- Row 1: Number & Verification Check -->
-                <div class="form-row-compact">
-                    <input type="text" class="clean-input barcode-main-input text-center" @bind="customerData.CustomerCode" />
-                    <span class="req-star me-1">*</span>
-                    <span class="text-success fs-5 ms-2" title="رقم صحيح">✓</span>
+                <!-- 2. Section Labels -->
+                <div class="labels-column">
+                    <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
+                    <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
+                    <div class="label-row-cell"><span class="hdr-lbl">الرصيد الإفتتاحي</span></div>
                 </div>
 
-                <!-- Row 2: Name Input -->
-                <div class="form-row-compact name-field-relative">
-                    <div class="w-100">
-                        <input type="text" class="clean-input w-100" @bind="customerData.Name" placeholder="أدخل اسم العميل أو المورد..." />
+                <!-- 3. Form Input Controls -->
+                <div class="controls-column customer-controls-width">
+                    <!-- Row 1: Number & Verification Check -->
+                    <div class="form-row-compact">
+                        <input type="text" class="clean-input barcode-main-input text-center" @bind="customerData.CustomerCode" />
+                        <span class="req-star me-1">*</span>
+                        <span class="text-success fs-5 ms-2" title="رقم صحيح">✓</span>
                     </div>
-                    <span class="req-star me-1 ms-1">*</span>
+
+                    <!-- Row 2: Name Input -->
+                    <div class="form-row-compact name-field-relative">
+                        <div class="w-100">
+                            <input type="text" class="clean-input w-100" @bind="customerData.Name" placeholder="أدخل اسم العميل أو المورد..." />
+                        </div>
+                        <span class="req-star me-1 ms-1">*</span>
+                    </div>
+
+                    <!-- Row 3: Opening Balance Date & Value -->
+                    <div class="form-row-compact pos-relative">
+                        <span class="small text-muted ms-1">في</span>
+                        <input type="date" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" />
+                        <span class="small text-muted ms-1 me-2">المبلغ</span>
+                        <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
+                    </div>
                 </div>
 
-                <!-- Row 3: Opening Balance Date & Value -->
-                <div class="form-row-compact pos-relative">
-                    <span class="small text-muted ms-1">في</span>
-                    <input type="date" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" />
-                    <span class="small text-muted ms-1 me-2">المبلغ</span>
-                    <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
+                <!-- 4. Save Button on Far Left -->
+                <div class="save-cell">
+                    <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
                 </div>
+
             </div>
 
-            <!-- 4. Save Button on Far Left -->
-            <div class="save-cell">
-                <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+            <!-- Navigation Tabs Bar -->
+            <div class="tab-strip-bar">
+                <button class="strip-tab-btn @(activeTab == 1 ? "active" : "")" @onclick="() => activeTab = 1" type="button">بيانات الحساب</button>
+                <button class="strip-tab-btn @(activeTab == 2 ? "active" : "")" @onclick="() => activeTab = 2" type="button">الضرائب</button>
+                <button class="strip-tab-btn @(activeTab == 3 ? "active" : "")" @onclick="() => activeTab = 3" type="button">بيانات الإتصال</button>
+                <button class="strip-tab-btn @(activeTab == 4 ? "active" : "")" @onclick="() => activeTab = 4" type="button">بيانات إضافية</button>
+                <button class="strip-tab-btn @(activeTab == 5 ? "active" : "")" @onclick="() => activeTab = 5" type="button">الانترنت</button>
             </div>
 
-        </div>
+            <!-- Tab 1: بيانات الحساب -->
+            @if (activeTab == 1)
+            {
+                <div class="tab-content-seamless">
 
-        <!-- Navigation Tabs Bar -->
-        <div class="tab-strip-bar">
-            <button class="strip-tab-btn @(activeTab == 1 ? "active" : "")" @onclick="() => activeTab = 1" type="button">بيانات الحساب</button>
-            <button class="strip-tab-btn @(activeTab == 2 ? "active" : "")" @onclick="() => activeTab = 2" type="button">الضرائب</button>
-            <button class="strip-tab-btn @(activeTab == 3 ? "active" : "")" @onclick="() => activeTab = 3" type="button">بيانات الإتصال</button>
-            <button class="strip-tab-btn @(activeTab == 4 ? "active" : "")" @onclick="() => activeTab = 4" type="button">بيانات إضافية</button>
-            <button class="strip-tab-btn @(activeTab == 5 ? "active" : "")" @onclick="() => activeTab = 5" type="button">الانترنت</button>
-        </div>
+                    <!-- 1. التصنيف -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">التصنيف</span>
+                    </div>
 
-        <!-- Tab 1: بيانات الحساب -->
-        @if (activeTab == 1)
-        {
-            <div class="tab-content-seamless">
-
-                <!-- 1. التصنيف -->
-                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
-                    <span class="fw-bold fs-6 text-dark section-header-title">التصنيف</span>
-                </div>
-
-                <div class="section-with-blue-line mb-4">
-                    <div class="full-width-stack">
-                        <!-- اسم الفرع -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">اسم الفرع</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
-                                    <span class="combo-display-text">@customerData.Branch</span>
-                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                                </div>
-                                @if (isBranchPopupOpen)
-                                {
-                                    <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="supplier-grid-header">
-                                            <div class="col-name">الاسم</div>
-                                            <div class="col-code">الكود</div>
-                                        </div>
-                                        <div class="supplier-grid-rows" style="max-height: 200px;">
-                                            @foreach (var b in mockBranchList)
-                                            {
-                                                <div class="supplier-row @(customerData.Branch == b.Name ? "active-row" : "")" @onclick="() => SelectBranch(b.Name)">
-                                                    <div class="col-name">@b.Name</div>
-                                                    <div class="col-code">@b.Code</div>
-                                                </div>
-                                            }
-                                        </div>
-                                        <div class="table-popup-footer">
-                                            <button type="button" class="btn-table-close" @onclick="() => isBranchPopupOpen = false">✕</button>
-                                            <span class="resizer-dots">⠿</span>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                            <span class="req-star me-1">*</span>
-                            <div class="d-flex align-items-center gap-1 ms-3">
-                                <input type="checkbox" id="chkAllBranches" class="chk-box" />
-                                <label for="chkAllBranches" class="small text-muted" style="white-space: nowrap;">كل الفروع</label>
-                            </div>
-                        </div>
-
-                        <!-- يوجد بداخل -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">يوجد بداخل</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleNestedPopup">
-                                    <span class="combo-display-text">@customerData.NestedWithin</span>
-                                    <div class="combo-icons-inside">
-                                        <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenNestedModal">+</button>
-                                        <span class="combo-arrow">▼</span>
-                                    </div>
-                                </div>
-                                @if (isNestedPopupOpen)
-                                {
-                                    <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="supplier-grid-header">
-                                            <div class="col-name">الاسم</div>
-                                        </div>
-                                        <div class="supplier-grid-rows" style="max-height: 200px;">
-                                            @foreach (var node in mockNestedTree)
-                                            {
-                                                @RenderNestedTreeNode(node, name => { customerData.NestedWithin = name; isNestedPopupOpen = false; })
-                                            }
-                                        </div>
-                                        <div class="table-popup-footer">
-                                            <button type="button" class="btn-table-close" @onclick="() => isNestedPopupOpen = false">✕</button>
-                                            <span class="resizer-dots">⠿</span>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- العملة الافتراضية -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">العملة الافتراضية</span>
-                            <div class="d-flex align-items-center gap-2" style="max-width: 620px; width: 100%;">
-                                <input type="number" class="clean-input text-center" style="width: 80px;" @bind="customerData.ExchangeRate" />
-                                <div class="dropdown-anchor flex-1">
-                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
-                                        <span class="combo-display-text">@customerData.Currency</span>
+                    <div class="section-with-blue-line mb-4">
+                        <div class="full-width-stack">
+                            <!-- اسم الفرع -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">اسم الفرع</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
+                                        <span class="combo-display-text">@customerData.Branch</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                     </div>
-                                    @if (isCurrencyPopupOpen)
+                                    @if (isBranchPopupOpen)
                                     {
                                         <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
                                             <div class="supplier-grid-header">
-                                                <div class="col-code">الكود</div>
                                                 <div class="col-name">الاسم</div>
-                                                <div class="col-code">المعامل</div>
+                                                <div class="col-code">الكود</div>
                                             </div>
                                             <div class="supplier-grid-rows" style="max-height: 200px;">
-                                                @foreach (var c in mockCurrencyList)
+                                                @foreach (var b in mockBranchList)
                                                 {
-                                                    <div class="supplier-row @(customerData.Currency == c.Code ? "active-row" : "")" @onclick="() => SelectCurrency(c)">
-                                                        <div class="col-code">@c.Code</div>
-                                                        <div class="col-name">@c.Name</div>
-                                                        <div class="col-code">@c.Rate</div>
+                                                    <div class="supplier-row @(customerData.Branch == b.Name ? "active-row" : "")" @onclick="() => SelectBranch(b.Name)">
+                                                        <div class="col-name">@b.Name</div>
+                                                        <div class="col-code">@b.Code</div>
                                                     </div>
                                                 }
                                             </div>
                                             <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                                <button type="button" class="btn-table-close" @onclick="() => isBranchPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                                <div class="d-flex align-items-center gap-1 ms-3">
+                                    <input type="checkbox" id="chkAllBranches" class="chk-box" />
+                                    <label for="chkAllBranches" class="small text-muted" style="white-space: nowrap;">كل الفروع</label>
+                                </div>
+                            </div>
+
+                            <!-- يوجد بداخل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">يوجد بداخل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleNestedPopup">
+                                        <span class="combo-display-text">@customerData.NestedWithin</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenNestedModal">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isNestedPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var node in mockNestedTree)
+                                                {
+                                                    @RenderNestedTreeNode(node, name => { customerData.NestedWithin = name; isNestedPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isNestedPopupOpen = false">✕</button>
                                                 <span class="resizer-dots">⠿</span>
                                             </div>
                                         </div>
                                     }
                                 </div>
                             </div>
+
+                            <!-- العملة الافتراضية -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">العملة الافتراضية</span>
+                                <div class="d-flex align-items-center gap-2" style="max-width: 620px; width: 100%;">
+                                    <input type="number" class="clean-input text-center" style="width: 80px;" @bind="customerData.ExchangeRate" />
+                                    <div class="dropdown-anchor flex-1">
+                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                            <span class="combo-display-text">@customerData.Currency</span>
+                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                        </div>
+                                        @if (isCurrencyPopupOpen)
+                                        {
+                                            <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                                <div class="supplier-grid-header">
+                                                    <div class="col-code">الكود</div>
+                                                    <div class="col-name">الاسم</div>
+                                                    <div class="col-code">المعامل</div>
+                                                </div>
+                                                <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                    @foreach (var c in mockCurrencyList)
+                                                    {
+                                                        <div class="supplier-row @(customerData.Currency == c.Code ? "active-row" : "")" @onclick="() => SelectCurrency(c)">
+                                                            <div class="col-code">@c.Code</div>
+                                                            <div class="col-name">@c.Name</div>
+                                                            <div class="col-code">@c.Rate</div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- حساب الاستاذ -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">حساب الاستاذ</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerPopup">
+                                        <span class="combo-display-text">@customerData.LedgerAccount</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isLedgerPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var node in mockLedgerTree)
+                                                {
+                                                    @RenderLedgerTreeNode(node, name => { customerData.LedgerAccount = name; isLedgerPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isLedgerPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. سياسة التعامل -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">سياسة التعامل</span>
+                    </div>
+
+                    <div class="section-with-blue-line mb-4">
+                        <div class="full-width-stack">
+                            <!-- التعامل الافتراضي -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">التعامل الافتراضي</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealTypePopup">
+                                        <div class="d-flex align-items-center gap-2 flex-1">
+                                            <span class="combo-display-text text-start">@customerData.DefaultDealType</span>
+                                            <span class="badge-signal-bars">📶</span>
+                                        </div>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isDealTypePopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var dt in new[] { "كاش", "أجل", "قسط" })
+                                                {
+                                                    <div class="panel-checkbox-row justify-content-between" @onclick="() => { customerData.DefaultDealType = dt; isDealTypePopupOpen = false; }">
+                                                        <span>@dt</span>
+                                                        <span>📶</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- حد الإئتمان -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">حد الإئتمان</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCreditCalc">
+                                        <span class="combo-display-text text-center">@customerData.CreditLimit</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isCreditCalcOpen)
+                                    {
+                                        <div class="calc-popup-box calc-desktop-popup" style="left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn calc-mem span-col-2"></button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- جهة التعامل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">جهة التعامل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealSidePopup">
+                                        <span class="combo-display-text">@customerData.DealSide</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isDealSidePopupOpen)
+                                    {
+                                        <div class="custom-table-popup" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var ds in new[] { "موردين بضريبة", "عملاء جملة", "عملاء قطاعي" })
+                                                {
+                                                    <div class="table-popup-row @(customerData.DealSide == ds ? "active-row" : "")" @onclick="() => { customerData.DealSide = ds; isDealSidePopupOpen = false; }">@ds</div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isDealSidePopupOpen = false">✕</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- الحساب المكمل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">الحساب المكمل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCompPopup">
+                                        <span class="combo-display-text">@customerData.ComplementaryAccount</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isCompPopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var comp in new[] { "الأرصدة الإفتتاحية", "حساب الأرباح والخسائر" })
+                                                {
+                                                    <div class="panel-checkbox-row" @onclick="() => { customerData.ComplementaryAccount = comp; isCompPopupOpen = false; }">@comp</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. الاضافات -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">الاضافات</span>
+                    </div>
+
+                    <div class="section-with-blue-line">
+                        <div class="two-column-form-grid align-items-start">
+                            <div class="form-side-column">
+                                <div class="field-entry-line">
+                                    <span class="field-title">شريحة الاسعار</span>
+                                    <select class="clean-input flex-1" @bind="customerData.PriceTier">
+                                        @foreach (var tier in mockPriceTiers)
+                                        {
+                                            <option value="@tier">@tier</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title">شروط الدفع</span>
+                                    <select class="clean-input flex-1" @bind="customerData.PaymentTerms">
+                                        @foreach (var term in mockPaymentTerms)
+                                        {
+                                            <option value="@term">@term</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title">شرائح الخصم</span>
+                                    <select class="clean-input flex-1"><option>خصم عملاء الفئة أ (5%)</option></select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title">مندوب المبيعات</span>
+                                    <select class="clean-input flex-1" @bind="customerData.SalesRepresentative">
+                                        @foreach (var rep in mockSalesReps)
+                                        {
+                                            <option value="@rep">@rep</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="field-entry-line">
+                                    <span class="field-title">مركز التكلفة</span>
+                                    <select class="clean-input flex-1"><option>الفرع الرئيسي - الإدارة العامة</option></select>
+                                </div>
+                            </div>
+
+                            <!-- الشركات التأمين Section Layout -->
+                            <div class="form-side-column justify-content-start" style="position: relative;">
+                                <div class="insurance-card-box">
+                                    <div class="insurance-card-header">
+                                        <span>شركات التأمين</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="small text-muted">مؤمن عليه ؟</span>
+                                            <label class="switch-toggle-label">
+                                                <input type="checkbox" class="switch-input" @bind="customerData.IsInsured" />
+                                                <span class="switch-slider"></span>
+                                            </label>
+                                            <span class="small text-muted">لا</span>
+                                        </div>
+                                    </div>
+                                    <div class="insurance-card-body">
+                                        <div class="field-entry-line mb-2">
+                                            <span class="field-title" style="width: 90px;">شركة التأمين</span>
+                                            <select class="clean-input flex-1" disabled="@(!customerData.IsInsured)"><option></option></select>
+                                        </div>
+                                        <div class="field-entry-line">
+                                            <span class="field-title" style="width: 90px;">الرقم التأميني /</span>
+                                            <input type="text" class="clean-input flex-1" @bind="customerData.InsuranceNo" disabled="@(!customerData.IsInsured)" />
+                                        </div>
+                                    </div>
+                                    <div class="insurance-blue-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab 2: الضرائب -->
+            @if (activeTab == 2)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">الضرائب</span></div>
+                    <div class="section-with-blue-line" style="max-width: 600px;">
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">يتعامل بالضريبة</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="switch-toggle-label">
+                                    <input type="checkbox" class="switch-input" @bind="customerData.TaxEnabled" />
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="small text-muted fw-bold">@(customerData.TaxEnabled ? "نعم" : "لا")</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">نوع الحساب</span>
+                            <select class="clean-input flex-1" @bind="customerData.TaxAccountType">
+                                <option value="شركة محلية">شركة محلية</option>
+                                <option value="شركة أجنبية">شركة أجنبية</option>
+                                <option value="شخص طبيعي">شخص طبيعي</option>
+                            </select>
+                            <span class="req-star me-1">*</span>
                         </div>
 
-                        <!-- حساب الاستاذ -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">حساب الاستاذ</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerPopup">
-                                    <span class="combo-display-text">@customerData.LedgerAccount</span>
-                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                        <!-- حقل الضريبة -->
+                        <div class="field-entry-line mb-3 pos-relative">
+                            <span class="field-title-wide">الضريبة</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxDropdownPopup">
+                                    <span class="combo-display-text">@customerData.TaxType</span>
+                                    <div class="combo-icons-inside">
+                                        <button class="btn-inside-plus" type="button">+</button>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
                                 </div>
-                                @if (isLedgerPopupOpen)
+                                @if (isTaxDropdownPopupOpen)
                                 {
-                                    <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
                                         <div class="supplier-grid-header">
+                                            <div class="col-code" style="width: 100px;">النسبة</div>
                                             <div class="col-name">الاسم</div>
                                         </div>
-                                        <div class="supplier-grid-rows" style="max-height: 200px;">
-                                            @foreach (var node in mockLedgerTree)
+                                        <div class="supplier-grid-rows" style="max-height: 220px;">
+                                            @foreach (var tax in mockTaxList)
                                             {
-                                                @RenderLedgerTreeNode(node, name => { customerData.LedgerAccount = name; isLedgerPopupOpen = false; })
+                                                <div class="supplier-row @(customerData.TaxType == tax.Name ? "active-row" : "")" @onclick="() => SelectTax(tax)">
+                                                    <div class="col-code" style="width: 100px;">@tax.Rate</div>
+                                                    <div class="col-name">@tax.Name</div>
+                                                </div>
                                             }
                                         </div>
                                         <div class="table-popup-footer">
-                                            <button type="button" class="btn-table-close" @onclick="() => isLedgerPopupOpen = false">✕</button>
+                                            <button type="button" class="btn-table-close" @onclick="() => isTaxDropdownPopupOpen = false">✕</button>
                                             <span class="resizer-dots">⠿</span>
                                         </div>
                                     </div>
@@ -217,596 +498,317 @@
                             </div>
                             <span class="req-star me-1">*</span>
                         </div>
+
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">رقم التسجيل</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.TaxRegistrationNumber" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">البطاقة الضريبية</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.TaxCard" />
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">مأمورية الضرائب</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.TaxAuthorityOffice" />
+                        </div>
+                        <div class="field-entry-line">
+                            <span class="field-title-wide">السجل التجاري</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.CommercialRegister" />
+                        </div>
                     </div>
                 </div>
+            }
 
-                <!-- 2. سياسة التعامل -->
-                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
-                    <span class="fw-bold fs-6 text-dark section-header-title">سياسة التعامل</span>
-                </div>
+            <!-- Tab 3: بيانات الإتصال -->
+            @if (activeTab == 3)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">بيانات الاتصال</span></div>
+                    <div class="section-with-blue-line mb-4" style="max-width: 750px;">
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title">التليفون</span>
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone1" />
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone2" />
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Mobile" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line">
+                            <span class="field-title">البريد الإلكتروني</span>
+                            <input type="email" class="clean-input flex-1" @bind="customerData.Email" />
+                        </div>
+                    </div>
 
-                <div class="section-with-blue-line mb-4">
-                    <div class="full-width-stack">
-                        <!-- التعامل الافتراضي -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">التعامل الافتراضي</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealTypePopup">
-                                    <div class="d-flex align-items-center gap-2 flex-1">
-                                        <span class="combo-display-text text-start">@customerData.DefaultDealType</span>
-                                        <span class="badge-signal-bars">📶</span>
-                                    </div>
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
+                    <div class="section-with-blue-line" style="max-width: 750px;">
+                        <!-- البلد -->
+                        <div class="field-entry-line mb-2 pos-relative">
+                            <span class="field-title">البلد</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCountryPopup">
+                                    <span class="combo-display-text">@customerData.Country</span>
                                     <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                 </div>
-                                @if (isDealTypePopupOpen)
+                                @if (isCountryPopupOpen)
                                 {
-                                    <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="panel-scroll-content">
-                                            @foreach (var dt in new[] { "كاش", "أجل", "قسط" })
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 220px;">
+                                            @foreach (var c in mockCountryList)
                                             {
-                                                <div class="panel-checkbox-row justify-content-between" @onclick="() => { customerData.DefaultDealType = dt; isDealTypePopupOpen = false; }">
-                                                    <span>@dt</span>
-                                                    <span>📶</span>
+                                                <div class="supplier-row @(customerData.Country == c ? "active-row" : "")" @onclick="() => { customerData.Country = c; isCountryPopupOpen = false; }">
+                                                    <div class="col-name">@c</div>
                                                 </div>
                                             }
                                         </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- حد الإئتمان -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">حد الإئتمان</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCreditCalc">
-                                    <span class="combo-display-text text-center">@customerData.CreditLimit</span>
-                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                                </div>
-                                @if (isCreditCalcOpen)
-                                {
-                                    <div class="calc-popup-box calc-desktop-popup" style="left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="calc-screen">@calcDisplay</div>
-                                        <div class="calc-grid">
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
-                                            <button type="button" class="calc-btn calc-op"></button>
-                                            <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
-                                            <button type="button" class="calc-btn calc-mem">MC</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
-                                            <button type="button" class="calc-btn calc-mem">MR</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
-                                            <button type="button" class="calc-btn calc-mem">MS</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
-                                            <button type="button" class="calc-btn calc-mem span-col-2"></button>
-                                            <button type="button" class="calc-btn calc-mem">+M</button>
-                                            <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
-                                            <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isCountryPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
                                         </div>
                                     </div>
                                 }
                             </div>
+                            <span class="req-star me-1">*</span>
                         </div>
 
-                        <!-- جهة التعامل -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">جهة التعامل</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealSidePopup">
-                                    <span class="combo-display-text">@customerData.DealSide</span>
+                        <!-- المنطقة -->
+                        <div class="field-entry-line mb-2 pos-relative">
+                            <span class="field-title">المنطقة</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleRegionPopup">
+                                    <span class="combo-display-text">@customerData.Region</span>
                                     <div class="combo-icons-inside">
                                         <button class="btn-inside-plus" type="button">+</button>
                                         <span class="combo-arrow">▼</span>
                                     </div>
                                 </div>
-                                @if (isDealSidePopupOpen)
+                                @if (isRegionPopupOpen)
                                 {
-                                    <div class="custom-table-popup" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="table-popup-header">الاسم</div>
-                                        <div class="table-popup-list">
-                                            @foreach (var ds in new[] { "موردين بضريبة", "عملاء جملة", "عملاء قطاعي" })
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            @foreach (var r in mockRegionList)
                                             {
-                                                <div class="table-popup-row @(customerData.DealSide == ds ? "active-row" : "")" @onclick="() => { customerData.DealSide = ds; isDealSidePopupOpen = false; }">@ds</div>
+                                                <div class="supplier-row @(customerData.Region == r ? "active-row" : "")" @onclick="() => { customerData.Region = r; isRegionPopupOpen = false; }">
+                                                    <div class="col-name">@r</div>
+                                                </div>
                                             }
                                         </div>
                                         <div class="table-popup-footer">
-                                            <button type="button" class="btn-table-close" @onclick="() => isDealSidePopupOpen = false">✕</button>
+                                            <button type="button" class="btn-table-close" @onclick="() => isRegionPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
                                         </div>
                                     </div>
                                 }
                             </div>
-                            <span class="req-star me-1">*</span>
                         </div>
 
-                        <!-- الحساب المكمل -->
-                        <div class="field-entry-line pos-relative">
-                            <span class="field-title">الحساب المكمل</span>
-                            <div class="dropdown-anchor" style="max-width: 620px;">
-                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCompPopup">
-                                    <span class="combo-display-text">@customerData.ComplementaryAccount</span>
-                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                                </div>
-                                @if (isCompPopupOpen)
-                                {
-                                    <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
-                                        <div class="panel-scroll-content">
-                                            @foreach (var comp in new[] { "الأرصدة الإفتتاحية", "حساب الأرباح والخسائر" })
-                                            {
-                                                <div class="panel-checkbox-row" @onclick="() => { customerData.ComplementaryAccount = comp; isCompPopupOpen = false; }">@comp</div>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                            <span class="req-star me-1">*</span>
+                        <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="customerData.Governorate" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="customerData.City" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="customerData.Landmark" /></div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">رقم المبنى</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.BuildingNo" />
+                            <span class="small text-muted ms-2">الدور</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.FloorNo" />
+                            <span class="small text-muted ms-2">الشقة</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.ApartmentNo" />
                         </div>
+                        <div class="field-entry-line mb-2"><span class="field-title">الرقم المميز</span><input type="text" class="clean-input" style="width: 200px;" @bind="customerData.UniqueNo" /><span class="small text-muted ms-2 me-2">الرقم البريدي</span><input type="text" class="clean-input flex-1" @bind="customerData.PostalCode" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">العنوان</span><input type="text" class="clean-input flex-1" @bind="customerData.FullAddress" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">رقم الموقع العالمي</span><input type="text" class="clean-input flex-1" @bind="customerData.GlobalSiteNo" /></div>
                     </div>
                 </div>
+            }
 
-                <!-- 3. الاضافات -->
-                <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
-                    <span class="fw-bold fs-6 text-dark section-header-title">الاضافات</span>
-                </div>
+            <!-- Tab 4: بيانات إضافية -->
+            @if (activeTab == 4)
+            {
+                <div class="tab-content-seamless">
 
-                <div class="section-with-blue-line">
-                    <div class="two-column-form-grid align-items-start">
-                        <div class="form-side-column">
-                            <div class="field-entry-line">
-                                <span class="field-title">شريحة الاسعار</span>
-                                <select class="clean-input flex-1" @bind="customerData.PriceTier">
-                                    @foreach (var tier in mockPriceTiers)
-                                    {
-                                        <option value="@tier">@tier</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="field-entry-line">
-                                <span class="field-title">شروط الدفع</span>
-                                <select class="clean-input flex-1" @bind="customerData.PaymentTerms">
-                                    @foreach (var term in mockPaymentTerms)
-                                    {
-                                        <option value="@term">@term</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="field-entry-line">
-                                <span class="field-title">شرائح الخصم</span>
-                                <select class="clean-input flex-1"><option>خصم عملاء الفئة أ (5%)</option></select>
-                            </div>
-                            <div class="field-entry-line">
-                                <span class="field-title">مندوب المبيعات</span>
-                                <select class="clean-input flex-1" @bind="customerData.SalesRepresentative">
-                                    @foreach (var rep in mockSalesReps)
-                                    {
-                                        <option value="@rep">@rep</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="field-entry-line">
-                                <span class="field-title">مركز التكلفة</span>
-                                <select class="clean-input flex-1"><option>الفرع الرئيسي - الإدارة العامة</option></select>
-                            </div>
-                        </div>
-
-                        <!-- الشركات التأمين Section Layout -->
-                        <div class="form-side-column justify-content-start" style="position: relative;">
-                            <div class="insurance-card-box">
-                                <div class="insurance-card-header">
-                                    <span>شركات التأمين</span>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="small text-muted">مؤمن عليه ؟</span>
-                                        <label class="switch-toggle-label">
-                                            <input type="checkbox" class="switch-input" @bind="customerData.IsInsured" />
-                                            <span class="switch-slider"></span>
-                                        </label>
-                                        <span class="small text-muted">لا</span>
-                                    </div>
-                                </div>
-                                <div class="insurance-card-body">
-                                    <div class="field-entry-line mb-2">
-                                        <span class="field-title" style="width: 90px;">شركة التأمين</span>
-                                        <select class="clean-input flex-1" disabled="@(!customerData.IsInsured)"><option></option></select>
-                                    </div>
-                                    <div class="field-entry-line">
-                                        <span class="field-title" style="width: 90px;">الرقم التأميني /</span>
-                                        <input type="text" class="clean-input flex-1" @bind="customerData.InsuranceNo" disabled="@(!customerData.IsInsured)" />
-                                    </div>
-                                </div>
-                                <div class="insurance-blue-bar"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-
-        <!-- Tab 2: الضرائب -->
-        @if (activeTab == 2)
-        {
-            <div class="tab-content-seamless">
-                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">الضرائب</span></div>
-                <div class="section-with-blue-line" style="max-width: 600px;">
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title-wide">يتعامل بالضريبة</span>
-                        <div class="d-flex align-items-center gap-2">
+                    <!-- المفاتيح العلوية جهة اليمين -->
+                    <div class="d-flex flex-column align-items-end gap-2 mb-4 me-2" style="direction:ltr;">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
                             <label class="switch-toggle-label">
-                                <input type="checkbox" class="switch-input" @bind="customerData.TaxEnabled" />
+                                <input type="checkbox" class="switch-input" @bind="customerData.HasSerial" />
                                 <span class="switch-slider"></span>
                             </label>
-                            <span class="small text-muted fw-bold">@(customerData.TaxEnabled ? "نعم" : "لا")</span>
+                            <span class="field-title text-end" style="width: 110px;">له مسلسل</span>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title-wide">نوع الحساب</span>
-                        <select class="clean-input flex-1" @bind="customerData.TaxAccountType">
-                            <option value="شركة محلية">شركة محلية</option>
-                            <option value="شركة أجنبية">شركة أجنبية</option>
-                            <option value="شخص طبيعي">شخص طبيعي</option>
-                        </select>
-                        <span class="req-star me-1">*</span>
-                    </div>
 
-                    <!-- حقل الضريبة -->
-                    <div class="field-entry-line mb-3 pos-relative">
-                        <span class="field-title-wide">الضريبة</span>
-                        <div class="dropdown-anchor flex-1">
-                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxDropdownPopup">
-                                <span class="combo-display-text">@customerData.TaxType</span>
-                                <div class="combo-icons-inside">
-                                    <button class="btn-inside-plus" type="button">+</button>
-                                    <span class="combo-arrow">▼</span>
-                                </div>
-                            </div>
-                            @if (isTaxDropdownPopupOpen)
-                            {
-                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                    <div class="supplier-grid-header">
-                                        <div class="col-code" style="width: 100px;">النسبة</div>
-                                        <div class="col-name">الاسم</div>
-                                    </div>
-                                    <div class="supplier-grid-rows" style="max-height: 220px;">
-                                        @foreach (var tax in mockTaxList)
-                                        {
-                                            <div class="supplier-row @(customerData.TaxType == tax.Name ? "active-row" : "")" @onclick="() => SelectTax(tax)">
-                                                <div class="col-code" style="width: 100px;">@tax.Rate</div>
-                                                <div class="col-name">@tax.Name</div>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="table-popup-footer">
-                                        <button type="button" class="btn-table-close" @onclick="() => isTaxDropdownPopupOpen = false">✕</button>
-                                        <span class="resizer-dots">⠿</span>
-                                    </div>
-                                </div>
-                            }
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="customerData.IsDualRole" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="field-title text-end" style="width: 110px;">يتعامل ك عميل و</span>
                         </div>
-                        <span class="req-star me-1">*</span>
-                    </div>
 
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title-wide">رقم التسجيل</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxRegistrationNumber" />
-                        <span class="req-star me-1">*</span>
-                    </div>
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title-wide">البطاقة الضريبية</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxCard" />
-                    </div>
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title-wide">مأمورية الضرائب</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.TaxAuthorityOffice" />
-                    </div>
-                    <div class="field-entry-line">
-                        <span class="field-title-wide">السجل التجاري</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.CommercialRegister" />
-                    </div>
-                </div>
-            </div>
-        }
-
-        <!-- Tab 3: بيانات الإتصال -->
-        @if (activeTab == 3)
-        {
-            <div class="tab-content-seamless">
-                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">بيانات الاتصال</span></div>
-                <div class="section-with-blue-line mb-4" style="max-width: 750px;">
-                    <div class="field-entry-line mb-3">
-                        <span class="field-title">التليفون</span>
-                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone1" />
-                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Phone2" />
-                        <input type="text" class="clean-input" style="width: 190px;" @bind="customerData.Mobile" />
-                        <span class="req-star me-1">*</span>
-                    </div>
-                    <div class="field-entry-line">
-                        <span class="field-title">البريد الإلكتروني</span>
-                        <input type="email" class="clean-input flex-1" @bind="customerData.Email" />
-                    </div>
-                </div>
-
-                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
-                <div class="section-with-blue-line" style="max-width: 750px;">
-                    <!-- البلد -->
-                    <div class="field-entry-line mb-2 pos-relative">
-                        <span class="field-title">البلد</span>
-                        <div class="dropdown-anchor flex-1">
-                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCountryPopup">
-                                <span class="combo-display-text">@customerData.Country</span>
-                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                            </div>
-                            @if (isCountryPopupOpen)
-                            {
-                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                    <div class="supplier-grid-header">
-                                        <div class="col-name">الاسم</div>
-                                    </div>
-                                    <div class="supplier-grid-rows" style="max-height: 220px;">
-                                        @foreach (var c in mockCountryList)
-                                        {
-                                            <div class="supplier-row @(customerData.Country == c ? "active-row" : "")" @onclick="() => { customerData.Country = c; isCountryPopupOpen = false; }">
-                                                <div class="col-name">@c</div>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="table-popup-footer">
-                                        <button type="button" class="btn-table-close" @onclick="() => isCountryPopupOpen = false">✕</button>
-                                        <span class="resizer-dots">⠿</span>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <span class="req-star me-1">*</span>
-                    </div>
-
-                    <!-- المنطقة -->
-                    <div class="field-entry-line mb-2 pos-relative">
-                        <span class="field-title">المنطقة</span>
-                        <div class="dropdown-anchor flex-1">
-                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleRegionPopup">
-                                <span class="combo-display-text">@customerData.Region</span>
-                                <div class="combo-icons-inside">
-                                    <button class="btn-inside-plus" type="button">+</button>
-                                    <span class="combo-arrow">▼</span>
-                                </div>
-                            </div>
-                            @if (isRegionPopupOpen)
-                            {
-                                <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
-                                    <div class="supplier-grid-header">
-                                        <div class="col-name">الاسم</div>
-                                    </div>
-                                    <div class="supplier-grid-rows" style="max-height: 200px;">
-                                        @foreach (var r in mockRegionList)
-                                        {
-                                            <div class="supplier-row @(customerData.Region == r ? "active-row" : "")" @onclick="() => { customerData.Region = r; isRegionPopupOpen = false; }">
-                                                <div class="col-name">@r</div>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="table-popup-footer">
-                                        <button type="button" class="btn-table-close" @onclick="() => isRegionPopupOpen = false">✕</button>
-                                        <span class="resizer-dots">⠿</span>
-                                    </div>
-                                </div>
-                            }
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="customerData.UsesPoints" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="field-title text-end" style="width: 110px;">يتعامل بنقاط</span>
                         </div>
                     </div>
 
-                    <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="customerData.Governorate" /></div>
-                    <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="customerData.City" /></div>
-                    <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="customerData.Street" /></div>
-                    <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="customerData.Landmark" /></div>
-                    <div class="field-entry-line mb-2">
-                        <span class="field-title">رقم المبنى</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.BuildingNo" />
-                        <span class="small text-muted ms-2">الدور</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.FloorNo" />
-                        <span class="small text-muted ms-2">الشقة</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.ApartmentNo" />
-                    </div>
-                    <div class="field-entry-line mb-2"><span class="field-title">الرقم المميز</span><input type="text" class="clean-input" style="width: 200px;" @bind="customerData.UniqueNo" /><span class="small text-muted ms-2 me-2">الرقم البريدي</span><input type="text" class="clean-input flex-1" @bind="customerData.PostalCode" /></div>
-                    <div class="field-entry-line mb-2"><span class="field-title">العنوان</span><input type="text" class="clean-input flex-1" @bind="customerData.FullAddress" /></div>
-                    <div class="field-entry-line mb-2"><span class="field-title">رقم الموقع العالمي</span><input type="text" class="clean-input flex-1" @bind="customerData.GlobalSiteNo" /></div>
-                </div>
-            </div>
-        }
+                    <!-- تقسيم الحقول أسفل المفاتيح: اخري على اليمين وحقول اضافية على اليسار -->
+                    <div class="two-column-form-grid" style="column-gap: 50px;">
 
-        <!-- Tab 4: بيانات إضافية -->
-        @if (activeTab == 4)
-        {
-            <div class="tab-content-seamless">
-
-                <!-- المفاتيح العلوية جهة اليمين -->
-                <div class="d-flex flex-column align-items-end gap-2 mb-4 me-2" style="direction:ltr;">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="small text-muted">لا</span>
-                        <label class="switch-toggle-label">
-                            <input type="checkbox" class="switch-input" @bind="customerData.HasSerial" />
-                            <span class="switch-slider"></span>
-                        </label>
-                        <span class="field-title text-end" style="width: 110px;">له مسلسل</span>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="small text-muted">لا</span>
-                        <label class="switch-toggle-label">
-                            <input type="checkbox" class="switch-input" @bind="customerData.IsDualRole" />
-                            <span class="switch-slider"></span>
-                        </label>
-                        <span class="field-title text-end" style="width: 110px;">يتعامل ك عميل و</span>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="small text-muted">لا</span>
-                        <label class="switch-toggle-label">
-                            <input type="checkbox" class="switch-input" @bind="customerData.UsesPoints" />
-                            <span class="switch-slider"></span>
-                        </label>
-                        <span class="field-title text-end" style="width: 110px;">يتعامل بنقاط</span>
-                    </div>
-                </div>
-
-                <!-- تقسيم الحقول أسفل المفاتيح: اخري على اليمين وحقول اضافية على اليسار -->
-                <div class="two-column-form-grid" style="column-gap: 50px;">
-
-                    <!-- العمود الأيمن: اخري مع الخط الأزرق -->
-                    <div>
-                        <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
-                            <span class="fw-bold fs-6 text-dark section-header-title">اخري</span>
-                        </div>
-                        <div class="section-with-blue-line">
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">رقم الهوية</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.NationalId" />
+                        <!-- العمود الأيمن: اخري مع الخط الأزرق -->
+                        <div>
+                            <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                                <span class="fw-bold fs-6 text-dark section-header-title">اخري</span>
                             </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">جهة العمل</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.Employer" />
-                            </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">الضامن الأول</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor1" />
-                            </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">الضامن الثاني</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor2" />
-                            </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">رقم الحساب البنكي</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.BankAccountNo" />
-                            </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">اسم البنك</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.BankName" />
-                            </div>
-                            <div class="field-entry-line mb-2">
-                                <span class="field-title">رقم الصفحة</span>
-                                <input type="text" class="clean-input flex-1" @bind="customerData.PageNo" />
-                            </div>
-                            <div class="field-entry-line align-items-start mb-2">
-                                <span class="field-title pt-1">الملاحظات</span>
-                                <textarea class="clean-input flex-1" rows="4" @bind="customerData.Notes"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- العمود الأيسر: حقول اضافية مع الخط الأزرق -->
-                    <div>
-                        <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
-                            <span class="fw-bold fs-6 text-dark section-header-title">حقول اضافية</span>
-                        </div>
-                        <div class="section-with-blue-line">
-                            @for (int i = 1; i <= 8; i++)
-                            {
-                                int idx = i;
+                            <div class="section-with-blue-line">
                                 <div class="field-entry-line mb-2">
-                                    <span class="field-title">الحقل @idx</span>
-                                    <div class="dropdown-anchor flex-1">
-                                        <div class="custom-combo-trigger">
-                                            <span class="combo-display-text"></span>
-                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    <span class="field-title">رقم الهوية</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.NationalId" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">جهة العمل</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.Employer" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">الضامن الأول</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor1" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">الضامن الثاني</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.Guarantor2" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">رقم الحساب البنكي</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.BankAccountNo" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">اسم البنك</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.BankName" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">رقم الصفحة</span>
+                                    <input type="text" class="clean-input flex-1" @bind="customerData.PageNo" />
+                                </div>
+                                <div class="field-entry-line align-items-start mb-2">
+                                    <span class="field-title pt-1">الملاحظات</span>
+                                    <textarea class="clean-input flex-1" rows="4" @bind="customerData.Notes"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- العمود الأيسر: حقول اضافية مع الخط الأزرق -->
+                        <div>
+                            <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                                <span class="fw-bold fs-6 text-dark section-header-title">حقول اضافية</span>
+                            </div>
+                            <div class="section-with-blue-line">
+                                @for (int i = 1; i <= 8; i++)
+                                {
+                                    int idx = i;
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title">الحقل @idx</span>
+                                        <div class="dropdown-anchor flex-1">
+                                            <div class="custom-combo-trigger">
+                                                <span class="combo-display-text"></span>
+                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
+                                }
+                            </div>
                         </div>
+
                     </div>
 
                 </div>
+            }
 
-            </div>
-        }
+            <!-- Tab 5: الانترنت (Updated to precisely match the target desktop screen layout) -->
+            @if (activeTab == 5)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">خدمة الانترنت</span></div>
+                    <div class="section-with-blue-line" style="max-width: 600px;">
+                        <div class="field-entry-line mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.EnableInternetAccess" />
+                                <span class="fw-bold text-dark">تفعيل الدخول عبر الانترنت</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">اسم المستخدم</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.InternetUsername" disabled="@(!customerData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">الرقم السري</span>
+                            <input type="password" class="clean-input flex-1" @bind="customerData.InternetPassword" disabled="@(!customerData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-4">
+                            <span class="field-title">اسم العميل</span>
+                            <input type="text" class="clean-input flex-1" @bind="customerData.InternetDisplayName" disabled="@(!customerData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
 
-        <!-- Tab 5: الانترنت (Updated to precisely match the target desktop screen layout) -->
-        @if (activeTab == 5)
-        {
-            <div class="tab-content-seamless">
-                <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">خدمة الانترنت</span></div>
-                <div class="section-with-blue-line" style="max-width: 600px;">
-                    <div class="field-entry-line mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.EnableInternetAccess" />
-                            <span class="fw-bold text-dark">تفعيل الدخول عبر الانترنت</span>
+                        <!-- Additional Options matching target screenshot layout[cite: 1, 2] -->
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessAvailableStock" />
+                                <span class="text-dark small">الاطلاع على أرصدة المخزون المتاحة</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <span class="field-title">اسم المستخدم</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.InternetUsername" disabled="@(!customerData.EnableInternetAccess)" />
-                        <span class="req-star me-1">*</span>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <span class="field-title">الرقم السري</span>
-                        <input type="password" class="clean-input flex-1" @bind="customerData.InternetPassword" disabled="@(!customerData.EnableInternetAccess)" />
-                        <span class="req-star me-1">*</span>
-                    </div>
-                    <div class="field-entry-line mb-4">
-                        <span class="field-title">اسم العميل</span>
-                        <input type="text" class="clean-input flex-1" @bind="customerData.InternetDisplayName" disabled="@(!customerData.EnableInternetAccess)" />
-                        <span class="req-star me-1">*</span>
-                    </div>
-
-                    <!-- Additional Options matching target screenshot layout[cite: 1, 2] -->
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessAvailableStock" />
-                            <span class="text-dark small">الاطلاع على أرصدة المخزون المتاحة</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessItemPrices" />
+                                <span class="text-dark small">الاطلاع على أسعار الأصناف الموجودة</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessItemPrices" />
-                            <span class="text-dark small">الاطلاع على أسعار الأصناف الموجودة</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessPendingOrders" />
+                                <span class="text-dark small">الاطلاع على الطلبيات التي قامت بها الشركة ولم تأتي</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessPendingOrders" />
-                            <span class="text-dark small">الاطلاع على الطلبيات التي قامت بها الشركة ولم تأتي</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessCreditLimit" />
+                                <span class="text-dark small">الاطلاع على حد الإئتمان له</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.AccessCreditLimit" />
-                            <span class="text-dark small">الاطلاع على حد الإئتمان له</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.SendComplaintsToCompany" />
+                                <span class="text-dark small">إرسال شكوى الى الشركة</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.SendComplaintsToCompany" />
-                            <span class="text-dark small">إرسال شكوى الى الشركة</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.EditOwnContactInfo" />
+                                <span class="text-dark small">إمكانية تعديل بيانات الاتصال الخاصه به</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.EditOwnContactInfo" />
-                            <span class="text-dark small">إمكانية تعديل بيانات الاتصال الخاصه به</span>
-                        </div>
-                    </div>
-                    <div class="field-entry-line mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="checkbox" class="form-check-input m-0" @bind="customerData.LimitDailyPurchaseOrders" />
-                            <span class="text-dark small">عدد طلبيات الشراء التي يقوم بها في اليوم</span>
-                            <input type="number" class="clean-input text-center ms-2" style="width: 60px;" @bind="customerData.MaxDailyPurchaseOrders" />
-                            <span class="text-muted small">طلبية</span>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="customerData.LimitDailyPurchaseOrders" />
+                                <span class="text-dark small">عدد طلبيات الشراء التي يقوم بها في اليوم</span>
+                                <input type="number" class="clean-input text-center ms-2" style="width: 60px;" @bind="customerData.MaxDailyPurchaseOrders" />
+                                <span class="text-muted small">طلبية</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
 
     </div>
 </div>
@@ -1146,9 +1148,9 @@ public class CustomerModel
         position: relative;
         display: flex;
         flex-direction: column;
-        align-items: center;
         padding-left: 15px;
         user-select: none;
+        margin-bottom:10px;
     }
 
     .orange-divider-line {
@@ -1270,7 +1272,6 @@ public class CustomerModel
         display: flex;
         justify-content: flex-start;
         gap: 6px;
-        border-bottom: 1px solid #dee2e6;
         padding-bottom: 8px;
         margin-bottom: 16px;
     }

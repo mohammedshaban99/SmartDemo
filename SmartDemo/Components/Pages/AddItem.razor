@@ -3,8 +3,7 @@
 @rendermode InteractiveServer
 
 <div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
-    <div class="main-canvas" @onclick:stopPropagation>
-              <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
+                <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
             <div class="image-right-block">
                 <div class="image-square">
                     <span class="image-placeholder-text">الصورة</span>
@@ -14,6 +13,8 @@
                     <label for="chkActive" class="small-chk-label">نشط</label>
                 </div>
             </div>
+    <div class="main-canvas" @onclick:stopPropagation>
+  
         <!-- Top Header Area -->
         <div class="header-master-grid">
 
@@ -3217,6 +3218,7 @@ public class OpeningBalanceModel
         box-sizing: border-box;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         overflow: auto;
+        display:flex;
     }
 
     .main-canvas {
@@ -3235,12 +3237,7 @@ public class OpeningBalanceModel
     }
 
     .image-right-block {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        padding-left: 15px;
-        user-select: none;
-        margin-bottom:10px;
+        width: fit-content;
     }
 
     .orange-divider-line {
@@ -3270,8 +3267,6 @@ public class OpeningBalanceModel
         justify-content: center;
         border-radius: 2px;
         margin-bottom: 6px;
-        margin-right: -90px;
-        margin-right: -90px;
     }
 
     .image-placeholder-text {
@@ -3283,7 +3278,6 @@ public class OpeningBalanceModel
         display: flex;
         align-items: center;
         gap: 5px;
-        margin-right: -90px;
     }
 
     .small-chk-label {
