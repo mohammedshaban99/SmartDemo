@@ -246,7 +246,7 @@
 input.clean-input:focus,
 textarea.clean-input:focus {
     border-color: #ced4da;
-    border-bottom: 2px solid #007bff !important;
+    border-bottom: 3px solid #007bff !important;
     box-shadow: none;
 }
 
