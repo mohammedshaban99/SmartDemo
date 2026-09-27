@@ -4,11 +4,7 @@
 
 <div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
     <div class="main-canvas" @onclick:stopPropagation>
-
-        <!-- Top Header Area -->
-        <div class="header-master-grid">
-
-            <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
+              <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
             <div class="image-right-block">
                 <div class="image-square">
                     <span class="image-placeholder-text">الصورة</span>
@@ -17,8 +13,12 @@
                     <input type="checkbox" id="chkActive" class="chk-box" @bind="itemData.IsActive" />
                     <label for="chkActive" class="small-chk-label">نشط</label>
                 </div>
-                <div class="orange-divider-line"></div>
             </div>
+        <!-- Top Header Area -->
+        <div class="header-master-grid">
+
+      
+                            <div class="orange-divider-line"></div>
 
             <!-- 2. Section Labels -->
             <div class="labels-column">
@@ -3214,7 +3214,7 @@ public class OpeningBalanceModel
     .main-canvas {
         max-width: 1040px;
         margin-left: auto;
-        margin-right: 20px;
+        margin-right: 100px;
     }
 
     .header-master-grid {
@@ -3230,14 +3230,14 @@ public class OpeningBalanceModel
         position: relative;
         display: flex;
         flex-direction: column;
-        align-items: center;
         padding-left: 15px;
         user-select: none;
+        margin-bottom:10px;
     }
 
     .orange-divider-line {
         position: absolute;
-        left: 0;
+        right: 0;
         top: 0;
         width: 3px;
         height: 112px;
@@ -3262,6 +3262,8 @@ public class OpeningBalanceModel
         justify-content: center;
         border-radius: 2px;
         margin-bottom: 6px;
+        margin-right: -90px;
+        margin-right: -90px;
     }
 
     .image-placeholder-text {
@@ -3273,6 +3275,7 @@ public class OpeningBalanceModel
         display: flex;
         align-items: center;
         gap: 5px;
+        margin-right: -90px;
     }
 
     .small-chk-label {
@@ -3289,6 +3292,7 @@ public class OpeningBalanceModel
         flex-direction: column;
         gap: 8px;
         padding-top: 2px;
+        margin-right: 10px;
     }
 
     .label-row-cell {
