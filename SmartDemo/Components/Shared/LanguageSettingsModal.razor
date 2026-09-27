@@ -69,7 +69,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 2500;
+        z-index: 9999 !important; 
     }
 
     .languages-modal-dialog {
@@ -81,7 +81,7 @@
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        z-index: 4001;
+        z-index: 10000 !important; 
     }
 
     .languages-modal-header {
@@ -196,6 +196,13 @@
         justify-content: center;
     }
 
+        .languages-modal-footer .btn-lang-cancel {
+            border: none;
+            background: #a8a8a8;
+            border-radius: 6px;
+            color: white;
+    }
+
     .btn-lang-submit {
         background-color: #a8a8a8;
         color: #ffffff;
@@ -205,6 +212,7 @@
         font-weight: 600;
         font-size: 0.88rem;
         cursor: pointer;
+    }
     }
 
     .btn-lang-cancel {

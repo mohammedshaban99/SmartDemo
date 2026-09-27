@@ -2462,7 +2462,15 @@
 
     private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
     private void CloseTranslationPopup() => isTranslationPopupOpen = false;
-    private void OpenLanguagesModal() { isTranslationPopupOpen = false; isModalTransPopupOpen = false; isLanguagesModalOpen = true; }
+    private void OpenLanguagesModal() {
+        isTranslationPopupOpen = false;
+        isModalTransPopupOpen = false;
+        isLanguagesModalOpen = true;
+        StateHasChanged();
+     
+    }
+
+
     private void SaveLanguages() { }
 
     private bool isItemTypePopupOpen = false;
