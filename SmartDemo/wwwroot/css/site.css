@@ -1,7 +1,8 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; 
 }
 
 html, body {
@@ -10,6 +11,12 @@ html, body {
     display: flex;
     flex-direction: column;
 }
+
+
+input, select, textarea, button, .dxbl-control {
+    font-family: 'Cairo', sans-serif;
+}
+
 
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
