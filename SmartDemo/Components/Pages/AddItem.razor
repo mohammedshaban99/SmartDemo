@@ -285,7 +285,7 @@
                                         <option value="GS1">GS1</option>
                                         <option value="EAN">EAN</option>
                                     </select>
-                                    <input type="text" class="clean-input flex-1 border-0" @bind="itemData.GlobalBarcodeValue" />
+                                    <input type="text" class="clean-input flex-1 " @bind="itemData.GlobalBarcodeValue" />
                                 </div>
                             </div>
 
@@ -3785,7 +3785,8 @@ public class OpeningBalanceModel
     }
 
     .clean-input {
-        border: 1px solid #ced4da;
+        border: 1px solid transparent;
+        border-bottom: 3px solid transparent;
         border-radius: 3px;
         padding: 4px 8px;
         font-size: 0.85rem;
@@ -3800,6 +3801,7 @@ public class OpeningBalanceModel
     .barcode-main-input:focus,
     .modal-barcode-input:focus {
         border-color: #ced4da;
+        border: 1px solid transparent;
         border-bottom: 3px solid #007bff !important;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
@@ -3807,14 +3809,14 @@ public class OpeningBalanceModel
     }
 
     select.clean-input:focus {
-        border-color: #80bdff;
-        border-bottom: 1px solid #ced4da;
+        border-color: transparent;
+        border-bottom: 3px solid #007AFE;
         box-shadow: none;
     }
 
     .barcode-control {
         display: flex;
-        border: 1px solid #ced4da;
+        border: 1px solid  transparent;
         border-radius: 3px;
         overflow: hidden;
         background: #ffffff;
@@ -3837,7 +3839,7 @@ public class OpeningBalanceModel
         align-items: center;
         justify-content: space-between;
         background-color: #ffffff;
-        border: 1px solid #ced4da;
+        border: 1px solid transparent;
         border-radius: 3px;
         padding: 2px 8px;
         height: 31px;
@@ -4564,7 +4566,6 @@ public class OpeningBalanceModel
         align-items: center;
         gap: 4px;
         height: 31px;
-        border: 1px solid #ced4da;
         border-radius: 3px 0 0 3px;
         background: #ffffff;
         padding: 0 8px;
