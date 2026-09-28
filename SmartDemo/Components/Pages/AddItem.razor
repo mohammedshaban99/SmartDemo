@@ -189,8 +189,8 @@
                                                 }
                                             </div>
                                             <div class="panel-footer-actions">
-                                                <button type="button" class="btn-panel-cancel" @onclick="() => isBranchPopupOpen = false">إلغاء</button>
-                                                <button type="button" class="btn-panel-ok" @onclick="() => isBranchPopupOpen = false">موافق</button>
+                                                 <button type="button" class="btn-panel-ok" @onclick="() => isBranchPopupOpen = false">Ok</button>
+                                                <button type="button" class="btn-panel-cancel" @onclick="() => isBranchPopupOpen = false">Cancel</button>
                                             </div>
                                         </div>
                                     }
@@ -226,8 +226,9 @@
                                                 }
                                             </div>
                                             <div class="panel-footer-actions">
-                                                <button type="button" class="btn-panel-cancel" @onclick="() => isWarehousePopupOpen = false">إلغاء</button>
-                                                <button type="button" class="btn-panel-ok" @onclick="() => isWarehousePopupOpen = false">موافق</button>
+                                                <button type="button" class="btn-panel-ok" @onclick="() => isWarehousePopupOpen = false">Ok</button>
+                                                <button type="button" class="btn-panel-cancel" @onclick="() => isWarehousePopupOpen = false">Cancel</button>
+
                                             </div>
                                         </div>
                                     }
@@ -2156,7 +2157,7 @@
                                     </div>
                                     @if (isGroupModalInventoryAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header text-center">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -2182,7 +2183,7 @@
                                     </div>
                                     @if (isGroupModalSalesAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header text-center">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -2208,7 +2209,7 @@
                                     </div>
                                     @if (isGroupModalCogsAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header text-center">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -2233,7 +2234,7 @@
                                     </div>
                                     @if (isGroupModalSalesReturnAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header text-center">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -2258,7 +2259,7 @@
                                     </div>
                                     @if (isGroupModalWipAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header text-center">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -3904,9 +3905,6 @@ public class OpeningBalanceModel
 
     .custom-table-popup {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
         width: 100%;
         background: #ffffff;
         border: 1px solid #ced4da;
@@ -3918,15 +3916,9 @@ public class OpeningBalanceModel
         box-sizing: border-box;
     }
 
-    .group-type-tree-dropdown {
-        width: 380px !important;
-        min-width: 380px !important;
-    }
+   
 
-    .accounts-tree-dropdown-panel {
-        width: 380px !important;
-        min-width: 380px !important;
-    }
+ 
 
     .calc-desktop-popup {
         position: absolute;
@@ -4191,7 +4183,6 @@ public class OpeningBalanceModel
         position: absolute;
         top: 34px;
         right: 0;
-        width: 380px;
         background: #ffffff;
         border: 1px solid #ced4da;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
@@ -4862,4 +4853,14 @@ public class OpeningBalanceModel
         font-size: 0.9rem;
         cursor: pointer;
     }
+
+
+    .custom-table-popup.accounts-tree-dropdown-panel.custom-accounts-dropdown {
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        width:500px;
+    }
+
+
 </style>
