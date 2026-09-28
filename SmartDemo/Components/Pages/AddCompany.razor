@@ -3,6 +3,11 @@
 @using System.Linq
 
 <div class="company-desktop-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <!-- Global transparent backdrop when any popup is open to catch outside clicks -->
+    @if (IsAnyPopupOpen())
+    {
+        <div class="global-dropdown-backdrop" @onclick="CloseAllPopups" @onclick:stopPropagation></div>
+    }
 
     <!-- Top Window Toolbar / Header -->
     <div class="company-window-topbar">
@@ -289,6 +294,11 @@
     private bool isCountryPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
 
+    private bool IsAnyPopupOpen() =>
+        isActivityPopupOpen ||
+        isCountryPopupOpen ||
+        isCurrencyPopupOpen;
+
     public class ActivityItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; }
     public class CurrencyItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public string SubCurrency { get; set; } = ""; }
 
@@ -342,9 +352,9 @@
             ? mockCurrencies
             : mockCurrencies.Where(c => c.Name.Contains(currencyFilter) || c.Code.Contains(currencyFilter));
 
-    private void ToggleActivityPopup() { CloseAllPopups(); activityFilter = ""; isActivityPopupOpen = !isActivityPopupOpen; }
-    private void ToggleCountryPopup() { CloseAllPopups(); countryFilter = ""; isCountryPopupOpen = !isCountryPopupOpen; }
-    private void ToggleCurrencyPopup() { CloseAllPopups(); currencyFilter = ""; isCurrencyPopupOpen = !isCurrencyPopupOpen; }
+    private void ToggleActivityPopup() { bool wasOpen = isActivityPopupOpen; CloseAllPopups(); activityFilter = ""; isActivityPopupOpen = !wasOpen; }
+    private void ToggleCountryPopup() { bool wasOpen = isCountryPopupOpen; CloseAllPopups(); countryFilter = ""; isCountryPopupOpen = !wasOpen; }
+    private void ToggleCurrencyPopup() { bool wasOpen = isCurrencyPopupOpen; CloseAllPopups(); currencyFilter = ""; isCurrencyPopupOpen = !wasOpen; }
 
     private void SelectActivity(string name) { companyData.Activity = name; isActivityPopupOpen = false; }
     private void SelectCountry(string name) { companyData.Country = name; isCountryPopupOpen = false; }
@@ -404,6 +414,14 @@
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        position: relative;
+    }
+
+    .global-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 1000;
     }
 
     .company-window-topbar {

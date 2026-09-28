@@ -3,6 +3,12 @@
 @rendermode InteractiveServer
 
 <div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <!-- Global transparent backdrop when any popup is open to catch outside clicks -->
+    @if (IsAnyPopupOpen())
+    {
+        <div class="global-dropdown-backdrop" @onclick="CloseAllPopups" @onclick:stopPropagation></div>
+    }
+
     <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
     <div class="image-right-block">
         <div class="image-square">
@@ -17,6 +23,7 @@
 
         <!-- Top Header Area -->
         <div class="header-master-grid">
+
 
 
             <div class="orange-divider-line"></div>
@@ -80,13 +87,13 @@
 
                     <span class="req-star me-1 ms-1">*</span>
 
-                    <button type="button" class="btn-trans-trigger" @onclick="ToggleTranslationPopup" title="ترجمة الأسماء">
+                    <button type="button" class="btn-trans-trigger" @onclick="ToggleTranslationPopup" title="ترجمة الأسماء" @onclick:stopPropagation>
                         <span class="ico-trans-char">🌐</span>
                     </button>
 
                     @if (isTranslationPopupOpen)
                     {
-                        <div class="trans-popup-box">
+                        <div class="trans-popup-box" @onclick:stopPropagation>
                             <div class="trans-input-wrap">
                                 <input type="text" class="trans-input text-end" @bind="itemData.EnglishName" placeholder="الاسم انجليزي" />
                             </div>
@@ -500,8 +507,7 @@
                             {
                                 <div class="custom-dropdown-panel opening-balance-dropdown-panel" @onclick:stopPropagation>
                                     <div class="master-modal-topbar">
-                                                                                <span class="modal-top-title">الرصيد افتتاحي</span>
-
+                                        <span class="modal-top-title">الرصيد افتتاحي</span>
                                         <button type="button" class="btn-topbar-close-flat" @onclick="CloseOpeningBalanceModal">✕</button>
                                     </div>
                                     <div class="opening-balance-modal-body">
@@ -1869,33 +1875,33 @@
                                         }
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="section-block-title text-primary">الوصف</div>
-                            <div class="section-with-blue-line mb-3">
-                                <div class="d-flex align-items-start gap-2">
-                                    <textarea class="clean-input flex-1" style="height: 75px; resize: none;" @bind="itemData.Description" placeholder=""></textarea>
+                                <div class="section-block-title text-primary">الوصف</div>
+                                <div class="section-with-blue-line mb-3">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <textarea class="clean-input flex-1" style="height: 75px; resize: none;" @bind="itemData.Description" placeholder=""></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="section-block-title text-primary">شاشة اللمس</div>
+                                <div class="section-with-blue-line">
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title-wide">إخفاء من شاشة اللمس</span>
+                                        <input type="checkbox" class="form-check-input m-0" />
+                                    </div>
+                                    <div class="field-entry-line">
+                                        <span class="field-title-wide">ترتيب الظهور في شاشة</span>
+                                        <input type="number" class="clean-input text-center" style="width: 120px;" value="1" />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="section-block-title text-primary">شاشة اللمس</div>
-                            <div class="section-with-blue-line">
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">إخفاء من شاشة اللمس</span>
-                                    <input type="checkbox" class="form-check-input m-0" />
+                            <div class="group-image-side">
+                                <div class="modal-large-img-box">
+                                    <button type="button" class="btn-box-x">✕</button>
                                 </div>
-                                <div class="field-entry-line">
-                                    <span class="field-title-wide">ترتيب الظهور في شاشة</span>
-                                    <input type="number" class="clean-input text-center" style="width: 120px;" value="1" />
-                                </div>
+                                <span class="small text-muted mt-2">الصورة</span>
                             </div>
-                        </div>
-
-                        <div class="group-image-side">
-                            <div class="modal-large-img-box">
-                                <button type="button" class="btn-box-x">✕</button>
-                            </div>
-                            <span class="small text-muted mt-2">الصورة</span>
                         </div>
                     </div>
                 }
@@ -2146,7 +2152,7 @@
                             <div class="accounts-column-block accounts-column-block-width">
                                 <div class="section-block-title text-primary">الحسابات</div>
                                 <div class="section-with-blue-line mb-4">
-                                    <div class="field-entry-line">
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب المخزون</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalInventoryAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
@@ -2154,25 +2160,25 @@
                                                 ...
                                             </button>
                                         </div>
+                                        @if (isGroupModalInventoryAccountPopupOpen)
+                                        {
+                                            <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header text-center">الاسم</div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in accountsTreeList)
+                                                    {
+                                                        @RenderAccountsTreeDropdownNodeGeneric(node, groupModalInventoryAccount, selectedName => { groupModalInventoryAccount = selectedName; isGroupModalInventoryAccountPopupOpen = false; })
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isGroupModalInventoryAccountPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (isGroupModalInventoryAccountPopupOpen)
-                                    {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
-                                            <div class="table-popup-header text-center">الاسم</div>
-                                            <div class="table-popup-list">
-                                                @foreach (var node in accountsTreeList)
-                                                {
-                                                    @RenderAccountsTreeDropdownNodeGeneric(node, groupModalInventoryAccount, selectedName => { groupModalInventoryAccount = selectedName; isGroupModalInventoryAccountPopupOpen = false; })
-                                                }
-                                            </div>
-                                            <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isGroupModalInventoryAccountPopupOpen = false">✕</button>
-                                                <span class="resizer-dots">⠿</span>
-                                            </div>
-                                        </div>
-                                    }
 
-                                    <div class="field-entry-line">
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalSalesAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
@@ -2180,25 +2186,25 @@
                                                 ...
                                             </button>
                                         </div>
+                                        @if (isGroupModalSalesAccountPopupOpen)
+                                        {
+                                            <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header text-center">الاسم</div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in accountsTreeList)
+                                                    {
+                                                        @RenderAccountsTreeDropdownNodeGeneric(node, groupModalSalesAccount, selectedName => { groupModalSalesAccount = selectedName; isGroupModalSalesAccountPopupOpen = false; })
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isGroupModalSalesAccountPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (isGroupModalSalesAccountPopupOpen)
-                                    {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
-                                            <div class="table-popup-header text-center">الاسم</div>
-                                            <div class="table-popup-list">
-                                                @foreach (var node in accountsTreeList)
-                                                {
-                                                    @RenderAccountsTreeDropdownNodeGeneric(node, groupModalSalesAccount, selectedName => { groupModalSalesAccount = selectedName; isGroupModalSalesAccountPopupOpen = false; })
-                                                }
-                                            </div>
-                                            <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isGroupModalSalesAccountPopupOpen = false">✕</button>
-                                                <span class="resizer-dots">⠿</span>
-                                            </div>
-                                        </div>
-                                    }
 
-                                    <div class="field-entry-line">
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب تكلفة المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalCogsAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
@@ -2206,24 +2212,25 @@
                                                 ...
                                             </button>
                                         </div>
+                                        @if (isGroupModalCogsAccountPopupOpen)
+                                        {
+                                            <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header text-center">الاسم</div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in accountsTreeList)
+                                                    {
+                                                        @RenderAccountsTreeDropdownNodeGeneric(node, groupModalCogsAccount, selectedName => { groupModalCogsAccount = selectedName; isGroupModalCogsAccountPopupOpen = false; })
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isGroupModalCogsAccountPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (isGroupModalCogsAccountPopupOpen)
-                                    {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
-                                            <div class="table-popup-header text-center">الاسم</div>
-                                            <div class="table-popup-list">
-                                                @foreach (var node in accountsTreeList)
-                                                {
-                                                    @RenderAccountsTreeDropdownNodeGeneric(node, groupModalCogsAccount, selectedName => { groupModalCogsAccount = selectedName; isGroupModalCogsAccountPopupOpen = false; })
-                                                }
-                                            </div>
-                                            <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isGroupModalCogsAccountPopupOpen = false">✕</button>
-                                                <span class="resizer-dots">⠿</span>
-                                            </div>
-                                        </div>
-                                    }
-                                    <div class="field-entry-line">
+
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب مرتجع المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalSalesReturnAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
@@ -2231,24 +2238,25 @@
                                                 ...
                                             </button>
                                         </div>
+                                        @if (isGroupModalSalesReturnAccountPopupOpen)
+                                        {
+                                            <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header text-center">الاسم</div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in accountsTreeList)
+                                                    {
+                                                        @RenderAccountsTreeDropdownNodeGeneric(node, groupModalSalesReturnAccount, selectedName => { groupModalSalesReturnAccount = selectedName; isGroupModalSalesReturnAccountPopupOpen = false; })
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isGroupModalSalesReturnAccountPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (isGroupModalSalesReturnAccountPopupOpen)
-                                    {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
-                                            <div class="table-popup-header text-center">الاسم</div>
-                                            <div class="table-popup-list">
-                                                @foreach (var node in accountsTreeList)
-                                                {
-                                                    @RenderAccountsTreeDropdownNodeGeneric(node, groupModalSalesReturnAccount, selectedName => { groupModalSalesReturnAccount = selectedName; isGroupModalSalesReturnAccountPopupOpen = false; })
-                                                }
-                                            </div>
-                                            <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isGroupModalSalesReturnAccountPopupOpen = false">✕</button>
-                                                <span class="resizer-dots">⠿</span>
-                                            </div>
-                                        </div>
-                                    }
-                                    <div class="field-entry-line">
+
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب تحت التشغيل</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalWipAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
@@ -2256,24 +2264,25 @@
                                                 ...
                                             </button>
                                         </div>
+                                        @if (isGroupModalWipAccountPopupOpen)
+                                        {
+                                            <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                                <div class="table-popup-header text-center">الاسم</div>
+                                                <div class="table-popup-list">
+                                                    @foreach (var node in accountsTreeList)
+                                                    {
+                                                        @RenderAccountsTreeDropdownNodeGeneric(node, groupModalWipAccount, selectedName => { groupModalWipAccount = selectedName; isGroupModalWipAccountPopupOpen = false; })
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isGroupModalWipAccountPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (isGroupModalWipAccountPopupOpen)
-                                    {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
-                                            <div class="table-popup-header text-center">الاسم</div>
-                                            <div class="table-popup-list">
-                                                @foreach (var node in accountsTreeList)
-                                                {
-                                                    @RenderAccountsTreeDropdownNodeGeneric(node, groupModalWipAccount, selectedName => { groupModalWipAccount = selectedName; isGroupModalWipAccountPopupOpen = false; })
-                                                }
-                                            </div>
-                                            <div class="table-popup-footer">
-                                                <button type="button" class="btn-table-close" @onclick="() => isGroupModalWipAccountPopupOpen = false">✕</button>
-                                                <span class="resizer-dots">⠿</span>
-                                            </div>
-                                        </div>
-                                    }
                                 </div>
+
                                 <div class="section-block-title text-primary">الخصم</div>
                                 <div class="section-with-blue-line mb-4">
                                     <div class="field-entry-line">
@@ -2299,9 +2308,10 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="section-block-title text-primary">الخصم</div>
                                 <div class="section-with-blue-line">
-                                    <div class="field-entry-line">
+                                    <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">مصنعية التركيب</span>
                                         <div class="dropdown-anchor flex-1 pos-relative">
                                             <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleModalتركيبCalc">
@@ -2349,6 +2359,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 }
@@ -2463,6 +2474,11 @@
 }
 
 @code {
+    private bool groupModalInventoryAccountPopupOpen = false;
+    private bool groupModalSalesAccountPopupOpen = false;
+    private bool groupModalCogsAccountPopupOpen = false;
+    private bool groupModalSalesReturnAccountPopupOpen = false;
+    private bool groupModalWipAccountPopupOpen = false;
 
     private string groupModalInventoryAccount = "";
     private string groupModalSalesAccount = "";
@@ -2474,6 +2490,51 @@
     private bool isGroupModalCogsAccountPopupOpen = false;
     private bool isGroupModalSalesReturnAccountPopupOpen = false;
     private bool isGroupModalWipAccountPopupOpen = false;
+
+    private bool IsAnyPopupOpen() =>
+        isBarcodeTypePopupOpen ||
+        isItemTypePopupOpen ||
+        isBranchPopupOpen ||
+        isWarehousePopupOpen ||
+        isGroupPopupOpen ||
+        isUnitPopupOpen ||
+        isSupplierPopupOpen ||
+        isModalSupplierPopupOpen ||
+        isPolicyPopupOpen ||
+        isTranslationPopupOpen ||
+        isModalCodePopupOpen ||
+        isModalTransPopupOpen ||
+        isGroupTypeDropdownOpen ||
+        isParentGroupDropdownOpen ||
+        isOpeningBalanceAccountPopupOpen ||
+        isLedgerAccountPopupOpen ||
+        isSalesAccountPopupOpen ||
+        isCogsAccountPopupOpen ||
+        isSalesReturnAccountPopupOpen ||
+        isTaxAccountPopupOpen ||
+        isColorPickerPopupOpen ||
+        isGpcPopupOpen ||
+        isManufacturerPopupOpen ||
+        isActiveIngredientPopupOpen ||
+        isLengthCalcOpen ||
+        isWidthCalcOpen ||
+        isHeightCalcOpen ||
+        isPanelsCalcOpen ||
+        isMinLimitCalcOpen ||
+        isMaxLimitCalcOpen ||
+        isStagnationCalcOpen ||
+        isAdditionalCostCalcOpen ||
+        isModalتركيبCalcOpen ||
+        isModalMinCalcOpen ||
+        isModalMaxCalcOpen ||
+        isModalStagnationCalcOpen ||
+        isModalExpiryCalcOpen ||
+        isGroupModalInventoryAccountPopupOpen ||
+        isGroupModalSalesAccountPopupOpen ||
+        isGroupModalCogsAccountPopupOpen ||
+        isGroupModalSalesReturnAccountPopupOpen ||
+        isGroupModalWipAccountPopupOpen;
+
     private void ToggleGroupModalInventoryAccountPopup() { bool wasOpen = isGroupModalInventoryAccountPopupOpen; CloseAllPopups(); isGroupModalInventoryAccountPopupOpen = !wasOpen; }
     private void ToggleGroupModalSalesAccountPopup() { bool wasOpen = isGroupModalSalesAccountPopupOpen; CloseAllPopups(); isGroupModalSalesAccountPopupOpen = !wasOpen; }
     private void ToggleGroupModalCogsAccountPopup() { bool wasOpen = isGroupModalCogsAccountPopupOpen; CloseAllPopups(); isGroupModalCogsAccountPopupOpen = !wasOpen; }
@@ -2698,11 +2759,11 @@ private RenderFragment RenderTreeDropdownNode(TreeTypeNode node, Action<string> 
 
 private bool isGroupTypeDropdownOpen = false;
 private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الحية";
-private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
+private void ToggleGroupTypeDropdown() { bool wasOpen = isGroupTypeDropdownOpen; CloseAllPopups(); isGroupTypeDropdownOpen = !wasOpen; }
 
 private bool isParentGroupDropdownOpen = false;
 private string selectedParentGroup = "الحيوانات الحية";
-private void ToggleParentGroupDropdown() => isParentGroupDropdownOpen = !isParentGroupDropdownOpen;
+private void ToggleParentGroupDropdown() { bool wasOpen = isParentGroupDropdownOpen; CloseAllPopups(); isParentGroupDropdownOpen = !wasOpen; }
 
 public class CheckableItem
 {
@@ -2733,11 +2794,11 @@ private void ToggleActiveState(ChangeEventArgs e) { if (e.Value is bool val) ite
 private bool isModalCodePopupOpen = false;
 private string modalCodeIcon = "⚙️";
 private string selectedModalOption = "تلقائي";
-private void ToggleModalCodePopup() => isModalCodePopupOpen = !isModalCodePopupOpen;
+private void ToggleModalCodePopup() { bool wasOpen = isModalCodePopupOpen; CloseAllPopups(); isModalCodePopupOpen = !wasOpen; }
 private void SelectModalCodeOption(string opt, string icon) { selectedModalOption = opt; modalCodeIcon = icon; isModalCodePopupOpen = false; }
 
 private bool isModalTransPopupOpen = false;
-private void ToggleModalTransPopup() => isModalTransPopupOpen = !isModalTransPopupOpen;
+private void ToggleModalTransPopup() { bool wasOpen = isModalTransPopupOpen; CloseAllPopups(); isModalTransPopupOpen = !wasOpen; }
 
 private bool isUnitPopupOpen = false;
 private bool isUnitsModalOpen = false;
@@ -2889,18 +2950,18 @@ private bool isCogsAccountPopupOpen = false;
 private bool isSalesReturnAccountPopupOpen = false;
 private bool isTaxAccountPopupOpen = false;
 
-private void ToggleSalesAccountPopup() { CloseAllPopups(); isSalesAccountPopupOpen = !isSalesAccountPopupOpen; }
-private void ToggleCogsAccountPopup() { CloseAllPopups(); isCogsAccountPopupOpen = !isCogsAccountPopupOpen; }
-private void ToggleSalesReturnAccountPopup() { CloseAllPopups(); isSalesReturnAccountPopupOpen = !isSalesReturnAccountPopupOpen; }
-private void ToggleTaxAccountPopup() { CloseAllPopups(); isTaxAccountPopupOpen = !isTaxAccountPopupOpen; }
+private void ToggleSalesAccountPopup() { bool wasOpen = isSalesAccountPopupOpen; CloseAllPopups(); isSalesAccountPopupOpen = !wasOpen; }
+private void ToggleCogsAccountPopup() { bool wasOpen = isCogsAccountPopupOpen; CloseAllPopups(); isCogsAccountPopupOpen = !wasOpen; }
+private void ToggleSalesReturnAccountPopup() { bool wasOpen = isSalesReturnAccountPopupOpen; CloseAllPopups(); isSalesReturnAccountPopupOpen = !wasOpen; }
+private void ToggleTaxAccountPopup() { bool wasOpen = isTaxAccountPopupOpen; CloseAllPopups(); isTaxAccountPopupOpen = !wasOpen; }
 
 private bool isGpcPopupOpen = false;
 private bool isManufacturerPopupOpen = false;
 private bool isActiveIngredientPopupOpen = false;
 
-private void ToggleGpcPopup() { CloseAllPopups(); isGpcPopupOpen = !isGpcPopupOpen; }
-private void ToggleManufacturerPopup() { CloseAllPopups(); isManufacturerPopupOpen = !isManufacturerPopupOpen; }
-private void ToggleActiveIngredientPopup() { CloseAllPopups(); isActiveIngredientPopupOpen = !isActiveIngredientPopupOpen; }
+private void ToggleGpcPopup() { bool wasOpen = isGpcPopupOpen; CloseAllPopups(); isGpcPopupOpen = !wasOpen; }
+private void ToggleManufacturerPopup() { bool wasOpen = isManufacturerPopupOpen; CloseAllPopups(); isManufacturerPopupOpen = !wasOpen; }
+private void ToggleActiveIngredientPopup() { bool wasOpen = isActiveIngredientPopupOpen; CloseAllPopups(); isActiveIngredientPopupOpen = !wasOpen; }
 
 private bool isColorPickerPopupOpen = false;
 private string selectedColorTab = "Custom";
@@ -3056,9 +3117,9 @@ private OpeningBalanceModel openingBalanceData = new()
     LedgerAccount = "الأرصدة الإفتتاحية"
 };
 
-private void ToggleOpeningBalanceModal() { CloseAllPopups(); isOpeningBalanceModalOpen = !isOpeningBalanceModalOpen; }
+private void ToggleOpeningBalanceModal() { bool wasOpen = isOpeningBalanceModalOpen; CloseAllPopups(); isOpeningBalanceModalOpen = !wasOpen; }
 private void CloseOpeningBalanceModal() => isOpeningBalanceModalOpen = false;
-private void ToggleOpeningBalanceAccountPopup() => isOpeningBalanceAccountPopupOpen = !isOpeningBalanceAccountPopupOpen;
+private void ToggleOpeningBalanceAccountPopup() { bool wasOpen = isOpeningBalanceAccountPopupOpen; CloseAllPopups(); isOpeningBalanceAccountPopupOpen = !wasOpen; }
 
 public class AccountsTreeNode
 {
@@ -3164,7 +3225,7 @@ private void SelectSupplier(string name) { itemData.SupplierName = name; isSuppl
 
 private bool isModalSupplierPopupOpen = false;
 private string modalSelectedSupplier = "Cust and vend";
-private void ToggleModalSupplierPopup() => isModalSupplierPopupOpen = !isModalSupplierPopupOpen;
+private void ToggleModalSupplierPopup() { bool wasOpen = isModalSupplierPopupOpen; CloseAllPopups(); isModalSupplierPopupOpen = !wasOpen; }
 private void SelectModalSupplier(string name) { modalSelectedSupplier = name; isModalSupplierPopupOpen = false; }
 
 private bool isPolicyPopupOpen = false;
@@ -3211,6 +3272,12 @@ private void CloseAllPopups()
     isModalMaxCalcOpen = false;
     isModalStagnationCalcOpen = false;
     isModalExpiryCalcOpen = false;
+    isGroupModalInventoryAccountPopupOpen = false;
+    isGroupModalSalesAccountPopupOpen = false;
+    isGroupModalCogsAccountPopupOpen = false;
+    isGroupModalSalesReturnAccountPopupOpen = false;
+    isGroupModalWipAccountPopupOpen = false;
+    isOpeningBalanceModalOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
@@ -3354,6 +3421,14 @@ public class OpeningBalanceModel
         box-sizing: border-box;
         overflow: auto;
         display: flex;
+        position: relative;
+    }
+
+    .global-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 1500;
     }
 
     .main-canvas {
@@ -3917,7 +3992,7 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        direction:ltr;
+        direction: ltr;
     }
 
 
@@ -4195,7 +4270,7 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        direction:ltr;
+        direction: ltr;
     }
 
     .supplier-grid-header {
@@ -4317,7 +4392,6 @@ public class OpeningBalanceModel
         background-color: #ffffff;
         padding: 10px 18px;
         border-bottom: 1px solid #e9ecef;
-        direction:ltr;
     }
 
     .modal-top-title {
