@@ -3,23 +3,23 @@
 @rendermode InteractiveServer
 
 <div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
-                <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
-            <div class="image-right-block">
-                <div class="image-square">
-                    <span class="image-placeholder-text">الصورة</span>
-                </div>
-                <div class="active-check-group">
-                    <input type="checkbox" id="chkActive" class="chk-box" @bind="itemData.IsActive" />
-                    <label for="chkActive" class="small-chk-label">نشط</label>
-                </div>
-            </div>
+    <!-- 1. Far Right: Image Box & Active Status with Orange Bar -->
+    <div class="image-right-block">
+        <div class="image-square">
+            <span class="image-placeholder-text">الصورة</span>
+        </div>
+        <div class="active-check-group">
+            <input type="checkbox" id="chkActive" class="chk-box" @bind="itemData.IsActive" />
+            <label for="chkActive" class="small-chk-label">نشط</label>
+        </div>
+    </div>
     <div class="main-canvas" @onclick:stopPropagation>
-  
+
         <!-- Top Header Area -->
         <div class="header-master-grid">
 
-      
-                            <div class="orange-divider-line"></div>
+
+            <div class="orange-divider-line"></div>
 
             <!-- 2. Section Labels -->
             <div class="labels-column">
@@ -189,7 +189,7 @@
                                                 }
                                             </div>
                                             <div class="panel-footer-actions">
-                                                 <button type="button" class="btn-panel-ok" @onclick="() => isBranchPopupOpen = false">Ok</button>
+                                                <button type="button" class="btn-panel-ok" @onclick="() => isBranchPopupOpen = false">Ok</button>
                                                 <button type="button" class="btn-panel-cancel" @onclick="() => isBranchPopupOpen = false">Cancel</button>
                                             </div>
                                         </div>
@@ -1579,7 +1579,7 @@
 <!-- Dark DEXEF Error Modal Popup -->
 @if (isErrorModalOpen)
 {
-    <div class="modal-backdrop-blur dexef-error-backdrop">
+    <div class="modal-backdrop-blur dexef-error-backdrop" @onclick="CloseErrorModal">
         <div class="dexef-error-dialog" dir="rtl" @onclick:stopPropagation>
             <div class="dexef-error-topbar">
                 <button type="button" class="dexef-close-btn" @onclick="CloseErrorModal">✕</button>
@@ -1756,7 +1756,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-start gap-2 my-2">
+                <div class="d-flex justify-content-start gap-2 my-2 modal-tabs-row">
                     <button type="button" class="strip-tab-btn @(groupModalTab == 1 ? "active" : "")" @onclick="() => groupModalTab = 1">عام</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 2 ? "active" : "")" @onclick="() => groupModalTab = 2">الحسابات</button>
                     <button type="button" class="strip-tab-btn @(groupModalTab == 3 ? "active" : "")" @onclick="() => groupModalTab = 3">المعادلة</button>
@@ -1899,13 +1899,13 @@
                     </div>
                 }
 
-                <!-- Group Modal Tab 2: الحسابات (Matched exactly to desktop screenshot[cite: 9]) -->
+                <!-- Group Modal Tab 2: الحسابات -->
                 @if (groupModalTab == 2)
                 {
                     <div class="tab-content-seamless">
                         <div class="accounts-tab-grid" style="grid-template-columns: 1fr 1fr; column-gap: 20px;">
 
-                            <!-- Column 1: حسابات أخرى وتفصيلية (مع أزرار الـ ...) -->
+                            <!-- Column 1: الضرائب والتنبيهات -->
                             <div class="accounts-column-block accounts-column-block-width">
                                 <div class="section-block-title text-primary">الضرائب</div>
                                 <div class="section-with-blue-line">
@@ -2139,10 +2139,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
 
-                            <!-- Column 2: خيارات الخصم والنسب -->
+                            <!-- Column 2: الحسابات والخصم -->
                             <div class="accounts-column-block accounts-column-block-width">
                                 <div class="section-block-title text-primary">الحسابات</div>
                                 <div class="section-with-blue-line mb-4">
@@ -2151,7 +2150,7 @@
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalInventoryAccountPopup">
                                             <input type="text" class="clean-input flex-1" />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalInventoryAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
-                                                  ...
+                                                ...
                                             </button>
                                         </div>
                                     </div>
@@ -2349,8 +2348,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 }
@@ -2379,7 +2376,7 @@
                                         </select>
                                     </td>
                                     <td><input type="text" class="clean-input w-100" value="سعر التكلفة * 1.2" /></td>
-                                    <td><button class="delete-icon-btn">✖</button></td>
+                                    <td><button class="delete-icon-btn" type="button" @onclick="ShowDeleteErrorModal">✖</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2482,31 +2479,31 @@
     private void ToggleGroupModalSalesReturnAccountPopup() { bool wasOpen = isGroupModalSalesReturnAccountPopupOpen; CloseAllPopups(); isGroupModalSalesReturnAccountPopupOpen = !wasOpen; }
     private void ToggleGroupModalWipAccountPopup() { bool wasOpen = isGroupModalWipAccountPopupOpen; CloseAllPopups(); isGroupModalWipAccountPopupOpen = !wasOpen; }
     private RenderFragment RenderAccountsTreeDropdownNodeGeneric(AccountsTreeNode node, string currentValue, Action<string> onSelected) => @<text>
-                    <div class="tree-grid-row @(currentValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
-                         style="padding-right: @(node.Level * 16 + 12)px;"
-                         @onclick="() => onSelected(node.Name)">
-                        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
-                            @node.Code
-                        </span>
-                        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
-                            @if (node.Children.Any())
-                                        {
-                            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
-                                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
-                            </span>
-                                        }
-                            @node.Name
-                        </span>
-                    </div>
+    <div class="tree-grid-row @(currentValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+                        {
+            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+            </span>
+                        }
+            @node.Name
+        </span>
+    </div>
 
-                @if (node.IsExpanded && node.Children.Any())
-                    {
-                @foreach (var child in node.Children)
-                    {
-                @RenderAccountsTreeDropdownNodeGeneric(child, currentValue, onSelected)
-                    }
-                    }
-                </text>;
+@if (node.IsExpanded && node.Children.Any())
+    {
+@foreach (var child in node.Children)
+    {
+@RenderAccountsTreeDropdownNodeGeneric(child, currentValue, onSelected)
+    }
+    }
+</text>;
 
 
 
@@ -2518,106 +2515,112 @@
     private bool isConfirmDeleteModalOpen = false;
     private EquationRowModel? rowPendingDelete;
 
-    private void ShowDeleteErrorModal() => isErrorModalOpen = true;
-    private void CloseErrorModal() => isErrorModalOpen = false;
+    private void ShowDeleteErrorModal()
+{
+    isErrorModalOpen = true;
+    StateHasChanged();
+}
+private void CloseErrorModal() => isErrorModalOpen = false;
 
-    private void TryDeleteEquationRow(EquationRowModel eq)
+private void TryDeleteEquationRow(EquationRowModel eq)
+{
+    bool isEmpty = string.IsNullOrWhiteSpace(eq.Name) && string.IsNullOrWhiteSpace(eq.Equation);
+    if (isEmpty)
     {
-        bool isEmpty = string.IsNullOrWhiteSpace(eq.Name) && string.IsNullOrWhiteSpace(eq.Equation);
-        if (isEmpty)
-        {
-            rowPendingDelete = eq;
-            isConfirmDeleteModalOpen = true;
-        }
-        else
-        {
-            isErrorModalOpen = true;
-        }
+        rowPendingDelete = eq;
+        isConfirmDeleteModalOpen = true;
     }
-
-    private void ConfirmDeleteRow()
+    else
     {
-        if (rowPendingDelete != null)
-        {
-            itemData.EquationRows.Remove(rowPendingDelete);
-            rowPendingDelete = null;
-        }
-        isConfirmDeleteModalOpen = false;
+        isErrorModalOpen = true;
     }
+    StateHasChanged();
+}
 
-    private void CancelDeleteRow()
+private void ConfirmDeleteRow()
+{
+    if (rowPendingDelete != null)
     {
+        itemData.EquationRows.Remove(rowPendingDelete);
         rowPendingDelete = null;
-        isConfirmDeleteModalOpen = false;
     }
+    isConfirmDeleteModalOpen = false;
+}
 
-    private string GetSelectedBarcodeIcon() => selectedBarcodeOption switch
-    {
-        "تلقائي" => "🔀",
-        "بالمجموعة" => "📁",
-        "يدوي" => "✋",
-        _ => "🔀"
-    };
+private void CancelDeleteRow()
+{
+    rowPendingDelete = null;
+    isConfirmDeleteModalOpen = false;
+}
 
-    private void ToggleBarcodeTypePopup()
-    {
-        bool wasOpen = isBarcodeTypePopupOpen;
-        CloseAllPopups();
-        isBarcodeTypePopupOpen = !wasOpen;
-    }
+private string GetSelectedBarcodeIcon() => selectedBarcodeOption switch
+{
+    "تلقائي" => "🔀",
+    "بالمجموعة" => "📁",
+    "يدوي" => "✋",
+    _ => "🔀"
+};
+
+private void ToggleBarcodeTypePopup()
+{
+    bool wasOpen = isBarcodeTypePopupOpen;
+    CloseAllPopups();
+    isBarcodeTypePopupOpen = !wasOpen;
+}
 
 
 
 
 
-    private void SelectBarcodeOption(string opt)
-    {
-        selectedBarcodeOption = opt;
-        itemData.QrType = opt;
-        isBarcodeTypePopupOpen = false;
-    }
+private void SelectBarcodeOption(string opt)
+{
+    selectedBarcodeOption = opt;
+    itemData.QrType = opt;
+    isBarcodeTypePopupOpen = false;
+}
 
-    private bool isQrModalOpen = false;
-    private string modalBarcodeValue = "";
-    private void OpenQrModal() { modalBarcodeValue = itemData.BarcodeNumber; isQrModalOpen = true; }
-    private void CloseQrModal() => isQrModalOpen = false;
-    private void GenerateRandomBarcode() => modalBarcodeValue = new Random().NextInt64(1000000000000, 9999999999999).ToString();
-    private void ApplyModalBarcode() { itemData.BarcodeNumber = modalBarcodeValue; isQrModalOpen = false; }
+private bool isQrModalOpen = false;
+private string modalBarcodeValue = "";
+private void OpenQrModal() { modalBarcodeValue = itemData.BarcodeNumber; isQrModalOpen = true; }
+private void CloseQrModal() => isQrModalOpen = false;
+private void GenerateRandomBarcode() => modalBarcodeValue = new Random().NextInt64(1000000000000, 9999999999999).ToString();
+private void ApplyModalBarcode() { itemData.BarcodeNumber = modalBarcodeValue; isQrModalOpen = false; }
 
-    private bool isTranslationPopupOpen = false;
-    private bool isLanguagesModalOpen = false;
+private bool isTranslationPopupOpen = false;
+private bool isLanguagesModalOpen = false;
 
-    private List<LanguageSettingsModal.LanguageItem> availableLanguages = new()
+private List<LanguageSettingsModal.LanguageItem> availableLanguages = new()
     {
         new() { Name = "عربي", FlagEmoji = "🇪🇬", IsSelected = true },
         new() { Name = "English", FlagEmoji = "🇺🇸", IsSelected = true }
     };
 
-    private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
-    private void CloseTranslationPopup() => isTranslationPopupOpen = false;
-    private void OpenLanguagesModal() {
-        isTranslationPopupOpen = false;
-        isModalTransPopupOpen = false;
-        isLanguagesModalOpen = true;
-        StateHasChanged();
-     
-    }
+private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
+private void CloseTranslationPopup() => isTranslationPopupOpen = false;
+private void OpenLanguagesModal()
+{
+    isTranslationPopupOpen = false;
+    isModalTransPopupOpen = false;
+    isLanguagesModalOpen = true;
+    StateHasChanged();
+
+}
 
 
-    private void SaveLanguages() { }
+private void SaveLanguages() { }
 
-    private bool isItemTypePopupOpen = false;
-    private List<string> itemTypeList = new() { "مخزون", "مجموعة", "منتج تام", "خدمة" };
-    private void ToggleItemTypePopup() { bool wasOpen = isItemTypePopupOpen; CloseAllPopups(); isItemTypePopupOpen = !wasOpen; }
-    private void SelectItemType(string typeName) { itemData.ItemType = typeName; isItemTypePopupOpen = false; }
+private bool isItemTypePopupOpen = false;
+private List<string> itemTypeList = new() { "مخزون", "مجموعة", "منتج تام", "خدمة" };
+private void ToggleItemTypePopup() { bool wasOpen = isItemTypePopupOpen; CloseAllPopups(); isItemTypePopupOpen = !wasOpen; }
+private void SelectItemType(string typeName) { itemData.ItemType = typeName; isItemTypePopupOpen = false; }
 
-    public class TreeTypeNode
-    {
-        public string Name { get; set; } = "";
-        public string Code { get; set; } = "";
-        public int Level { get; set; } = 0;
-        public bool IsExpanded { get; set; } = true;
-        public List<TreeTypeNode> Children { get; set; } = new();
+public class TreeTypeNode
+{
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Level { get; set; } = 0;
+    public bool IsExpanded { get; set; } = true;
+    public List<TreeTypeNode> Children { get; set; } = new();
     }
 
     private bool isGroupPopupOpen = false;
@@ -2659,13 +2662,13 @@
     };
 
     private void ToggleGroupPopup()
-    {
-        bool wasOpen = isGroupPopupOpen;
-        CloseAllPopups();
-        isGroupPopupOpen = !wasOpen;
-    }
+{
+    bool wasOpen = isGroupPopupOpen;
+    CloseAllPopups();
+    isGroupPopupOpen = !wasOpen;
+}
 
-    private RenderFragment RenderTreeDropdownNode(TreeTypeNode node, Action<string> onSelected) => @<text>
+private RenderFragment RenderTreeDropdownNode(TreeTypeNode node, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(itemData.GroupCategory == node.Name || selectedGroupType == node.Name || selectedParentGroup == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
@@ -2674,27 +2677,27 @@
         </span>
         <span class="tree-node-code col-code text-left text-muted">
             @if (node.Children.Any())
-                        {
-            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
-                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
-            </span>
-                        }
+            {
+                <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+                </span>
+            }
             @node.Code
         </span>
     </div>
 
 @if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
     {
-@foreach (var child in node.Children)
-    {
-@RenderTreeDropdownNode(child, onSelected)
+        @RenderTreeDropdownNode(child, onSelected)
     }
-    }
+}
 </text>;
 
-    private bool isGroupTypeDropdownOpen = false;
-    private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الحية";
-    private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
+private bool isGroupTypeDropdownOpen = false;
+private string selectedGroupType = "الحيوانات ومستلزمات الحيوانات الحية";
+private void ToggleGroupTypeDropdown() => isGroupTypeDropdownOpen = !isGroupTypeDropdownOpen;
 
 private bool isParentGroupDropdownOpen = false;
 private string selectedParentGroup = "الحيوانات الحية";
@@ -3350,7 +3353,7 @@ public class OpeningBalanceModel
         box-sizing: border-box;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         overflow: auto;
-        display:flex;
+        display: flex;
     }
 
     .main-canvas {
@@ -3690,8 +3693,8 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
     }
-    
-    .accounts-column-block-width{
+
+    .accounts-column-block-width {
         width: 40vw;
     }
 
@@ -3916,9 +3919,9 @@ public class OpeningBalanceModel
         box-sizing: border-box;
     }
 
-   
 
- 
+
+
 
     .calc-desktop-popup {
         position: absolute;
@@ -4009,7 +4012,7 @@ public class OpeningBalanceModel
         position: absolute;
         top: 34px;
         right: 0;
-        width: 250px;
+        width: 100%;
         background: #ffffff;
         border: 1px solid #ced4da;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
@@ -4282,7 +4285,6 @@ public class OpeningBalanceModel
         }
 
         .opening-balance-modal-table td {
-
             padding: 6px;
             background-color: #ffffff;
         }
@@ -4394,6 +4396,8 @@ public class OpeningBalanceModel
 
     .master-modal-body {
         padding: 20px 24px;
+        max-height: 78vh;
+        overflow-y: auto;
     }
 
     .group-modal-header-grid {
@@ -4549,6 +4553,7 @@ public class OpeningBalanceModel
         flex-direction: column;
         align-items: center;
         padding-top: 15px;
+        flex-shrink: 0;
     }
 
     .modal-large-img-box {
@@ -4576,11 +4581,10 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         background-color: #ffffff;
         padding: 12px 20px;
-        margin: 20px;
-        border-radius: 20px;
+        margin: 0;
     }
 
     .modal-footer-actions-right {
@@ -4856,11 +4860,10 @@ public class OpeningBalanceModel
 
 
     .custom-table-popup.accounts-tree-dropdown-panel.custom-accounts-dropdown {
-        left:50%;
-        top:50%;
-        transform:translate(-50%,-50%);
-        width:500px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        width: 500px;
     }
-
 
 </style>
