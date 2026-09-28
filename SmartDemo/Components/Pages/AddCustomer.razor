@@ -1152,6 +1152,7 @@ public class CustomerModel
     }
 
     .main-canvas {
+        display: flex;
         max-width: 1040px;
         margin-left: auto;
         margin-right: 20px;
@@ -1177,10 +1178,10 @@ public class CustomerModel
 
     .orange-divider-line {
         position: absolute;
-        left: 0;
+        right: 0;
         top: 0;
         width: 3px;
-        height: 112px;
+        height: 100px;
         background-color: #e67e22;
         border-radius: 2px;
     }
@@ -1194,7 +1195,9 @@ public class CustomerModel
         align-items: center;
         justify-content: center;
         border-radius: 2px;
+        border-radius: 50%;
         margin-bottom: 6px;
+        overflow: hidden;
     }
 
     .user-avatar-icon {
@@ -1222,6 +1225,7 @@ public class CustomerModel
         flex-direction: column;
         gap: 8px;
         padding-top: 2px;
+        margin-right:10px;
     }
 
     .label-row-cell {
