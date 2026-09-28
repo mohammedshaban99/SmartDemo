@@ -46,10 +46,9 @@
 
                     <!-- Row 3: Opening Balance Date & Value -->
                     <div class="form-row-compact pos-relative">
+                        <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
                         <span class="small text-muted ms-1">في</span>
                         <input type="date" class="clean-input text-center" style="width: 140px;" @bind="customerData.OpeningBalanceDate" />
-                        <span class="small text-muted ms-1 me-2">المبلغ</span>
-                        <input type="number" class="clean-input flex-1 text-center" @bind="customerData.OpeningBalanceAmount" />
                     </div>
                 </div>
 
