@@ -1961,11 +1961,12 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">الحد الادنى</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <select class="clean-input" style="width: 75px;"><option>قطعة</option></select>
+                                         
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalMinCalc">
                                                 <span class="combo-display-text text-center">@modalMinVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
+                                            <label>قطعة</label>
                                             @if (isModalMinCalcOpen)
                                             {
                                                 <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
@@ -2008,11 +2009,12 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">الحد الأقصى</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <select class="clean-input" style="width: 75px;"><option>قطعة</option></select>
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalMaxCalc">
                                                 <span class="combo-display-text text-center">@modalMaxVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
+                                            <label>قطعة</label>
+
                                             @if (isModalMaxCalcOpen)
                                             {
                                                 <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
@@ -2055,11 +2057,13 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">فترة الركود</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <select class="clean-input" style="width: 75px;"><option>يوم</option></select>
+                                               
+
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalStagnationCalc">
                                                 <span class="combo-display-text text-center">@modalStagnationVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
+                                            <label>يوم</label>
                                             @if (isModalStagnationCalcOpen)
                                             {
                                                 <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
@@ -2102,11 +2106,12 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">التنبيه قبل انتهاء الصلاحية بـ</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                            <select class="clean-input" style="width: 75px;"><option>يوم</option></select>
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalExpiryCalc">
                                                 <span class="combo-display-text text-center">@modalExpiryVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
+                                            <label>يوم</label>
+
                                             @if (isModalExpiryCalcOpen)
                                             {
                                                 <div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
