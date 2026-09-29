@@ -420,7 +420,7 @@
 
                                     @if (isLedgerAccountPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                             <div class="table-popup-header">الاسم</div>
                                             <div class="table-popup-list">
                                                 @foreach (var node in accountsTreeList)
@@ -581,7 +581,7 @@
 
                                                     @if (isOpeningBalanceAccountPopupOpen)
                                                     {
-                                                        <div class="custom-table-popup accounts-tree-dropdown-panel" @onclick:stopPropagation>
+                                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
                                                             <div class="table-popup-header">الاسم</div>
                                                             <div class="table-popup-list">
                                                                 @foreach (var node in accountsTreeList)
@@ -2156,7 +2156,7 @@
                                     <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب المخزون</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalInventoryAccountPopup">
-                                            <input type="text" class="clean-input flex-1" />
+                                            <input type="text" class="clean-input flex-1" value="@groupModalInventoryAccount" readonly />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalInventoryAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
                                                 ...
                                             </button>
@@ -2182,7 +2182,7 @@
                                     <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalSalesAccountPopup">
-                                            <input type="text" class="clean-input flex-1" />
+                                            <input type="text" class="clean-input flex-1" value="@groupModalSalesAccount" readonly />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalSalesAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
                                                 ...
                                             </button>
@@ -2208,7 +2208,7 @@
                                     <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب تكلفة المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalCogsAccountPopup">
-                                            <input type="text" class="clean-input flex-1" />
+                                            <input type="text" class="clean-input flex-1" value="@groupModalCogsAccount" readonly />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalCogsAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
                                                 ...
                                             </button>
@@ -2234,7 +2234,7 @@
                                     <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب مرتجع المبيعات</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalSalesReturnAccountPopup">
-                                            <input type="text" class="clean-input flex-1" />
+                                            <input type="text" class="clean-input flex-1" value="@groupModalSalesReturnAccount" readonly />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalSalesReturnAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
                                                 ...
                                             </button>
@@ -2260,7 +2260,7 @@
                                     <div class="field-entry-line pos-relative">
                                         <span class="field-title" style="width: 110px;">حساب تحت التشغيل</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1" @onclick:stopPropagation @onclick="ToggleGroupModalWipAccountPopup">
-                                            <input type="text" class="clean-input flex-1" />
+                                            <input type="text" class="clean-input flex-1" value="@groupModalWipAccount" readonly />
                                             <button @onclick:stopPropagation @onclick="ToggleGroupModalWipAccountPopup" type="button" class="btn px-2 py-0 border-0 bg-transparent shadow-none" style="font-size:0.8rem;left:6px;position:absolute;transform: translateY(-50%);top:50%;">
                                                 ...
                                             </button>
@@ -2424,7 +2424,7 @@
                     <div class="flex-1 position-relative">
                         <input type="text" class="clean-input w-100" @bind="newUnitNameInput" />
                     </div>
-                      <span class="req-star" style="right: 10px; top: 6px;">*</span>
+                    <span class="req-star" style="right: 10px; top: 6px;">*</span>
 
                 </div>
 
@@ -2537,16 +2537,16 @@
         isGroupModalSalesReturnAccountPopupOpen ||
         isGroupModalWipAccountPopupOpen;
 
-    private void ToggleGroupModalInventoryAccountPopup() { bool wasOpen = isGroupModalInventoryAccountPopupOpen; CloseAllPopups(); isGroupModalInventoryAccountPopupOpen = !wasOpen; }
-    private void ToggleGroupModalSalesAccountPopup() { bool wasOpen = isGroupModalSalesAccountPopupOpen; CloseAllPopups(); isGroupModalSalesAccountPopupOpen = !wasOpen; }
-    private void ToggleGroupModalCogsAccountPopup() { bool wasOpen = isGroupModalCogsAccountPopupOpen; CloseAllPopups(); isGroupModalCogsAccountPopupOpen = !wasOpen; }
-    private void ToggleGroupModalSalesReturnAccountPopup() { bool wasOpen = isGroupModalSalesReturnAccountPopupOpen; CloseAllPopups(); isGroupModalSalesReturnAccountPopupOpen = !wasOpen; }
-    private void ToggleGroupModalWipAccountPopup() { bool wasOpen = isGroupModalWipAccountPopupOpen; CloseAllPopups(); isGroupModalWipAccountPopupOpen = !wasOpen; }
+    private void ToggleGroupModalInventoryAccountPopup() { bool wasOpen = isGroupModalInventoryAccountPopupOpen; isGroupModalInventoryAccountPopupOpen = !wasOpen; }
+    private void ToggleGroupModalSalesAccountPopup() { bool wasOpen = isGroupModalSalesAccountPopupOpen; isGroupModalSalesAccountPopupOpen = !wasOpen; }
+    private void ToggleGroupModalCogsAccountPopup() { bool wasOpen = isGroupModalCogsAccountPopupOpen; isGroupModalCogsAccountPopupOpen = !wasOpen; }
+    private void ToggleGroupModalSalesReturnAccountPopup() { bool wasOpen = isGroupModalSalesReturnAccountPopupOpen; isGroupModalSalesReturnAccountPopupOpen = !wasOpen; }
+    private void ToggleGroupModalWipAccountPopup() { bool wasOpen = isGroupModalWipAccountPopupOpen; isGroupModalWipAccountPopupOpen = !wasOpen; }
     private RenderFragment RenderAccountsTreeDropdownNodeGeneric(AccountsTreeNode node, string currentValue, Action<string> onSelected) => @<text>
     <div class="tree-grid-row @(currentValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
             @node.Code
         </span>
         <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
@@ -2924,7 +2924,7 @@ private RenderFragment RenderAccountsTreeDropdownNodeForLedger(AccountsTreeNode 
     <div class="tree-grid-row @(itemData.GeneralLedgerAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
             @node.Code
         </span>
         <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
@@ -3032,7 +3032,7 @@ private RenderFragment RenderAccountsTreeDropdownNodeForSales(AccountsTreeNode n
     <div class="tree-grid-row @(itemData.SalesAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
             @node.Code
         </span>
         <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
@@ -3058,7 +3058,7 @@ private RenderFragment RenderAccountsTreeDropdownNodeForCogs(AccountsTreeNode no
     <div class="tree-grid-row @(itemData.CogsAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
             @node.Code
         </span>
         <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
@@ -3084,7 +3084,7 @@ private RenderFragment RenderAccountsTreeDropdownNodeForReturns(AccountsTreeNode
     <div class="tree-grid-row @(itemData.SalesReturnAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-code col-code text-center text-muted" style="border-left: 1px solid #dee2e6;">
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
             @node.Code
         </span>
         <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
@@ -3121,7 +3121,7 @@ private OpeningBalanceModel openingBalanceData = new()
 
 private void ToggleOpeningBalanceModal() { bool wasOpen = isOpeningBalanceModalOpen; CloseAllPopups(); isOpeningBalanceModalOpen = !wasOpen; }
 private void CloseOpeningBalanceModal() => isOpeningBalanceModalOpen = false;
-private void ToggleOpeningBalanceAccountPopup() { bool wasOpen = isOpeningBalanceAccountPopupOpen; CloseAllPopups(); isOpeningBalanceAccountPopupOpen = !wasOpen; }
+private void ToggleOpeningBalanceAccountPopup() { bool wasOpen = isOpeningBalanceAccountPopupOpen; isOpeningBalanceAccountPopupOpen = !wasOpen; }
 
 public class AccountsTreeNode
 {
@@ -3187,17 +3187,17 @@ public class AccountsTreeNode
     <div class="tree-grid-row @(openingBalanceData.LedgerAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
          style="padding-right: @(node.Level * 16 + 12)px;"
          @onclick="() => onSelected(node.Name)">
-        <span class="tree-node-name col-name text-right">
-            @node.Name
+        <span class="tree-node-code col-code text-left text-muted" style="border-left: 1px solid #dee2e6;">
+            @node.Code
         </span>
-        <span class="tree-node-code col-code text-left text-muted">
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
             @if (node.Children.Any())
             {
                 <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
                     <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
                 </span>
             }
-            @node.Code
+            @node.Name
         </span>
     </div>
 
@@ -3279,7 +3279,6 @@ private void CloseAllPopups()
     isGroupModalCogsAccountPopupOpen = false;
     isGroupModalSalesReturnAccountPopupOpen = false;
     isGroupModalWipAccountPopupOpen = false;
-    isOpeningBalanceModalOpen = false;
 }
 
 private List<string> ledgerAccounts = new() { "مخزون البضاعة", "حساب المخزون الفرعي - 103" };
@@ -3818,7 +3817,7 @@ public class OpeningBalanceModel
 
     .barcode-control {
         display: flex;
-        border: 1px solid  transparent;
+        border: 1px solid transparent;
         border-radius: 3px;
         overflow: hidden;
         background: #ffffff;
@@ -4387,7 +4386,6 @@ public class OpeningBalanceModel
         align-items: center;
         justify-content: space-between;
         padding: 10px 18px;
-        direction:ltr;
     }
 
     .modal-top-title {
@@ -4772,7 +4770,7 @@ public class OpeningBalanceModel
         }
 
     .dexef-error-body {
-        padding: 10px 24px 20px 24px;
+        popupading: 10px 24px 20px 24px;
         display: flex;
         flex-direction: column;
         gap: 15px;
