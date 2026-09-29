@@ -1773,107 +1773,109 @@
                 @if (groupModalTab == 1)
                 {
                     <div class="group-tab-columns">
-                        <div class="group-fields-side">
-                            <div class="section-block-title text-primary">الخصائص</div>
-                            <div class="section-with-blue-line mb-3">
-                                <div class="field-entry-line mb-2 pos-relative">
-                                    <span class="field-title-wide">تندرج من</span>
-                                    <div class="dropdown-anchor flex-1">
-                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleParentGroupDropdown">
-                                            <span class="combo-display-text">@selectedParentGroup</span>
-                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                                        </div>
-
-                                        @if (isParentGroupDropdownOpen)
-                                        {
-                                            <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
-                                                <div class="table-popup-header d-flex justify-content-between">
-                                                    <span class="col-name text-right">الاسم</span>
-                                                    <span class="col-code text-left">الرقم</span>
-                                                </div>
-                                                <div class="table-popup-list">
-                                                    @foreach (var node in groupTreeList)
-                                                    {
-                                                        @RenderTreeDropdownNode(node, selectedName => { selectedParentGroup = selectedName; isParentGroupDropdownOpen = false; })
-                                                    }
-                                                </div>
-                                                <div class="table-popup-footer">
-                                                    <button type="button" class="btn-table-close" @onclick="() => isParentGroupDropdownOpen = false">✕</button>
-                                                    <span class="resizer-dots">⠿</span>
-                                                </div>
+                        <div class="group-fields-side flex-grow-1">
+                            <div class="w-100">
+                                <div class="section-block-title text-primary">الخصائص</div>
+                                <div class="section-with-blue-line mb-3">
+                                    <div class="field-entry-line mb-2 pos-relative">
+                                        <span class="field-title-wide">تندرج من</span>
+                                        <div class="dropdown-anchor flex-1">
+                                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleParentGroupDropdown">
+                                                <span class="combo-display-text">@selectedParentGroup</span>
+                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
-                                        }
-                                    </div>
-                                </div>
 
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">نوع الصنف</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="مخزون">مخزون</option>
-                                        <option value="خدمة">خدمة</option>
-                                        <option value="منتج تام">منتج تام</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">طريقة التقييم</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="الوارد أولاً صادر أولاً">الوارد أولاً صادر أولاً</option>
-                                        <option value="متوسط التكلفة">متوسط التكلفة</option>
-                                    </select>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">مكان التخزين</span>
-                                    <div class="d-flex gap-2 flex-1">
-                                        <input type="text" class="clean-input flex-1" value="مخزن A" />
-                                        <input type="text" class="clean-input flex-1" value="مخزن B" />
-                                        <input type="text" class="clean-input flex-1" value="مخزن C" />
-                                    </div>
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title-wide">التجانس بين الوحدات</span>
-                                    <select class="clean-input flex-1">
-                                        <option value="جميع وحدات الصنف متجانسة">جميع وحدات الصنف متجانسة</option>
-                                        <option value="غير متجانسة">غير متجانسة</option>
-                                    </select>
-                                </div>
-
-                                <div class="field-entry-line pos-relative">
-                                    <span class="field-title-wide">اسم المورد</span>
-                                    <div class="dropdown-anchor flex-1">
-                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleModalSupplierPopup">
-                                            <span class="combo-display-text">@modalSelectedSupplier</span>
-                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                            @if (isParentGroupDropdownOpen)
+                                            {
+                                                <div class="custom-table-popup group-type-tree-dropdown" @onclick:stopPropagation>
+                                                    <div class="table-popup-header d-flex justify-content-between">
+                                                        <span class="col-name text-right">الاسم</span>
+                                                        <span class="col-code text-left">الرقم</span>
+                                                    </div>
+                                                    <div class="table-popup-list">
+                                                        @foreach (var node in groupTreeList)
+                                                        {
+                                                            @RenderTreeDropdownNode(node, selectedName => { selectedParentGroup = selectedName; isParentGroupDropdownOpen = false; })
+                                                        }
+                                                    </div>
+                                                    <div class="table-popup-footer">
+                                                        <button type="button" class="btn-table-close" @onclick="() => isParentGroupDropdownOpen = false">✕</button>
+                                                        <span class="resizer-dots">⠿</span>
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
+                                    </div>
 
-                                        @if (isModalSupplierPopupOpen)
-                                        {
-                                            <div class="custom-supplier-grid-panel-advanced" @onclick:stopPropagation>
-                                                <div class="supplier-grid-header">
-                                                    <div class="col-code">الكود</div>
-                                                    <div class="col-name">الاسم</div>
-                                                    <div class="col-acc">الحساب</div>
-                                                    <div class="col-action">=</div>
-                                                </div>
-                                                <div class="supplier-grid-subbar">
-                                                    <div class="col-code text-center text-muted small">🔤</div>
-                                                    <div class="col-name text-center text-muted small">🔤</div>
-                                                    <div class="col-acc text-center text-muted small">=</div>
-                                                    <div class="col-action text-center">=</div>
-                                                </div>
-                                                <div class="supplier-grid-rows">
-                                                    @foreach (var sup in supplierList)
-                                                    {
-                                                        <div class="supplier-row @(modalSelectedSupplier == sup.Name ? "active-row" : "")"
-                                                             @onclick="() => SelectModalSupplier(sup.Name)">
-                                                            <div class="col-code">@sup.Code</div>
-                                                            <div class="col-name">@sup.Name</div>
-                                                            <div class="col-acc">@sup.Account</div>
-                                                            <div class="col-action"></div>
-                                                        </div>
-                                                    }
-                                                </div>
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title-wide">نوع الصنف</span>
+                                        <select class="clean-input flex-1">
+                                            <option value="مخزون">مخزون</option>
+                                            <option value="خدمة">خدمة</option>
+                                            <option value="منتج تام">منتج تام</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title-wide">طريقة التقييم</span>
+                                        <select class="clean-input flex-1">
+                                            <option value="الوارد أولاً صادر أولاً">الوارد أولاً صادر أولاً</option>
+                                            <option value="متوسط التكلفة">متوسط التكلفة</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title-wide">مكان التخزين</span>
+                                        <div class="d-flex gap-2 flex-1">
+                                            <input type="text" class="clean-input flex-1" value="مخزن A" />
+                                            <input type="text" class="clean-input flex-1" value="مخزن B" />
+                                            <input type="text" class="clean-input flex-1" value="مخزن C" />
+                                        </div>
+                                    </div>
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title-wide">التجانس بين الوحدات</span>
+                                        <select class="clean-input flex-1">
+                                            <option value="جميع وحدات الصنف متجانسة">جميع وحدات الصنف متجانسة</option>
+                                            <option value="غير متجانسة">غير متجانسة</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="field-entry-line pos-relative">
+                                        <span class="field-title-wide">اسم المورد</span>
+                                        <div class="dropdown-anchor flex-1">
+                                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleModalSupplierPopup">
+                                                <span class="combo-display-text">@modalSelectedSupplier</span>
+                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                             </div>
-                                        }
+
+                                            @if (isModalSupplierPopupOpen)
+                                            {
+                                                <div class="custom-supplier-grid-panel-advanced" @onclick:stopPropagation>
+                                                    <div class="supplier-grid-header">
+                                                        <div class="col-code">الكود</div>
+                                                        <div class="col-name">الاسم</div>
+                                                        <div class="col-acc">الحساب</div>
+                                                        <div class="col-action">=</div>
+                                                    </div>
+                                                    <div class="supplier-grid-subbar">
+                                                        <div class="col-code text-center text-muted small">🔤</div>
+                                                        <div class="col-name text-center text-muted small">🔤</div>
+                                                        <div class="col-acc text-center text-muted small">=</div>
+                                                        <div class="col-action text-center">=</div>
+                                                    </div>
+                                                    <div class="supplier-grid-rows">
+                                                        @foreach (var sup in supplierList)
+                                                        {
+                                                            <div class="supplier-row @(modalSelectedSupplier == sup.Name ? "active-row" : "")"
+                                                                 @onclick="() => SelectModalSupplier(sup.Name)">
+                                                                <div class="col-code">@sup.Code</div>
+                                                                <div class="col-name">@sup.Name</div>
+                                                                <div class="col-acc">@sup.Account</div>
+                                                                <div class="col-action"></div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1896,13 +1898,12 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="group-image-side">
-                                <div class="modal-large-img-box">
-                                    <button type="button" class="btn-box-x">✕</button>
-                                </div>
-                                <span class="small text-muted mt-2">الصورة</span>
+                        </div>
+                        <div class="group-image-side">
+                            <div class="modal-large-img-box">
+                                <button type="button" class="btn-box-x">✕</button>
                             </div>
+                            <span class="small text-muted mt-2">الصورة</span>
                         </div>
                     </div>
                 }
@@ -1961,7 +1962,6 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">الحد الادنى</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                         
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalMinCalc">
                                                 <span class="combo-display-text text-center">@modalMinVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
@@ -2057,8 +2057,6 @@
                                     <div class="field-entry-line">
                                         <span class="field-title" style="width: 100px;">فترة الركود</span>
                                         <div class="dropdown-anchor flex-1 d-flex align-items-center gap-1">
-                                               
-
                                             <div class="custom-combo-trigger flex-1" @onclick:stopPropagation @onclick="ToggleModalStagnationCalc">
                                                 <span class="combo-display-text text-center">@modalStagnationVal</span>
                                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
@@ -3494,7 +3492,7 @@ public class OpeningBalanceModel
         display: flex;
         align-items: center;
         gap: 5px;
-        justify-content:center;
+        justify-content: center;
     }
 
     .small-chk-label {
@@ -4620,7 +4618,7 @@ public class OpeningBalanceModel
     }
 
     .group-fields-side {
-        flex: 1;
+        display: flex;
     }
 
     .group-image-side {
@@ -4754,7 +4752,7 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        padding:8px 16px;
+        padding: 8px 16px;
     }
 
     .dexef-error-topbar {
