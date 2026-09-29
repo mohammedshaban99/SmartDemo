@@ -1,0 +1,43 @@
+﻿<div class="dev-textbox @CssClass">
+    @if (LabelPosition == Enums.LabelPosition.Top)
+    {
+        <div class="label-top">
+            <label for="@InputId">@Label</label>
+
+            <DxTextBox @bind-Text="Text"
+                       InputId="@InputId"
+                       CssClass="w-100" />
+        </div>
+    }
+    else
+    {
+        <div class="label-horizontal">
+            <label for="@InputId">@Label</label>
+
+            <DxTextBox @bind-Text="Text"
+                       InputId="@InputId"
+                       CssClass="w-100" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
+
+    [Parameter]
+    public Enums.LabelPosition LabelPosition { get; set; } = Enums.LabelPosition.Horizontal;
+
+    [Parameter]
+    public string InputId { get; set; } = Guid.NewGuid().ToString();
+
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+}
+

@@ -1,0 +1,117 @@
+﻿@page "/test"
+
+
+<h3>DevTextBox Test</h3>
+
+<div class="container">
+
+    <!-- ========================= -->
+    <!-- 1. TOP LABEL -->
+    <!-- ========================= -->
+
+    <h4>1. Top Label</h4>
+
+    <DevTextBox Label="Employee Name"
+                @bind-Text="EmployeeName"
+                LabelPosition="Enums.LabelPosition.Top"
+                InputId="employee-name-top" />
+
+    <p>
+        Value: @EmployeeName
+    </p>
+
+
+    <hr />
+
+
+    <!-- ========================= -->
+    <!-- 2. HORIZONTAL LABEL -->
+    <!-- ========================= -->
+
+    <h4>2. Horizontal Label</h4>
+
+    <DevTextBox Label="Employee Email"
+                @bind-Text="EmployeeEmail"
+                LabelPosition="Enums.LabelPosition.Horizontal"
+                InputId="employee-email-horizontal" />
+
+    <p>
+        Value: @EmployeeEmail
+    </p>
+
+
+    <hr />
+
+
+    <!-- ========================= -->
+    <!-- 3. TOP LABEL + CUSTOM CSS -->
+    <!-- ========================= -->
+
+    <h4>3. Top Label + Custom CSS</h4>
+
+    <DevTextBox Label="Department"
+                @bind-Text="Department"
+                LabelPosition="Enums.LabelPosition.Top"
+                InputId="department"
+                CssClass="my-custom-textbox" />
+
+    <p>
+        Value: @Department
+    </p>
+
+
+    <hr />
+
+
+    <!-- ========================= -->
+    <!-- 4. HORIZONTAL + CUSTOM CSS -->
+    <!-- ========================= -->
+
+    <h4>4. Horizontal Label + Custom CSS</h4>
+
+    <DevTextBox Label="Phone Number"
+                @bind-Text="PhoneNumber"
+                LabelPosition="Enums.LabelPosition.Horizontal"
+                InputId="phone-number"
+                CssClass="my-custom-textbox" />
+
+    <p>
+        Value: @PhoneNumber
+    </p>
+
+</div>
+
+
+@code {
+
+    private string EmployeeName { get; set; }
+        = "Nancdvfsdvfdy Davolio";
+
+    private string EmployeeEmail { get; set; }
+        = "davolio@example.com";
+
+    private string Department { get; set; }
+        = "Human Resources";
+
+    private string PhoneNumber { get; set; }
+        = "01012345678";
+}
+
+
+<style>
+
+    .container {
+        max-width: 800px;
+        margin: 30px auto;
+    }
+
+    h4 {
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+
+    .my-custom-textbox {
+        margin-bottom: 10px;
+    }
+
+</style>
