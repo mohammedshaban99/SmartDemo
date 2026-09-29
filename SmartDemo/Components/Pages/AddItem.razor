@@ -507,8 +507,9 @@
                             {
                                 <div class="custom-dropdown-panel opening-balance-dropdown-panel" @onclick:stopPropagation>
                                     <div class="master-modal-topbar">
-                                        <span class="modal-top-title">الرصيد افتتاحي</span>
                                         <button type="button" class="btn-topbar-close-flat" @onclick="CloseOpeningBalanceModal">✕</button>
+                                        <span class="modal-top-title">الرصيد افتتاحي</span>
+
                                     </div>
                                     <div class="opening-balance-modal-body">
                                         <div class="opening-balance-modal-table-wrap">
@@ -2422,8 +2423,9 @@
                     <span class="fw-bold">الاسم</span>
                     <div class="flex-1 position-relative">
                         <input type="text" class="clean-input w-100" @bind="newUnitNameInput" />
-                        <span class="req-star" style="position: absolute; right: 10px; top: 6px;">*</span>
                     </div>
+                      <span class="req-star" style="right: 10px; top: 6px;">*</span>
+
                 </div>
 
                 <div class="table-scroll-wrapper mb-4">
@@ -3925,7 +3927,6 @@ public class OpeningBalanceModel
         right: 0;
         top: -233px;
         width: fit-content;
-        background: #ffffff;
         border: 1.5px solid #ced4da;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         border-radius: 4px;
@@ -3933,6 +3934,7 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
+        background: #F0F3F6;
     }
 
     .panel-scroll-content {
@@ -4336,12 +4338,9 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: column;
         gap: 12px;
-        background-color: #ffffff;
     }
 
     .opening-balance-modal-table-wrap {
-        border: 1px solid #dee2e6;
-        background: #ffffff;
         border-radius: 3px;
         overflow: hidden;
     }
@@ -4354,16 +4353,13 @@ public class OpeningBalanceModel
     }
 
         .opening-balance-modal-table th {
-            background-color: #f8f9fa;
             color: #495057;
             font-weight: 600;
-            border-bottom: 1px solid #dee2e6;
             padding: 6px;
         }
 
         .opening-balance-modal-table td {
             padding: 6px;
-            background-color: #ffffff;
         }
 
     .group-modal-layer {
@@ -4390,9 +4386,8 @@ public class OpeningBalanceModel
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        background-color: #ffffff;
         padding: 10px 18px;
-        border-bottom: 1px solid #e9ecef;
+        direction:ltr;
     }
 
     .modal-top-title {
@@ -4681,7 +4676,6 @@ public class OpeningBalanceModel
     }
 
     .table-scroll-wrapper {
-        border: 1px solid #dee2e6;
         background: #ffffff;
     }
 
@@ -4694,12 +4688,13 @@ public class OpeningBalanceModel
     }
 
         .item-details-table th {
-            background-color: #f8f9fa;
             color: #495057;
             font-weight: 600;
             border-bottom: 1px solid #dee2e6;
             border-left: 1px solid #dee2e6;
             padding: 7px;
+            background: #F0F3F6;
+            border-left: solid 1px #dee2e6;
         }
 
         .item-details-table td {
