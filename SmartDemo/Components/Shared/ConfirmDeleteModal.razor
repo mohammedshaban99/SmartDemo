@@ -1,0 +1,40 @@
+﻿@if (IsOpen)
+{
+    <div class="modal-backdrop-blur">
+        <div class="confirm-delete-dialog bg-white rounded shadow-lg overflow-hidden" dir="rtl" style="width: 440px;" @onclick:stopPropagation>
+            <div class="bg-primary px-3 py-2 d-flex justify-content-end align-items-center">
+                <button type="button" class="btn-topbar-close-flat text-white" @onclick="OnCancel">✕</button>
+            </div>
+            <div class="p-4 text-center d-flex flex-column align-items-center gap-3">
+                <div class="fs-1 text-primary">🗑️️</div>
+                <div class="fw-bold fs-6 text-dark">@Message</div>
+            </div>
+            <div class="d-flex justify-content-center gap-2 p-3 border-top bg-light">
+                <button type="button" class="btn btn-primary px-4" @onclick="OnConfirm">نعم</button>
+                <button type="button" class="btn btn-secondary px-4" @onclick="OnCancel">لا</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public string Message { get; set; } = "هل تريد الحذف ؟";
+    [Parameter] public EventCallback OnConfirmed { get; set; }
+    [Parameter] public EventCallback OnCancelled { get; set; }
+
+    private async Task OnConfirm()
+    {
+        await OnConfirmed.InvokeAsync();
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private async Task OnCancel()
+    {
+        await OnCancelled.InvokeAsync();
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+}

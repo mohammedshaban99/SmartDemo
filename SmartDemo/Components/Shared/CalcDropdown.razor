@@ -1,0 +1,43 @@
+﻿<div class="calc-popup-box calc-desktop-popup" @onclick:stopPropagation>
+    <div class="calc-screen">@Display</div>
+    <div class="calc-grid">
+        <button type="button" class="calc-btn calc-op span-col-2" @onclick='() => OnAction.InvokeAsync("C")'>C</button>
+        <button type="button" class="calc-btn calc-op span-col-2" @onclick='() => OnAction.InvokeAsync("CE")'>CE</button>
+        <button type="button" class="calc-btn calc-op span-col-2" @onclick='() => OnAction.InvokeAsync("Back")'>Back</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("sqrt")'>sqrt</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("/")'>/</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("9")'>9</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("8")'>8</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("7")'>7</button>
+        <button type="button" class="calc-btn calc-mem">MC</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("%")'>%</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("*")'>*</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("6")'>6</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("5")'>5</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("4")'>4</button>
+        <button type="button" class="calc-btn calc-mem">MR</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("x/1")'>x/1</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("-")'>-</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("3")'>3</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("2")'>2</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("1")'>1</button>
+        <button type="button" class="calc-btn calc-mem">MS</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => OnAction.InvokeAsync("=")'>=</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => Press("+")'>+</button>
+        <button type="button" class="calc-btn" @onclick='() => Press(".")'>.</button>
+        <button type="button" class="calc-btn calc-op" @onclick='() => OnAction.InvokeAsync("-/+")'>-/+</button>
+        <button type="button" class="calc-btn" @onclick='() => Press("0")'>0</button>
+        <button type="button" class="calc-btn calc-mem">+M</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Display { get; set; } = "0";
+    [Parameter] public EventCallback<string> OnDigitPressed { get; set; }
+    [Parameter] public EventCallback<string> OnAction { get; set; }
+
+    private async Task Press(string val)
+    {
+        await OnDigitPressed.InvokeAsync(val);
+    }
+}
