@@ -160,34 +160,76 @@
                     <input type="text" class="clean-input text-center" style="width: 110px;" @bind="expenseData.ReferenceNumber" />
                 </div>
             </div>
-           
-
-
         </div>
 
-        <!-- 3. Table Section with Corrected Column Ordering (Right-to-Left: الشرح -> المبلغ -> نوع المصروف -> الرقم) -->
+        <!-- 3. Table Section with Clean Inactive Rows -->
         <div class="section-with-blue-line mb-4">
             <div class="table-scroll-wrapper">
                 <table class="item-details-table">
                     <thead>
                         <tr>
-                            <th style="width: 32px;"></th>
                             <th>الرقم</th>
                             <th>نوع المصروف</th>
                             <th>المبلغ</th>
                             <th>الشرح</th>
+                            <th style="width: 32px;"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var row in expenseData.ExpenseRows)
+                        @for (int i = 0; i < expenseData.ExpenseRows.Count; i++)
                         {
-                            <tr>
-                                <td><span class="text-muted">▶</span></td>
-                                <td><input type="text" class="clean-input w-100 text-center" @bind="row.Number" /></td>
-                                <td><input type="text" class="clean-input w-100 text-center" @bind="row.ExpenseType" /></td>
-                                <td><input type="number" class="clean-input w-100 text-center" @bind="row.Amount" /></td>
-                                <td><input type="text" class="clean-input w-100" @bind="row.Description" /></td>
-                             <td><button class="delete-icon-btn" type="button" @onclick="() => PromptDeleteRow(row)">✖</button></td>
+                            var index = i;
+                            var row = expenseData.ExpenseRows[i];
+                            var isActive = index == activeRowIndex;
+                            var isEven = index % 2 == 1;
+
+                            <tr class="@(isActive ? "active-grid-row" : (isEven ? "even-grid-row" : "odd-grid-row"))" @onclick="() => ActivateRow(index)">
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 text-center active-cell-input" @value="row.Number" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateNumber(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@(!string.IsNullOrEmpty(row.Number) ? row.Number : "")</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 text-center active-cell-input" @value="row.ExpenseType" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateExpenseType(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@row.ExpenseType</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="number" class="clean-input w-100 text-center active-cell-input" @value="row.Amount" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateAmount(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@(row.Amount != 0 ? row.Amount.ToString() : "")</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 active-cell-input" @value="row.Description" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateDescription(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell">@row.Description</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <span class="text-danger fw-bold" style="cursor: pointer;" @onclick="() => PromptDeleteRow(row)">✖</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -200,59 +242,105 @@
             <span class="total-number-display">0</span>
         </div>
 
-        <!-- 4. Footer Section: Right Side (Inputs), Left Side (Summary & Actions) -->
+        <!-- 4. Footer Section -->
         <div class="expense-footer-grid">
             <div class="expense-footer-right-side">
 
+                <!-- طريقة الدفع Field Line -->
                 <div class="field-entry-line pos-relative">
                     <span class="field-title">طريقة الدفع</span>
                     <div class="d-flex align-items-center gap-2 flex-1">
-                        <span class="req-star">*</span>
-                        <input type="text" class="clean-input text-center" style="width: 50px;" @bind="expenseData.PaymentTypeCode" />
-                        <div class="dropdown-anchor flex-1 pos-relative">
-                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentMethodPopup">
-                                <span class="combo-display-text">@expenseData.PaymentMethod</span>
-                                <div class="combo-icons-inside">
-                                    <span class="combo-arrow">▼</span>
-                                    <span class="ico-swap">🛒</span>
-                                </div>
-                            </div>
 
-                            @if (isPaymentMethodPopupOpen)
-                            {
-                                <div class="custom-dropdown-panel payment-method-dropdown-panel" @onclick:stopPropagation>
-                                    <div class="panel-scroll-content">
-                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "الخزينة الرئيسية" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("الخزينة الرئيسية")'>
-                                            <span class="checkbox-label">الخزينة الرئيسية</span>
-                                            <span class="ms-auto text-primary">🛒</span>
-                                        </div>
-                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "بنك" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("بنك")'>
-                                            <span class="checkbox-label">بنك</span>
-                                            <span class="ms-auto text-primary">🏠</span>
-                                        </div>
-                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "ماكينة نقاط البيع" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("ماكينة نقاط البيع")'>
-                                            <span class="checkbox-label">ماكينة نقاط البيع</span>
-                                            <span class="ms-auto text-primary">💳</span>
-                                        </div>
-                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
-                                            <span class="checkbox-label">عهدَة</span>
-                                            <span class="ms-auto text-primary">🚶‍♂️</span>
-                                        </div>
-                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
-                                            <span class="checkbox-label">حساب استاذ</span>
-                                            <span class="ms-auto text-primary">🏷️</span>
-                                        </div>
+                        <!-- 1. RIGHTMOST: Type Dropdown with Top Label -->
+                        <div class="d-flex flex-column gap-1" style="width: 110px;">
+                            <span class="sub-field-lbl">النوع</span>
+                            <div class="dropdown-anchor pos-relative w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentMethodPopup">
+                                    <span class="combo-display-text">@expenseData.PaymentMethod</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                        <span class="ico-swap">@GetSelectedPaymentIcon()</span>
                                     </div>
                                 </div>
-                            }
+
+                                @if (isPaymentMethodPopupOpen)
+                                {
+                                    <div class="custom-dropdown-panel payment-method-dropdown-panel custom-payment-dropdown-styled" @onclick:stopPropagation>
+                                        <div class="panel-scroll-content">
+                                            <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "خزينة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("خزينة")'>
+                                                <span class="checkbox-label">خزينة</span>
+                                                <span class="payment-icon-slot">🛒</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "بنك" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("بنك")'>
+                                                <span class="checkbox-label">بنك</span>
+                                                <span class="payment-icon-slot">🏠</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "ماكينة نقاط البيع" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("ماكينة نقاط البيع")'>
+                                                <span class="checkbox-label">ماكينة نقاط البيع</span>
+                                                <span class="payment-icon-slot">💳</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
+                                                <span class="checkbox-label">عهدَة</span>
+                                                <span class="payment-icon-slot">🚶‍♂️️</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
+                                                <span class="checkbox-label">حساب استاذ</span>
+                                                <span class="payment-icon-slot">🏷️</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
+
+                        <!-- 2. MIDDLE: Grid Lookup Window Input with Top Label -->
+                        <div class="d-flex flex-column gap-1 flex-1">
+                            <span class="sub-field-lbl">اسم الحساب</span>
+                            <div class="dropdown-anchor pos-relative w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentGridPopup">
+                                    <span class="combo-display-text">@expenseData.PaymentMethodName</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isPaymentGridPopupOpen)
+                                {
+                                    <div class="custom-table-popup custom-accounts-dropdown payment-grid-popup-box" @onclick:stopPropagation>
+                                        <div class="table-popup-header d-flex justify-content-between align-items-center">
+                                            <button type="button" class="btn-table-close" @onclick="() => isPaymentGridPopupOpen = false">✕</button>
+                                            <div class="d-flex gap-3">
+                                                <span class="col-code text-center" style="width: 70px;">النوع</span>
+                                                <span class="col-name text-right" style="width: 140px;">اسم الحساب</span>
+                                            </div>
+                                        </div>
+                                        <div class="table-popup-list" style="height: 150px;">
+                                            <div class="supplier-row active-row d-flex justify-content-between align-items-center p-2 cursor-pointer" @onclick='() => SelectPaymentGridItem("1", "الخزينة الرئيسية", "EGP")'>
+                                                <span class="col-code text-center" style="width: 70px;">EGP</span>
+                                                <span class="col-name text-right" style="width: 140px;">الخزينة الرئيسية</span>
+                                            </div>
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- 3. LEFTMOST: Currency code, number and required star indicator -->
+                        <div class="d-flex align-items-center gap-1 mt-3">
+                            <span class="req-star">*</span>
+                            <span class="small">@expenseData.PaymentTypeCode</span>
+                            <span class="small font-weight-bold">EGP</span>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="field-entry-line">
                     <span class="field-title">العمله</span>
                     <div class="d-flex align-items-center gap-2 flex-1">
-                       
                         <div class="dropdown-anchor flex-1 pos-relative">
                             <div class="custom-combo-trigger custom-combo-trigger-currency" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
                                 <span class="combo-display-text">@expenseData.Currency</span>
@@ -291,22 +379,26 @@
                 </div>
             </div>
 
+            <!-- Left Side: Summary and Floating Badge -->
             <div class="expense-footer-left-side">
                 <div class="expense-summary-box">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold small">الاجمالي قبل الضريبة</span>
-                        <span class="text-muted small">0</span>                    
+                        <span class="text-muted small">0</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold small">الضرائب :</span>
-                        <span class="text-muted small">0</span>                   
+                        <span class="text-muted small">0</span>
                     </div>
                 </div>
 
-              
+                <!-- Floating Total Badge -->
+                <div class="floating-badge-left">
+                    <span class="floating-badge-number">0</span>
+                </div>
             </div>
-          
         </div>
+
         <div class="d-flex align-items-center gap-2 mt-3">
             <button type="button" class="btn-action-custom btn-save-custom" @onclick="SaveData">حفظ</button>
             <button type="button" class="btn-action-custom btn-print-custom" @onclick="OnSaveAndPrint">حفظ و طباعة</button>
@@ -330,7 +422,10 @@
     private bool isCostCenterPopupOpen = false;
     private bool isTaxPopupOpen = false;
     private bool isPaymentMethodPopupOpen = false;
+    private bool isPaymentGridPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
+
+    private int activeRowIndex = 0;
 
     private bool isConfirmDeleteModalOpen = false;
     private ExpenseRowModel? rowPendingDelete;
@@ -342,15 +437,19 @@
         CostCenter = "",
         Tax = "",
         Statement = "",
-        PaymentMethod = "الخزينة الرئيسية",
+        PaymentMethod = "خزينة",
+        PaymentMethodName = "الخزينة الرئيسية",
         PaymentTypeCode = "0",
         CurrencyRate = 1,
         Currency = "EGP",
         Notes = "",
-        ExpenseRows = new List<ExpenseRowModel>
+        ExpenseRows = Enumerable.Range(1, 12).Select(i => new ExpenseRowModel
         {
-            new() { Number = "1", ExpenseType = "", Amount = 0, Description = "" }
-        }
+            Number = i == 1 ? "1" : "",
+            ExpenseType = "",
+            Amount = 0,
+            Description = ""
+        }).ToList()
     };
 
     private bool IsAnyPopupOpen() =>
@@ -360,6 +459,7 @@
         isCostCenterPopupOpen ||
         isTaxPopupOpen ||
         isPaymentMethodPopupOpen ||
+        isPaymentGridPopupOpen ||
         isCurrencyPopupOpen;
 
     private void CloseAllPopups()
@@ -370,7 +470,45 @@
         isCostCenterPopupOpen = false;
         isTaxPopupOpen = false;
         isPaymentMethodPopupOpen = false;
+        isPaymentGridPopupOpen = false;
         isCurrencyPopupOpen = false;
+    }
+
+    private void ActivateRow(int index)
+    {
+        if (index <= activeRowIndex || IsRowFilled(expenseData.ExpenseRows[index - 1]))
+        {
+            activeRowIndex = index;
+        }
+    }
+
+    private void UpdateNumber(ExpenseRowModel row, string? val) { row.Number = val ?? ""; }
+    private void UpdateExpenseType(ExpenseRowModel row, string? val) { row.ExpenseType = val ?? ""; }
+    private void UpdateAmount(ExpenseRowModel row, string? val)
+    {
+        if (decimal.TryParse(val, out var result))
+            row.Amount = result;
+        else
+            row.Amount = 0;
+    }
+    private void UpdateDescription(ExpenseRowModel row, string? val) { row.Description = val ?? ""; }
+
+    private void OnRowInput(int index)
+    {
+        var row = expenseData.ExpenseRows[index];
+        if (IsRowFilled(row) && index == activeRowIndex && index < expenseData.ExpenseRows.Count - 1)
+        {
+            activeRowIndex = index + 1;
+            if (string.IsNullOrEmpty(expenseData.ExpenseRows[activeRowIndex].Number))
+            {
+                expenseData.ExpenseRows[activeRowIndex].Number = (activeRowIndex + 1).ToString();
+            }
+        }
+    }
+
+    private bool IsRowFilled(ExpenseRowModel row)
+    {
+        return !string.IsNullOrWhiteSpace(row.ExpenseType) || row.Amount > 0 || !string.IsNullOrWhiteSpace(row.Description);
     }
 
     private string GetSelectedExpenseIcon() => selectedExpenseType switch
@@ -379,6 +517,16 @@
         "مصروف على الإعتماد" => "🚢",
         "مصروف على الأصول" => "🏠",
         _ => "📊"
+    };
+
+    private string GetSelectedPaymentIcon() => expenseData.PaymentMethod switch
+    {
+        "خزينة" => "🛒",
+        "بنك" => "🏠",
+        "ماكينة نقاط البيع" => "💳",
+        "عهدَة" => "🚶‍♂️",
+        "حساب استاذ" => "🏷️",
+        _ => "🛒"
     };
 
     private void ToggleExpenseTypePopup()
@@ -411,12 +559,20 @@
     private void ToggleCostCenterPopup() { bool wasOpen = isCostCenterPopupOpen; CloseAllPopups(); isCostCenterPopupOpen = !wasOpen; }
     private void ToggleTaxPopup() { bool wasOpen = isTaxPopupOpen; CloseAllPopups(); isTaxPopupOpen = !wasOpen; }
     private void TogglePaymentMethodPopup() { bool wasOpen = isPaymentMethodPopupOpen; CloseAllPopups(); isPaymentMethodPopupOpen = !wasOpen; }
+    private void TogglePaymentGridPopup() { bool wasOpen = isPaymentGridPopupOpen; CloseAllPopups(); isPaymentGridPopupOpen = !wasOpen; }
     private void ToggleCurrencyPopup() { bool wasOpen = isCurrencyPopupOpen; CloseAllPopups(); isCurrencyPopupOpen = !wasOpen; }
 
     private void SelectPaymentMethod(string method)
     {
         expenseData.PaymentMethod = method;
         isPaymentMethodPopupOpen = false;
+    }
+
+    private void SelectPaymentGridItem(string code, string name, string account)
+    {
+        expenseData.PaymentTypeCode = code;
+        expenseData.PaymentMethodName = name;
+        isPaymentGridPopupOpen = false;
     }
 
     private void SelectCurrency(string code, string name, decimal rate)
@@ -460,6 +616,7 @@
         public string Tax { get; set; } = "";
         public string Statement { get; set; } = "";
         public string PaymentMethod { get; set; } = "";
+        public string PaymentMethodName { get; set; } = "";
         public string PaymentTypeCode { get; set; } = "0";
         public decimal CurrencyRate { get; set; } = 1;
         public string Currency { get; set; } = "EGP";
@@ -539,12 +696,13 @@
         justify-content: space-between;
     }
 
-    .expense-filter-group-root{
+    .expense-filter-group-root {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 5px;
     }
+
     .expense-filter-group {
         display: flex;
         flex-direction: column;
@@ -581,6 +739,20 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+
+    .floating-badge-left {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 4px 16px;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #333;
+        width: fit-content;
     }
 
     .btn-action-custom {
@@ -641,6 +813,61 @@
             background-color: #e9f2ff;
         }
 
+    .custom-payment-dropdown-styled {
+        top: 34px !important;
+        right: auto !important;
+        left: 0 !important;
+        width: 190px !important;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .custom-payment-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        position: relative;
+        border-bottom: none;
+        border-top: 1px solid #f0f0f0;
+    }
+
+        .custom-payment-row:first-child {
+            border-top: none;
+        }
+
+        .custom-payment-row .checkbox-label {
+            order: 1;
+            flex: 1;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #222;
+        }
+
+        .custom-payment-row .payment-icon-slot {
+            order: 2;
+            margin-left: 0;
+            font-size: 0.95rem;
+        }
+
+        .custom-payment-row.active-row {
+            background-color: #eef3fb !important;
+        }
+
+            .custom-payment-row.active-row::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background-color: #0d6efd;
+            }
+
+        .custom-payment-row:hover {
+            background-color: #eef3fb;
+        }
+
     .clean-input {
         border: 1px solid transparent;
         border-bottom: 3px solid transparent;
@@ -658,6 +885,32 @@
         border: 1px solid transparent;
         border-bottom: 3px solid #007bff !important;
         box-shadow: none;
+    }
+
+    /* Table Zebra Striping and Active Row Styles */
+    .odd-grid-row {
+        background-color: #ffffff;
+    }
+
+    .even-grid-row {
+        background-color: #f7f9fc;
+    }
+
+    .active-grid-row {
+        background-color: #eef3fb !important;
+    }
+
+    .active-cell-input {
+        border: 1px solid #80bdff !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .table-static-cell {
+        padding: 4px 8px;
+        min-height: 28px;
+        font-size: 0.85rem;
+        color: #333;
     }
 
     .custom-combo-trigger {
@@ -714,6 +967,12 @@
         box-sizing: border-box;
         direction: rtl;
         top: 34px;
+    }
+
+    .payment-grid-popup-box {
+        width: 280px !important;
+        right: auto !important;
+        left: 0 !important;
     }
 
     .table-popup-header {
@@ -783,6 +1042,13 @@
         white-space: nowrap;
     }
 
+    .sub-field-lbl {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #555;
+        text-align: right;
+    }
+
     .req-star {
         color: #dc3545;
         font-size: 0.9rem;
@@ -811,7 +1077,7 @@
         cursor: pointer;
     }
 
-    .custom-combo-trigger.custom-combo-trigger-currency{
-        width:350px;
+    .custom-combo-trigger.custom-combo-trigger-currency {
+        width: 350px;
     }
 </style>

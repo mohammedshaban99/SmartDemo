@@ -1,15 +1,15 @@
 ﻿@if (IsOpen)
 {
-    <div class="modal-backdrop-blur">
+    <div class="modal-backdrop-blur confirm-modal-fixed-layer">
         <div class="confirm-delete-dialog bg-white rounded shadow-lg overflow-hidden" dir="rtl" style="width: 440px;" @onclick:stopPropagation>
-            <div class="bg-primary px-3 py-2 d-flex justify-content-end align-items-center">
-                <button type="button" class="btn-topbar-close-flat text-white" @onclick="OnCancel">✕</button>
+            <div class=" custom-close-btn px-3 py-2 d-flex justify-content-end align-items-center">
+                <button type="button" class="btn-topbar-close-flat" @onclick="OnCancel">✕</button>
             </div>
-            <div class="p-4 text-center d-flex flex-column align-items-center gap-3">
-                <div class="fs-1 text-primary">🗑️️</div>
+           <div class="message-container p-4 text-center d-flex flex-column align-items-start gap-3">
+                <div class="fs-1 text-primary">🗑</div>
                 <div class="fw-bold fs-6 text-dark">@Message</div>
             </div>
-            <div class="d-flex justify-content-center gap-2 p-3 border-top bg-light">
+            <div class="d-flex justify-content-end gap-2 p-3">
                 <button type="button" class="btn btn-primary px-4" @onclick="OnConfirm">نعم</button>
                 <button type="button" class="btn btn-secondary px-4" @onclick="OnCancel">لا</button>
             </div>
@@ -38,3 +38,29 @@
         await IsOpenChanged.InvokeAsync(false);
     }
 }
+
+<style>
+    .confirm-modal-fixed-layer {
+        position: fixed !important;
+        inset: 0 !important;
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 9999 !important;
+    }
+
+    .btn-topbar-close-flat {
+        border: none;
+        outline: none;
+        color: gray;
+        background: transparent;
+    }
+
+    .custom-close-btn, .message-container{
+        background-color: #F0F2F7;
+    }
+    .message-container{
+        border: solid 1px #dee2e6;
+    }
+</style>
