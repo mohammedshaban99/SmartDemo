@@ -1,0 +1,1022 @@
+﻿@page "/ChartAccounts"
+@using SmartDemo.Components.Shared
+@rendermode InteractiveServer
+
+<div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <!-- Global transparent backdrop when any popup is open to catch outside clicks -->
+    @if (IsAnyPopupOpen())
+    {
+        <div class="global-dropdown-backdrop" @onclick="CloseAllPopups" @onclick:stopPropagation></div>
+    }
+
+    <!-- 1. Far Right: Icon Box & Active Status with Continuous Vertical Section Dividers -->
+    <div class="image-right-block">
+        <div class="image-square">
+            <span class="fs-2">🖩</span>
+        </div>
+        <div class="active-check-group">
+            <input type="checkbox" id="chkActive" class="chk-box" @bind="chartData.IsActive" />
+            <label for="chkActive" class="small-chk-label">نشط</label>
+        </div>
+    </div>
+
+    <div class="main-canvas" @onclick:stopPropagation>
+
+        <div class="custom-header">
+            <!-- Top Header & Main Form Area -->
+            <div class="header-master-grid">
+
+                <!-- Section 1: بيانات الاساسوية -->
+                <div class="section-group-block">
+                    <div class="section-header-title">بيانات الاساسوية</div>
+                    <div class="section-grid-content">
+                        <div class="orange-divider-line" style="height: 110px;"></div>
+
+                        <!-- Labels Column -->
+                        <div class="labels-column">
+                            <div class="label-row-cell"><span class="hdr-lbl">التصنيف</span></div>
+                            <div class="label-row-cell"><span class="hdr-lbl">اسم الحساب</span></div>
+                            <div class="label-row-cell"><span class="hdr-lbl">يندرج من</span></div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="controls-column">
+
+                            <!-- Row 1: التصنيف -->
+                            <div class="form-row-compact pos-relative">
+                                <div class="dropdown-anchor w-100">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleClassificationPopup">
+                                        <span class="combo-display-text">@chartData.Classification</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isClassificationPopupOpen)
+                                    {
+                                        <div class="custom-table-popup item-type-popup-size" style="width: 100%;" @onclick:stopPropagation>
+                                            <div class="table-popup-header d-flex justify-content-between">
+                                                <span class="col-name text-right">الاسم</span>
+                                                <span class="col-code text-left">الرقم</span>
+                                            </div>
+                                            <div class="table-popup-list">
+                                                @foreach (var c in classificationList)
+                                                {
+                                                    <div class="table-popup-row d-flex justify-content-between @(chartData.Classification == c.Name ? "active-row" : "")"
+                                                         @onclick="() => SelectClassification(c.Name)">
+                                                        <span class="text-right">@c.Name</span>
+                                                        <span class="text-left text-muted">@c.Code</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isClassificationPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1 ms-1">*</span>
+                            </div>
+
+                            <!-- Row 2: اسم الحساب -->
+                            <div class="form-row-compact name-field-relative">
+                                <div class="w-100">
+                                    <input type="text" class="clean-input w-100" @bind="chartData.AccountName" />
+                                </div>
+                                <span class="req-star me-1 ms-1">*</span>
+
+                         
+
+                                @if (isTranslationPopupOpen)
+                                {
+                                    <div class="trans-popup-box" @onclick:stopPropagation>
+                                        <div class="trans-input-wrap">
+                                            <input type="text" class="trans-input text-end" @bind="chartData.EnglishName" placeholder="الاسم انجليزي" />
+                                        </div>
+                                        <div class="trans-popup-actions">
+                                            <button type="button" class="btn-popup-icon" @onclick="OpenLanguagesModal" title="إعدادات اللغات">⚙</button>
+                                            <button type="button" class="btn-popup-icon" @onclick="CloseTranslationPopup" title="إغلاق">✕</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Row 3: يندرج من & الرقم -->
+                            <div class="form-row-compact pos-relative">
+                                <div class="dropdown-anchor flex-1">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleParentTreePopup">
+                                        <span class="combo-display-text">@chartData.ParentAccount</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isParentTreePopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel custom-accounts-dropdown" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var node in accountsTreeList)
+                                                {
+                                                    @RenderAccountsTreeDropdownNode(node, selectedName => { chartData.ParentAccount = selectedName; isParentTreePopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isParentTreePopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1 ms-1">*</span>
+
+                                <span class="hdr-lbl ms-2">الرقم</span>
+                                <input type="text" class="clean-input text-center" style="width: 120px;" @bind="chartData.Code" />
+                                <span class="req-star me-1">*</span>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: النوع -->
+                <div class="section-group-block mt-3">
+                    <div class="section-header-title">النوع</div>
+                    <div class="section-grid-content">
+                        <div class="orange-divider-line" style="height: 45px;"></div>
+
+                        <!-- Labels Column -->
+                        <div class="labels-column">
+                            <div class="label-row-cell"><span class="hdr-lbl">نوع الحساب</span></div>
+                        </div>
+
+                        <!-- Controls Column -->
+                        <div class="controls-column">
+                            <div class="form-row-compact pos-relative">
+                                <div class="dropdown-anchor w-100">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleAccountTypePopup">
+                                        <span class="combo-display-text">@chartData.AccountType</span>
+                                        <div class="combo-icons-inside">
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+
+                                    @if (isAccountTypePopupOpen)
+                                    {
+                                        <div class="custom-table-popup item-type-popup-size" style="width: 100%;" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var typeName in accountTypesList)
+                                                {
+                                                    <div class="table-popup-row @(chartData.AccountType == typeName ? "active-row" : "")"
+                                                         @onclick="() => SelectAccountType(typeName)">
+                                                        @typeName
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isAccountTypePopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-2 ms-1">*</span>
+                                <button type="button" class="btn-trans-trigger p-0 text-primary fw-bold" style="font-size: 0.8rem;" @onclick="ToggleAccountTypeNote">الشرح</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button restored to original reference position (between Type and Properties sections)[cite: 10, 11] -->
+            <div class="save-cell-middle my-3">
+                <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+            </div>
+        </div>
+ 
+
+        <!-- Section 3: الخصائص -->
+        <div class="tab-content-seamless">
+            <div class="section-group-block">
+                <div class="section-header-title">الخصائص</div>
+                <div class="section-grid-content">
+                    <div class="orange-divider-line" style="height: 200px;"></div>
+
+                    <!-- Labels Column -->
+                    <div class="labels-column">
+                        <div class="label-row-cell"><span class="hdr-lbl">مركز التكلفة</span></div>
+                        <div class="label-row-cell"><span class="hdr-lbl">طبيعة الحساب</span></div>
+                        <div class="label-row-cell"><span class="hdr-lbl">عملة الحساب</span></div>
+                        <div class="label-row-cell"><span class="hdr-lbl">اعتبار من</span></div>
+                        <div class="label-row-cell" style="height: 75px;"><span class="hdr-lbl">ملاحظات</span></div>
+                    </div>
+
+                    <!-- Controls Column -->
+                    <div class="controls-column">
+                        <!-- 1. مركز التكلفة -->
+                        <div class="form-row-compact pos-relative">
+                            <div class="dropdown-anchor w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCostCenterPopup">
+                                    <span class="combo-display-text">@chartData.CostCenter</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isCostCenterPopupOpen)
+                                {
+                                    <div class="custom-table-popup item-type-popup-size" style="width: 100%;" @onclick:stopPropagation>
+                                        <div class="table-popup-list">
+                                            @foreach (var cc in costCenterOptions)
+                                            {
+                                                <div class="table-popup-row @(chartData.CostCenter == cc ? "active-row" : "")"
+                                                     @onclick="() => SelectCostCenter(cc)">
+                                                    @cc
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isCostCenterPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- 2. طبيعة الحساب -->
+                        <div class="form-row-compact pos-relative">
+                            <div class="dropdown-anchor w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleAccountNaturePopup">
+                                    <span class="combo-display-text">@chartData.AccountNature</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isAccountNaturePopupOpen)
+                                {
+                                    <div class="custom-table-popup item-type-popup-size" style="width: 100%;" @onclick:stopPropagation>
+                                        <div class="table-popup-list">
+                                            @foreach (var nat in accountNatureOptions)
+                                            {
+                                                <div class="table-popup-row @(chartData.AccountNature == nat ? "active-row" : "")"
+                                                     @onclick="() => SelectAccountNature(nat)">
+                                                    @nat
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isAccountNaturePopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- 3. عملة الحساب -->
+                        <div class="form-row-compact pos-relative">
+                            <div class="dropdown-anchor w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                    <span class="combo-display-text">@chartData.Currency</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isCurrencyPopupOpen)
+                                {
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 100%;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-code">الكود</div>
+                                            <div class="col-name">الاسم</div>
+                                            <div class="col-action">المعامل</div>
+                                        </div>
+                                        <div class="supplier-grid-rows">
+                                            <div class="supplier-row active-row" @onclick='() => SelectCurrency("EGP")'>
+                                                <div class="col-code">EGP</div>
+                                                <div class="col-name">جنيه مصري</div>
+                                                <div class="col-action">1</div>
+                                            </div>
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- 4. اعتبار من -->
+                        <div class="form-row-compact">
+                            <div class="dropdown-anchor w-100">
+                                <input type="date" class="clean-input w-100 text-center" @bind="chartData.EffectiveDate" />
+                            </div>
+                        </div>
+
+                        <!-- 5. ملاحظات -->
+                        <div class="form-row-compact align-items-start">
+                            <div class="dropdown-anchor w-100">
+                                <textarea class="clean-input w-100" style="height: 70px; resize: none;" @bind="chartData.Notes" placeholder=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= MODALS SECTION ================= -->
+<LanguageSettingsModal IsOpen="isLanguagesModalOpen"
+                       IsOpenChanged="@((val) => isLanguagesModalOpen = val)"
+                       Languages="availableLanguages"
+                       OnSave="SaveLanguages" />
+
+@code {
+    private bool isClassificationPopupOpen = false;
+    private bool isParentTreePopupOpen = false;
+    private bool isAccountTypePopupOpen = false;
+    private bool isCostCenterPopupOpen = false;
+    private bool isAccountNaturePopupOpen = false;
+    private bool isCurrencyPopupOpen = false;
+    private bool isTranslationPopupOpen = false;
+    private bool isLanguagesModalOpen = false;
+
+    private ChartAccountModel chartData = new()
+    {
+        Classification = "الأصول",
+        AccountName = "",
+        EnglishName = "",
+        Code = "10101",
+        ParentAccount = "الأصول المتداولة و ما في حكمها",
+        AccountType = "حساب فرعي",
+        CostCenter = "لا يتطلب مركز تكلفة",
+        AccountNature = "مدين و دائن",
+        Currency = "EGP",
+        EffectiveDate = DateTime.Today,
+        Notes = "",
+        IsActive = true
+    };
+
+    private class ClassificationItem
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+    }
+
+    private List<ClassificationItem> classificationList = new()
+    {
+        new() { Name = "الأصول", Code = "1" },
+        new() { Name = "الخصوم و حقوق الملكية", Code = "2" },
+        new() { Name = "المصروفات", Code = "3" },
+        new() { Name = "الإيرادات", Code = "4" }
+    };
+
+    private List<string> accountTypesList = new() { "حساب رئيسي", "حساب فرعي" };
+    private List<string> costCenterOptions = new() { "لا يتطلب مركز تكلفة", "يجب تحديد مركز تكلفة", "تنبيه في حالة عدم ادخال مركز تكلفة" };
+    private List<string> accountNatureOptions = new() { "مدين و دائن", "مدين", "دائن" };
+
+    private List<LanguageSettingsModal.LanguageItem> availableLanguages = new()
+    {
+        new() { Name = "عربي", FlagEmoji = "🇪🇬", IsSelected = true },
+        new() { Name = "English", FlagEmoji = "🇺🇸", IsSelected = true }
+    };
+
+    private bool IsAnyPopupOpen() =>
+        isClassificationPopupOpen ||
+        isParentTreePopupOpen ||
+        isAccountTypePopupOpen ||
+        isCostCenterPopupOpen ||
+        isAccountNaturePopupOpen ||
+        isCurrencyPopupOpen ||
+        isTranslationPopupOpen ||
+        isLanguagesModalOpen;
+
+    private void CloseAllPopups()
+    {
+        isClassificationPopupOpen = false;
+        isParentTreePopupOpen = false;
+        isAccountTypePopupOpen = false;
+        isCostCenterPopupOpen = false;
+        isAccountNaturePopupOpen = false;
+        isCurrencyPopupOpen = false;
+        isTranslationPopupOpen = false;
+    }
+
+    private void ToggleClassificationPopup() { bool wasOpen = isClassificationPopupOpen; CloseAllPopups(); isClassificationPopupOpen = !wasOpen; }
+    private void SelectClassification(string name) { chartData.Classification = name; isClassificationPopupOpen = false; }
+
+    private void ToggleParentTreePopup() { bool wasOpen = isParentTreePopupOpen; CloseAllPopups(); isParentTreePopupOpen = !wasOpen; }
+    private void ToggleAccountTypePopup() { bool wasOpen = isAccountTypePopupOpen; CloseAllPopups(); isAccountTypePopupOpen = !wasOpen; }
+    private void SelectAccountType(string typeName) { chartData.AccountType = typeName; isAccountTypePopupOpen = false; }
+    private void ToggleAccountTypeNote() { }
+
+    private void ToggleCostCenterPopup() { bool wasOpen = isCostCenterPopupOpen; CloseAllPopups(); isCostCenterPopupOpen = !wasOpen; }
+    private void SelectCostCenter(string cc) { chartData.CostCenter = cc; isCostCenterPopupOpen = false; }
+
+    private void ToggleAccountNaturePopup() { bool wasOpen = isAccountNaturePopupOpen; CloseAllPopups(); isAccountNaturePopupOpen = !wasOpen; }
+    private void SelectAccountNature(string nat) { chartData.AccountNature = nat; isAccountNaturePopupOpen = false; }
+
+    private void ToggleCurrencyPopup() { bool wasOpen = isCurrencyPopupOpen; CloseAllPopups(); isCurrencyPopupOpen = !wasOpen; }
+    private void SelectCurrency(string cur) { chartData.Currency = cur; isCurrencyPopupOpen = false; }
+
+    private void ToggleTranslationPopup() => isTranslationPopupOpen = !isTranslationPopupOpen;
+    private void CloseTranslationPopup() => isTranslationPopupOpen = false;
+    private void OpenLanguagesModal()
+    {
+        isTranslationPopupOpen = false;
+        isLanguagesModalOpen = true;
+        StateHasChanged();
+    }
+    private void SaveLanguages() { }
+
+    private void SaveData() { }
+
+    public class AccountsTreeNode
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public int Level { get; set; } = 0;
+        public bool IsExpanded { get; set; } = true;
+        public List<AccountsTreeNode> Children { get; set; } = new();
+    }
+
+    private List<AccountsTreeNode> accountsTreeList = new()
+    {
+        new() {
+            Name = "الأصول",
+            Code = "1",
+            Level = 0,
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "أصول طويلة الأجل", Code = "11", Level = 1 },
+                new() { Name = "النقدية وما في حكمها", Code = "12", Level = 1 },
+                new() { Name = "المدينون", Code = "13", Level = 1 },
+                new() { Name = "الأصول المتداولة الأخرى", Code = "14", Level = 1 },
+                new() { Name = "الأصول الأخرى", Code = "15", Level = 1 }
+            }
+        },
+        new() {
+            Name = "الخصوم",
+            Code = "2",
+            Level = 0,
+            Children = new() {
+                new() { Name = "الدائنون", Code = "21", Level = 1 }
+            }
+        }
+    };
+
+    private RenderFragment RenderAccountsTreeDropdownNode(AccountsTreeNode node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row @(chartData.ParentAccount == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 16 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="tree-node-name col-name text-right" style="padding-right: 8px;">
+            @if (node.Children.Any())
+                        {
+            <span class="ms-1 toggle-arrow-wrap" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                <i class="bi @(node.IsExpanded ? "bi-chevron-down" : "bi-chevron-left") small text-muted"></i>
+            </span>
+                        }
+            @node.Name
+        </span>
+        <span class="tree-node-code col-code text-left text-muted">
+            @node.Code
+        </span>
+    </div>
+
+@if (node.IsExpanded && node.Children.Any())
+    {
+@foreach (var child in node.Children)
+    {
+@RenderAccountsTreeDropdownNode(child, onSelected)
+    }
+    }
+</text>;
+
+public class ChartAccountModel
+{
+    public string Classification { get; set; } = "";
+    public string AccountName { get; set; } = "";
+    public string EnglishName { get; set; } = "";
+    public string Code { get; set; } = "";
+    public string ParentAccount { get; set; } = "";
+    public string AccountType { get; set; } = "";
+    public string CostCenter { get; set; } = "";
+    public string AccountNature { get; set; } = "";
+    public string Currency { get; set; } = "";
+    public DateTime EffectiveDate { get; set; } = DateTime.Today;
+    public string Notes { get; set; } = "";
+    public bool IsActive { get; set; } = true;
+}
+}
+
+<style>
+    .page-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 30px 40px;
+        box-sizing: border-box;
+        overflow: auto;
+        display: flex;
+        position: relative;
+    }
+
+    .global-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 1500;
+    }
+
+    .main-canvas {
+        max-width: 1040px;
+        margin-left: auto;
+        margin-right: 120px;
+    }
+
+    .header-master-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        position: relative;
+    }
+
+    .section-group-block {
+        position: relative;
+        margin-bottom: 5px;
+    }
+
+    .section-header-title {
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #0d6efd;
+        margin-bottom: 8px;
+    }
+
+    .section-grid-content {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        position: relative;
+    }
+
+    .image-right-block {
+        width: fit-content;
+        margin-left: 30px;
+    }
+
+    .orange-divider-line {
+        position: absolute;
+        right: 0;
+        top: 2px;
+        width: 3px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .image-square {
+        width: 75px;
+        height: 75px;
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2px;
+        margin-bottom: 6px;
+        color: #495057;
+    }
+
+    .active-check-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+    }
+
+    .small-chk-label {
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .chk-box {
+        cursor: pointer;
+    }
+
+    .labels-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 2px;
+        margin-right: 12px;
+    }
+
+    .label-row-cell {
+        height: 31px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .hdr-lbl {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .controls-column {
+        width: 530px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-row-compact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 31px;
+    }
+
+    .name-field-relative {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .btn-trans-trigger {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 2px 6px;
+        display: flex;
+        align-items: center;
+        color: #495057;
+        margin-left: 2px;
+    }
+
+    .ico-trans-char {
+        font-size: 1.15rem;
+    }
+
+    .trans-popup-box {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        width: 380px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 12px;
+        z-index: 4000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .trans-input-wrap {
+        border-bottom: 2px solid #007bff;
+    }
+
+    .trans-input {
+        width: 100%;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-radius: 3px 3px 0 0;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        outline: none;
+        box-sizing: border-box;
+        background-color: #ffffff;
+    }
+
+    .trans-popup-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-popup-icon {
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+        .btn-popup-icon:hover {
+            color: #007bff;
+        }
+
+    .btn-primary-custom {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 120px;
+    }
+
+    .tab-content-seamless {
+        background-color: transparent;
+        padding: 5px 0;
+        box-sizing: border-box;
+    }
+
+    .field-entry-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        margin-bottom: 10px;
+    }
+
+    .clean-input {
+        border: 1px solid transparent;
+        border-bottom: 3px solid transparent;
+        border-radius: 3px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-bottom 0.15s ease-in-out;
+    }
+
+    input.clean-input:focus,
+    textarea.clean-input:focus {
+        border-color: #ced4da;
+        border: 1px solid transparent;
+        border-bottom: 3px solid #007bff !important;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: none;
+    }
+
+    select.clean-input:focus {
+        border-color: transparent;
+        border-bottom: 3px solid #007AFE;
+        box-shadow: none;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+        user-select: none;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        flex: 1;
+        min-width: 0;
+        text-align: right;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: auto;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+        line-height: 1;
+    }
+
+    .dropdown-anchor {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .custom-table-popup {
+        position: absolute;
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        direction: ltr;
+    }
+
+        .custom-table-popup.accounts-tree-dropdown-panel.custom-accounts-dropdown {
+            left: 0;
+            top: 34px;
+            transform: none;
+            width: 100%;
+            direction: rtl;
+        }
+
+    .tree-grid-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .tree-grid-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .tree-child-row {
+        background-color: #fafbfc;
+    }
+
+    .tree-node-name {
+        flex: 1;
+        text-align: right;
+    }
+
+    .tree-node-code {
+        width: 80px;
+        text-align: left;
+    }
+
+    .toggle-arrow-wrap {
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .item-type-popup-size {
+        width: 250px;
+        min-width: 250px;
+        direction: rtl !important;
+    }
+
+    .table-popup-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.83rem;
+        color: #333;
+        text-align: right;
+        padding: 5px 8px;
+    }
+
+    .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .table-popup-row {
+        padding: 6px 12px;
+        font-size: 0.83rem;
+        cursor: pointer;
+        text-align: right;
+        border-top: solid 1px #ddd;
+    }
+
+        .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 3px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .custom-supplier-grid-panel-advanced {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        direction: rtl;
+    }
+
+    .supplier-grid-header {
+        display: flex;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .col-code {
+        width: 110px;
+        padding: 5px 8px;
+        text-align: center;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .col-name {
+        flex: 1;
+        padding: 5px 8px;
+        text-align: right;
+    }
+
+    .col-action {
+        padding: 5px;
+        text-align: center;
+    }
+
+    .supplier-grid-rows {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .supplier-row {
+        display: flex;
+        font-size: 0.82rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .supplier-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .modal-backdrop-blur {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2500;
+    }
+
+    .custom-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:50px;
+    }
+</style>
