@@ -61,7 +61,7 @@
                         <span class="combo-display-text" @onclick="ToggleDisplayModePopup">@selectedDisplayMode</span>
                         <div class="combo-icons-inside combo-icons-inside-width">
                             <span class="combo-arrow" @onclick="ToggleDisplayModePopup">▼</span>
-                            <span class="btn-inside-plus" @onclick="ToggleDisplayModePopup" style="cursor: pointer;">...</span>
+                            <span class="btn-inside-plus" @onclick="OpenDisplayModeManagerModal" style="cursor: pointer;">...</span>
                             <span class="combo-arrow" @onclick="ToggleThirdIconPopup" style="cursor: pointer;">▼</span>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                         <div class="custom-table-popup custom-accounts-dropdown" style="width: 280px; right: auto; left: 0;" @onclick:stopPropagation>
                             <div class="table-popup-header d-flex justify-content-between align-items-center">
                                 <span class="col-name text-right">الاسم</span>
-                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>                               
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
                             </div>
                             <div class="table-popup-list" style="height: 180px;"></div>
                             <div class="table-popup-footer">
@@ -432,6 +432,57 @@
                     OnConfirmed="ConfirmDeleteRow"
                     OnCancelled="CancelDeleteRow" />
 
+<!-- EXACT CENTER WINDOW FOR DISPLAY MODE MANAGER (...) -->
+@if (isDisplayModeManagerModalOpen)
+{
+    <div class="global-dropdown-backdrop" @onclick="CloseDisplayModeManagerModal" @onclick:stopPropagation></div>
+    <div class="exact-center-dialog-overlay" @onclick:stopPropagation>
+        <div class="exact-center-dialog">
+            <div class="exact-center-dialog-header">
+                <button type="button" class="exact-center-close-btn" @onclick="CloseDisplayModeManagerModal">✕</button>
+            </div>
+            <div class="exact-center-dialog-table-header">
+                <table class="w-100 mb-0" style="border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th class="text-right">الاسم</th>
+                            <th class="text-center" style="width: 70px;">تعديل</th>
+                            <th class="text-center" style="width: 70px;">حذف</th>
+               
+                           
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="exact-center-dialog-body">
+                <table class="table w-100 mb-0" style="border-collapse: collapse;">
+                    <tbody>
+                        <!-- Example rows for testing scrolling with multiple items -->
+                        @for (int i = 1; i <= 15; i++)
+                        {
+                            <tr>
+                                <td class="text-right">طريقة عرض رقم @i</td>
+                                <td class="text-center" style="width: 70px;">
+                                    <span class="text-primary fw-bold" style="cursor: pointer;">✏</span>
+                                </td>
+                                <td class="text-center" style="width: 70px;">
+                                    <span class="text-danger fw-bold" style="cursor: pointer;">✖</span>
+                                </td>
+                               
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="exact-center-dialog-footer">
+                <button type="button" class="btn-center-action btn-center-close" @onclick="CloseDisplayModeManagerModal">إغلاق</button>
+                <button type="button" class="btn-center-action btn-center-add">إضافة</button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private string selectedDisplayMode = "";
     private string selectedExpenseType = "مصروف عام";
@@ -444,6 +495,7 @@
     private bool isPaymentMethodPopupOpen = false;
     private bool isPaymentGridPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
+    private bool isDisplayModeManagerModalOpen = false;
 
     private int activeRowIndex = 0;
 
@@ -481,7 +533,8 @@
         isTaxPopupOpen ||
         isPaymentMethodPopupOpen ||
         isPaymentGridPopupOpen ||
-        isCurrencyPopupOpen;
+        isCurrencyPopupOpen ||
+        isDisplayModeManagerModalOpen;
 
     private void CloseAllPopups()
     {
@@ -494,6 +547,18 @@
         isPaymentMethodPopupOpen = false;
         isPaymentGridPopupOpen = false;
         isCurrencyPopupOpen = false;
+        isDisplayModeManagerModalOpen = false;
+    }
+
+    private void OpenDisplayModeManagerModal()
+    {
+        CloseAllPopups();
+        isDisplayModeManagerModalOpen = true;
+    }
+
+    private void CloseDisplayModeManagerModal()
+    {
+        isDisplayModeManagerModalOpen = false;
     }
 
     private void ActivateRow(int index)
@@ -1131,8 +1196,98 @@
     }
 
     .combo-icons-inside.combo-icons-inside-width {
-        width:60px;
+        width: 60px;
         justify-content: space-between;
+    }
+
+    /* Styles for the Exact Center Window Modal */
+    .exact-center-dialog-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2500;
+        background: rgba(0, 0, 0, 0.35);
+    }
+
+    .exact-center-dialog {
+        background: #ffffff;
+        width: 480px;
+        height: 400px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        direction: rtl;
+        overflow: hidden;
+    }
+
+    .exact-center-dialog-header {
+        padding: 8px 12px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .exact-center-close-btn {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .exact-center-dialog-table-header {
+        background-color: #f1f3f5;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+        .exact-center-dialog-table-header th,
+        .exact-center-dialog-body td {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f0f0f0;
         }
 
+    .exact-center-dialog-body {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .exact-center-dialog-footer {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-center-action {
+        padding: 6px 24px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 1px solid #ced4da;
+    }
+
+    .btn-center-close {
+        background-color: #0d6efd;
+        color: #ffffff;
+        border-color: #0d6efd;
+    }
+
+    .btn-center-add {
+        background-color: #adb5bd;
+        color: #ffffff;
+        border-color: #adb5bd;
+    }
 </style>
