@@ -252,10 +252,9 @@
                 <div class="field-entry-line">
                     <span class="field-title">العمله</span>
                     <div class="d-flex align-items-center gap-2 flex-1">
-                        <input type="number" class="clean-input text-center" style="width: 90px;" @bind="expenseData.CurrencyRate" />
-                        <span class="req-star">*</span>
+                       
                         <div class="dropdown-anchor flex-1 pos-relative">
-                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                            <div class="custom-combo-trigger custom-combo-trigger-currency" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
                                 <span class="combo-display-text">@expenseData.Currency</span>
                                 <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                             </div>
@@ -281,6 +280,8 @@
                                 </div>
                             }
                         </div>
+                        <input type="number" class="clean-input text-center" style="width: 90px;" @bind="expenseData.CurrencyRate" />
+                        <span class="req-star">*</span>
                     </div>
                 </div>
 
@@ -808,5 +809,9 @@
         color: #dc3545;
         font-weight: bold;
         cursor: pointer;
+    }
+
+    .custom-combo-trigger.custom-combo-trigger-currency{
+        width:350px;
     }
 </style>
