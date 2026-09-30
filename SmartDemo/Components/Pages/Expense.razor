@@ -16,7 +16,7 @@
             <div class="expense-title-banner">
                 <span>المصروفات</span>
             </div>
-         </div>
+        </div>
         <!-- Top Header Area: Expense Type (Right) & Red Banner Title (Center) & Display Mode (Left) -->
         <div class="expense-header-row mb-3">
             <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
@@ -52,16 +52,17 @@
                 </div>
             </div>
 
-     
+
 
             <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
                 <span class="hdr-lbl">طريقة العرض</span>
                 <div class="dropdown-anchor" style="width: 140px;">
-                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDisplayModePopup">
-                        <span class="combo-display-text">@selectedDisplayMode</span>
+                    <div class="custom-combo-trigger" @onclick:stopPropagation>
+                        <span class="combo-display-text" @onclick="ToggleDisplayModePopup">@selectedDisplayMode</span>
                         <div class="combo-icons-inside">
-                            <span class="btn-inside-plus">...</span>
-                            <span class="combo-arrow">▼</span>
+                            <span class="combo-arrow" @onclick="ToggleDisplayModePopup">▼</span>
+                            <span class="btn-inside-plus" @onclick="ToggleDisplayModePopup" style="cursor: pointer;">...</span>
+                            <span class="combo-arrow" @onclick="ToggleThirdIconPopup" style="cursor: pointer;">▼</span>
                         </div>
                     </div>
 
@@ -70,6 +71,21 @@
                         <div class="custom-table-popup item-type-popup-size" style="width: 140px;" @onclick:stopPropagation>
                             <div class="table-popup-list">
                                 <div class="table-popup-row @(selectedDisplayMode == "افتراضي" ? "active-row" : "")" @onclick='() => SelectDisplayMode("افتراضي")'>افتراضي</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (isThirdIconPopupOpen)
+                    {
+                        <div class="custom-table-popup custom-accounts-dropdown" style="width: 280px; right: auto; left: 0;" @onclick:stopPropagation>
+                            <div class="table-popup-header d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
+                                <span class="col-name text-right">الاسم</span>
+                            </div>
+                            <div class="table-popup-list" style="height: 180px;"></div>
+                            <div class="table-popup-footer">
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
+                                <span class="resizer-dots">⠿</span>
                             </div>
                         </div>
                     }
@@ -386,11 +402,11 @@
             <div class="expense-footer-left-side">
                 <div class="expense-summary-box">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span >الاجمالي قبل الضريبة</span>
+                        <span>الاجمالي قبل الضريبة</span>
                         <span class="text-muted small">0</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span >الضرائب :</span>
+                        <span>الضرائب :</span>
                         <span class="text-muted small">0</span>
                     </div>
                 </div>
@@ -421,6 +437,7 @@
     private string selectedExpenseType = "مصروف عام";
     private bool isExpenseTypePopupOpen = false;
     private bool isDisplayModePopupOpen = false;
+    private bool isThirdIconPopupOpen = false;
     private bool isApprovalPopupOpen = false;
     private bool isCostCenterPopupOpen = false;
     private bool isTaxPopupOpen = false;
@@ -458,6 +475,7 @@
     private bool IsAnyPopupOpen() =>
         isExpenseTypePopupOpen ||
         isDisplayModePopupOpen ||
+        isThirdIconPopupOpen ||
         isApprovalPopupOpen ||
         isCostCenterPopupOpen ||
         isTaxPopupOpen ||
@@ -469,6 +487,7 @@
     {
         isExpenseTypePopupOpen = false;
         isDisplayModePopupOpen = false;
+        isThirdIconPopupOpen = false;
         isApprovalPopupOpen = false;
         isCostCenterPopupOpen = false;
         isTaxPopupOpen = false;
@@ -550,6 +569,13 @@
         bool wasOpen = isDisplayModePopupOpen;
         CloseAllPopups();
         isDisplayModePopupOpen = !wasOpen;
+    }
+
+    private void ToggleThirdIconPopup()
+    {
+        bool wasOpen = isThirdIconPopupOpen;
+        CloseAllPopups();
+        isThirdIconPopupOpen = !wasOpen;
     }
 
     private void SelectDisplayMode(string mode)
@@ -665,7 +691,6 @@
         width: 100%;
         margin: 0 auto;
         border-top: solid 1px #D9524E;
-    }
     }
 
     .expense-title-banner {
@@ -1091,13 +1116,13 @@
         width: 350px;
     }
 
-    .expense-title-banner-root{
+    .expense-title-banner-root {
         display: flex;
         justify-content: center;
         align-items: center;
-      }
+    }
 
-    .expense-title-banner{
+    .expense-title-banner {
         background: #B23701;
         color: white;
         width: 200px;
