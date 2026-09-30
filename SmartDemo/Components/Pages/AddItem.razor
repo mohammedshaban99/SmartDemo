@@ -560,7 +560,7 @@
                                             </table>
                                         </div>
 
-                                        <div class="d-flex flex-column gap-3 mt-2">
+                                        <div class="d-flex flex-column mt-2">
                                             <div class="field-entry-line">
                                                 <span class="field-title" style="width: 80px;">في تاريخ</span>
                                                 <div class="dropdown-anchor flex-1">
@@ -2374,11 +2374,27 @@
                 }
             </div>
 
-            <div class="master-modal-footer">
+            <div class="master-modal-footer master-modal-footer-custom">
                 <div class="modal-footer-actions-right">
-                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">حفظ</button>
-                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="() => isGroupModalOpen = false">إغلاق</button>
+
+                    <button type="button" class="btn btn-primary px-4 btn-sm" @onclick="OnSave">
+                        حفظ
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-primary px-4 btn-sm"
+                            @onclick="OnClose">
+                        إغلاق
+                    </button>
+
                 </div>
+                <div class="modal-footer-actions-left">
+                    <button type="button"  class="arrow btn btn-outline-secondary btn-sm" @onclick="OnPrevious">  <i class="bi bi-arrow-left"></i> </button>
+                    <button type="button" class="arrow btn btn-outline-secondary btn-sm" @onclick="OnNext">  <i class="bi bi-arrow-right"></i></button>
+                </div>
+               
+             
             </div>
         </div>
     </div>
@@ -2850,6 +2866,28 @@ private void ToggleModalMinCalc() { bool wasOpen = isModalMinCalcOpen; CloseAllP
 private void ToggleModalMaxCalc() { bool wasOpen = isModalMaxCalcOpen; CloseAllPopups(); isModalMaxCalcOpen = !wasOpen; if (isModalMaxCalcOpen) { activeCalcTarget = "ModalMax"; calcDisplay = modalMaxVal; } }
 private void ToggleModalStagnationCalc() { bool wasOpen = isModalStagnationCalcOpen; CloseAllPopups(); isModalStagnationCalcOpen = !wasOpen; if (isModalStagnationCalcOpen) { activeCalcTarget = "ModalStagnation"; calcDisplay = modalStagnationVal; } }
 private void ToggleModalExpiryCalc() { bool wasOpen = isModalExpiryCalcOpen; CloseAllPopups(); isModalExpiryCalcOpen = !wasOpen; if (isModalExpiryCalcOpen) { activeCalcTarget = "ModalExpiry"; calcDisplay = modalExpiryVal; } }
+
+
+private void OnPrevious()
+{
+    // Previous item
+}
+
+private void OnNext()
+{
+    // Next item
+}
+
+
+private void OnSave()
+{
+    // Previous item
+}
+
+private void OnClose()
+{
+    // Next item
+}
 
 private void CalcPress(string val)
 {
@@ -3903,7 +3941,7 @@ public class OpeningBalanceModel
         bottom: -15px;
         right: 0;
         top: -233px;
-        width: fit-content;
+        width: 56vw;
         border: 1.5px solid #ced4da;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         border-radius: 4px;
@@ -4629,11 +4667,27 @@ public class OpeningBalanceModel
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         background-color: #ffffff;
         padding: 12px 20px;
         margin: 0;
     }
+    .master-modal-footer.master-modal-footer-custom{
+            display: flex;
+             align-items: center;
+            justify-content: space-between;
+            direction:ltr;
+    }
+
+      .master-modal-footer.master-modal-footer-custom .arrow{
+           border:none;
+           background-color:transparent;
+           outline:none;
+    }
+
+            .master-modal-footer.master-modal-footer-custom .arrow :hover{
+               color:black;
+            }
 
     .modal-footer-actions-right {
         display: flex;
