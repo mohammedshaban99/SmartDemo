@@ -24,7 +24,7 @@
                 <div class="dropdown-anchor" style="width: 180px;">
                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleExpenseTypePopup">
                         <span class="combo-display-text">@selectedExpenseType</span>
-                        <div class="combo-icons-inside">
+                        <div class="combo-icons-inside ">
                             <span class="ico-swap">@GetSelectedExpenseIcon()</span>
                             <span class="combo-arrow">▼</span>
                         </div>
@@ -56,10 +56,10 @@
 
             <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
                 <span class="hdr-lbl">طريقة العرض</span>
-                <div class="dropdown-anchor" style="width: 140px;">
+                <div class="dropdown-anchor dropdown-anchor-width" style="width: 200px;">
                     <div class="custom-combo-trigger" @onclick:stopPropagation>
                         <span class="combo-display-text" @onclick="ToggleDisplayModePopup">@selectedDisplayMode</span>
-                        <div class="combo-icons-inside">
+                        <div class="combo-icons-inside combo-icons-inside-width">
                             <span class="combo-arrow" @onclick="ToggleDisplayModePopup">▼</span>
                             <span class="btn-inside-plus" @onclick="ToggleDisplayModePopup" style="cursor: pointer;">...</span>
                             <span class="combo-arrow" @onclick="ToggleThirdIconPopup" style="cursor: pointer;">▼</span>
@@ -79,8 +79,8 @@
                     {
                         <div class="custom-table-popup custom-accounts-dropdown" style="width: 280px; right: auto; left: 0;" @onclick:stopPropagation>
                             <div class="table-popup-header d-flex justify-content-between align-items-center">
-                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
                                 <span class="col-name text-right">الاسم</span>
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>                               
                             </div>
                             <div class="table-popup-list" style="height: 180px;"></div>
                             <div class="table-popup-footer">
@@ -1129,4 +1129,10 @@
         text-align: center;
         padding: 8px 16px;
     }
+
+    .combo-icons-inside.combo-icons-inside-width {
+        width:60px;
+        justify-content: space-between;
+        }
+
 </style>
