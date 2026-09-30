@@ -11,9 +11,15 @@
 
     <!-- Main Canvas -->
     <div class="main-canvas" @onclick:stopPropagation>
+        <!-- Red Banner Title in Center -->
+        <div class="expense-title-banner-root">
+            <div class="expense-title-banner">
+                <span>المصروفات</span>
+            </div>
+         </div>
         <!-- Top Header Area: Expense Type (Right) & Red Banner Title (Center) & Display Mode (Left) -->
         <div class="expense-header-row mb-3">
-            <div class="expense-top-field pos-relative">
+            <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
                 <span class="hdr-lbl">نوع المصروف</span>
                 <div class="dropdown-anchor" style="width: 180px;">
                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleExpenseTypePopup">
@@ -46,12 +52,9 @@
                 </div>
             </div>
 
-            <!-- Red Banner Title in Center -->
-            <div class="expense-title-banner">
-                <span>المصروفات</span>
-            </div>
+     
 
-            <div class="expense-top-field pos-relative">
+            <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
                 <span class="hdr-lbl">طريقة العرض</span>
                 <div class="dropdown-anchor" style="width: 140px;">
                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDisplayModePopup">
@@ -281,7 +284,7 @@
                                             </div>
                                             <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
                                                 <span class="checkbox-label">عهدَة</span>
-                                                <span class="payment-icon-slot">🚶‍♂️️</span>
+                                                <span class="payment-icon-slot">🚶‍♂</span>
                                             </div>
                                             <div class="panel-checkbox-row custom-payment-row @(expenseData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
                                                 <span class="checkbox-label">حساب استاذ</span>
@@ -383,11 +386,11 @@
             <div class="expense-footer-left-side">
                 <div class="expense-summary-box">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold small">الاجمالي قبل الضريبة</span>
+                        <span >الاجمالي قبل الضريبة</span>
                         <span class="text-muted small">0</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold small">الضرائب :</span>
+                        <span >الضرائب :</span>
                         <span class="text-muted small">0</span>
                     </div>
                 </div>
@@ -661,6 +664,8 @@
         max-width: 1200px;
         width: 100%;
         margin: 0 auto;
+        border-top: solid 1px #D9524E;
+    }
     }
 
     .expense-title-banner {
@@ -676,17 +681,23 @@
     }
 
     .expense-header-row {
-        border-top: solid 1px #D9534F;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-top: 10px;
     }
 
     .expense-top-field {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        align-items: flex-start;
     }
+
+        .expense-top-field .hdr-lbl {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
 
     .expense-filter-row {
         display: flex;
@@ -742,17 +753,16 @@
     }
 
     .floating-badge-left {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 3px;
         padding: 4px 16px;
         font-weight: bold;
         font-size: 1rem;
         color: #333;
         width: fit-content;
+        width: 100%;
+        justify-content: flex-end;
     }
 
     .btn-action-custom {
@@ -1079,5 +1089,19 @@
 
     .custom-combo-trigger.custom-combo-trigger-currency {
         width: 350px;
+    }
+
+    .expense-title-banner-root{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+    .expense-title-banner{
+        background: #B23701;
+        color: white;
+        width: 200px;
+        text-align: center;
+        padding: 8px 16px;
     }
 </style>
