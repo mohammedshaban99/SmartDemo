@@ -11,35 +11,8 @@
 
     <!-- Main Canvas -->
     <div class="main-canvas" @onclick:stopPropagation>
-        <!-- Red Banner Title on Top -->
-        <div class="expense-title-banner mb-3">
-            <span>المصروفات</span>
-        </div>
-
-        <!-- Top Header Area: Display Mode & Expense Type -->
+        <!-- Top Header Area: Expense Type (Right) & Red Banner Title (Center) & Display Mode (Left) -->
         <div class="expense-header-row mb-3">
-            <div class="expense-top-field pos-relative">
-                <span class="hdr-lbl">طريقة العرض</span>
-                <div class="dropdown-anchor" style="width: 140px;">
-                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDisplayModePopup">
-                        <span class="combo-display-text">@selectedDisplayMode</span>
-                        <div class="combo-icons-inside">
-                            <span class="btn-inside-plus">...</span>
-                            <span class="combo-arrow">▼</span>
-                        </div>
-                    </div>
-
-                    @if (isDisplayModePopupOpen)
-                    {
-                        <div class="custom-table-popup item-type-popup-size" style="width: 140px;" @onclick:stopPropagation>
-                            <div class="table-popup-list">
-                                <div class="table-popup-row @(selectedDisplayMode == "افتراضي" ? "active-row" : "")" @onclick='() => SelectDisplayMode("افتراضي")'>افتراضي</div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-
             <div class="expense-top-field pos-relative">
                 <span class="hdr-lbl">نوع المصروف</span>
                 <div class="dropdown-anchor" style="width: 180px;">
@@ -72,105 +45,137 @@
                     }
                 </div>
             </div>
+
+            <!-- Red Banner Title in Center -->
+            <div class="expense-title-banner">
+                <span>المصروفات</span>
+            </div>
+
+            <div class="expense-top-field pos-relative">
+                <span class="hdr-lbl">طريقة العرض</span>
+                <div class="dropdown-anchor" style="width: 140px;">
+                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDisplayModePopup">
+                        <span class="combo-display-text">@selectedDisplayMode</span>
+                        <div class="combo-icons-inside">
+                            <span class="btn-inside-plus">...</span>
+                            <span class="combo-arrow">▼</span>
+                        </div>
+                    </div>
+
+                    @if (isDisplayModePopupOpen)
+                    {
+                        <div class="custom-table-popup item-type-popup-size" style="width: 140px;" @onclick:stopPropagation>
+                            <div class="table-popup-list">
+                                <div class="table-popup-row @(selectedDisplayMode == "افتراضي" ? "active-row" : "")" @onclick='() => SelectDisplayMode("افتراضي")'>افتراضي</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
 
         <!-- Second Row: البيان -> الضريبة -> مركز التكلفة -> الاعتماد -> رقم المرجع # -->
         <div class="expense-filter-row mb-4">
+
             <div class="expense-filter-group flex-1">
                 <span class="hdr-lbl">البيان</span>
                 <input type="text" class="clean-input flex-1" @bind="expenseData.Statement" />
             </div>
 
-            <div class="expense-filter-group pos-relative">
-                <span class="hdr-lbl">الضريبة</span>
-                <div class="dropdown-anchor" style="width: 150px;">
-                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxPopup">
-                        <span class="combo-display-text">@expenseData.Tax</span>
-                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                    </div>
-                    @if (isTaxPopupOpen)
-                    {
-                        <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
-                            <div class="table-popup-header d-flex justify-content-between">
-                                <span class="col-name text-right">الاسم</span>
-                                <span class="col-code text-left">النسبة</span>
-                            </div>
-                            <div class="table-popup-list" style="height: 180px;"></div>
-                            <div class="table-popup-footer">
-                                <button type="button" class="btn-table-close" @onclick="() => isTaxPopupOpen = false">✕</button>
-                                <span class="resizer-dots">⠿</span>
-                            </div>
+            <div class="expense-filter-group-root">
+                <div class="expense-filter-group pos-relative">
+                    <span class="hdr-lbl">الضريبة</span>
+                    <div class="dropdown-anchor" style="width: 150px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxPopup">
+                            <span class="combo-display-text">@expenseData.Tax</span>
+                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                         </div>
-                    }
+                        @if (isTaxPopupOpen)
+                        {
+                            <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                <div class="table-popup-header d-flex justify-content-between">
+                                    <span class="col-name text-right">الاسم</span>
+                                    <span class="col-code text-left">النسبة</span>
+                                </div>
+                                <div class="table-popup-list" style="height: 180px;"></div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isTaxPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="expense-filter-group pos-relative">
+                    <span class="hdr-lbl">مركز التكلفة</span>
+                    <div class="dropdown-anchor" style="width: 160px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCostCenterPopup">
+                            <span class="combo-display-text">@expenseData.CostCenter</span>
+                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                        </div>
+                        @if (isCostCenterPopupOpen)
+                        {
+                            <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                <div class="table-popup-header d-flex justify-content-between">
+                                    <span class="col-name text-right">الاسم</span>
+                                    <span class="col-code text-left">الكود</span>
+                                </div>
+                                <div class="table-popup-list" style="height: 180px;"></div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isCostCenterPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="expense-filter-group pos-relative">
+                    <span class="hdr-lbl">الاعتماد</span>
+                    <div class="dropdown-anchor" style="width: 150px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleApprovalPopup">
+                            <span class="combo-display-text">@expenseData.Approval</span>
+                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                        </div>
+                        @if (isApprovalPopupOpen)
+                        {
+                            <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                <div class="table-popup-header d-flex justify-content-between">
+                                    <span class="col-name text-right">الاسم</span>
+                                    <span class="col-code text-left">النسبة</span>
+                                </div>
+                                <div class="table-popup-list" style="height: 180px;"></div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isApprovalPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="expense-filter-group">
+                    <span class="hdr-lbl">رقم المرجع #</span>
+                    <input type="text" class="clean-input text-center" style="width: 110px;" @bind="expenseData.ReferenceNumber" />
                 </div>
             </div>
+           
 
-            <div class="expense-filter-group pos-relative">
-                <span class="hdr-lbl">مركز التكلفة</span>
-                <div class="dropdown-anchor" style="width: 160px;">
-                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCostCenterPopup">
-                        <span class="combo-display-text">@expenseData.CostCenter</span>
-                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                    </div>
-                    @if (isCostCenterPopupOpen)
-                    {
-                        <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
-                            <div class="table-popup-header d-flex justify-content-between">
-                                <span class="col-name text-right">الاسم</span>
-                                <span class="col-code text-left">الكود</span>
-                            </div>
-                            <div class="table-popup-list" style="height: 180px;"></div>
-                            <div class="table-popup-footer">
-                                <button type="button" class="btn-table-close" @onclick="() => isCostCenterPopupOpen = false">✕</button>
-                                <span class="resizer-dots">⠿</span>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
 
-            <div class="expense-filter-group pos-relative">
-                <span class="hdr-lbl">الاعتماد</span>
-                <div class="dropdown-anchor" style="width: 150px;">
-                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleApprovalPopup">
-                        <span class="combo-display-text">@expenseData.Approval</span>
-                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
-                    </div>
-                    @if (isApprovalPopupOpen)
-                    {
-                        <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
-                            <div class="table-popup-header d-flex justify-content-between">
-                                <span class="col-name text-right">الاسم</span>
-                                <span class="col-code text-left">النسبة</span>
-                            </div>
-                            <div class="table-popup-list" style="height: 180px;"></div>
-                            <div class="table-popup-footer">
-                                <button type="button" class="btn-table-close" @onclick="() => isApprovalPopupOpen = false">✕</button>
-                                <span class="resizer-dots">⠿</span>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="expense-filter-group">
-                <span class="hdr-lbl">رقم المرجع #</span>
-                <input type="text" class="clean-input text-center" style="width: 110px;" @bind="expenseData.ReferenceNumber" />
-            </div>
         </div>
 
-        <!-- 3. Table Section with Inline Inputs -->
+        <!-- 3. Table Section with Corrected Column Ordering (Right-to-Left: الشرح -> المبلغ -> نوع المصروف -> الرقم) -->
         <div class="section-with-blue-line mb-4">
             <div class="table-scroll-wrapper">
                 <table class="item-details-table">
                     <thead>
                         <tr>
                             <th style="width: 32px;"></th>
-                            <th>الشرح</th>
-                            <th>المبلغ</th>
-                            <th>نوع المصروف</th>
                             <th>الرقم</th>
-                            <th style="width: 40px; color: red;">*</th>
+                            <th>نوع المصروف</th>
+                            <th>المبلغ</th>
+                            <th>الشرح</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -178,11 +183,11 @@
                         {
                             <tr>
                                 <td><span class="text-muted">▶</span></td>
-                                <td><input type="text" class="clean-input w-100" @bind="row.Description" /></td>
-                                <td><input type="number" class="clean-input w-100 text-center" @bind="row.Amount" /></td>
-                                <td><input type="text" class="clean-input w-100 text-center" @bind="row.ExpenseType" /></td>
                                 <td><input type="text" class="clean-input w-100 text-center" @bind="row.Number" /></td>
-                                <td><button class="delete-icon-btn" type="button" @onclick="() => PromptDeleteRow(row)">✖</button></td>
+                                <td><input type="text" class="clean-input w-100 text-center" @bind="row.ExpenseType" /></td>
+                                <td><input type="number" class="clean-input w-100 text-center" @bind="row.Amount" /></td>
+                                <td><input type="text" class="clean-input w-100" @bind="row.Description" /></td>
+                             <td><button class="delete-icon-btn" type="button" @onclick="() => PromptDeleteRow(row)">✖</button></td>
                             </tr>
                         }
                     </tbody>
@@ -198,44 +203,49 @@
         <!-- 4. Footer Section: Right Side (Inputs), Left Side (Summary & Actions) -->
         <div class="expense-footer-grid">
             <div class="expense-footer-right-side">
+
                 <div class="field-entry-line pos-relative">
                     <span class="field-title">طريقة الدفع</span>
-                    <div class="dropdown-anchor flex-1 pos-relative">
-                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentMethodPopup">
-                            <span class="combo-display-text">@expenseData.PaymentMethod</span>
-                            <div class="combo-icons-inside">
-                                <span class="combo-arrow">▼</span>
-                                <span class="ico-swap">🛒</span>
-                            </div>
-                        </div>
-
-                        @if (isPaymentMethodPopupOpen)
-                        {
-                            <div class="custom-dropdown-panel payment-method-dropdown-panel" @onclick:stopPropagation>
-                                <div class="panel-scroll-content">
-                                    <div class="panel-checkbox-row @(expenseData.PaymentMethod == "خزينة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("خزينة")'>
-                                        <span class="checkbox-label">خزينة</span>
-                                        <span class="ms-auto text-primary">🛒</span>
-                                    </div>
-                                    <div class="panel-checkbox-row @(expenseData.PaymentMethod == "بنك" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("بنك")'>
-                                        <span class="checkbox-label">بنك</span>
-                                        <span class="ms-auto text-primary">🏠</span>
-                                    </div>
-                                    <div class="panel-checkbox-row @(expenseData.PaymentMethod == "ماكينة نقاط البيع" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("ماكينة نقاط البيع")'>
-                                        <span class="checkbox-label">ماكينة نقاط البيع</span>
-                                        <span class="ms-auto text-primary">💳</span>
-                                    </div>
-                                    <div class="panel-checkbox-row @(expenseData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
-                                        <span class="checkbox-label">عهدَة</span>
-                                        <span class="ms-auto text-primary">🚶‍♂️</span>
-                                    </div>
-                                    <div class="panel-checkbox-row @(expenseData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
-                                        <span class="checkbox-label">حساب استاذ</span>
-                                        <span class="ms-auto text-primary">🏷️</span>
-                                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-1">
+                        <span class="req-star">*</span>
+                        <input type="text" class="clean-input text-center" style="width: 50px;" @bind="expenseData.PaymentTypeCode" />
+                        <div class="dropdown-anchor flex-1 pos-relative">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentMethodPopup">
+                                <span class="combo-display-text">@expenseData.PaymentMethod</span>
+                                <div class="combo-icons-inside">
+                                    <span class="combo-arrow">▼</span>
+                                    <span class="ico-swap">🛒</span>
                                 </div>
                             </div>
-                        }
+
+                            @if (isPaymentMethodPopupOpen)
+                            {
+                                <div class="custom-dropdown-panel payment-method-dropdown-panel" @onclick:stopPropagation>
+                                    <div class="panel-scroll-content">
+                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "الخزينة الرئيسية" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("الخزينة الرئيسية")'>
+                                            <span class="checkbox-label">الخزينة الرئيسية</span>
+                                            <span class="ms-auto text-primary">🛒</span>
+                                        </div>
+                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "بنك" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("بنك")'>
+                                            <span class="checkbox-label">بنك</span>
+                                            <span class="ms-auto text-primary">🏠</span>
+                                        </div>
+                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "ماكينة نقاط البيع" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("ماكينة نقاط البيع")'>
+                                            <span class="checkbox-label">ماكينة نقاط البيع</span>
+                                            <span class="ms-auto text-primary">💳</span>
+                                        </div>
+                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
+                                            <span class="checkbox-label">عهدَة</span>
+                                            <span class="ms-auto text-primary">🚶‍♂️</span>
+                                        </div>
+                                        <div class="panel-checkbox-row @(expenseData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
+                                            <span class="checkbox-label">حساب استاذ</span>
+                                            <span class="ms-auto text-primary">🏷️</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
 
@@ -283,12 +293,12 @@
             <div class="expense-footer-left-side">
                 <div class="expense-summary-box">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold small">الاجمالي قبل الضريبة</span>
                         <span class="text-muted small">0</span>
+                        <span class="fw-bold small">الاجمالي قبل الضريبة</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold small">الضرائب :</span>
                         <span class="text-muted small">0</span>
+                        <span class="fw-bold small">الضرائب :</span>
                     </div>
                 </div>
 
@@ -330,6 +340,7 @@
         Tax = "",
         Statement = "",
         PaymentMethod = "الخزينة الرئيسية",
+        PaymentTypeCode = "0",
         CurrencyRate = 1,
         Currency = "EGP",
         Notes = "",
@@ -446,6 +457,7 @@
         public string Tax { get; set; } = "";
         public string Statement { get; set; } = "";
         public string PaymentMethod { get; set; } = "";
+        public string PaymentTypeCode { get; set; } = "0";
         public decimal CurrencyRate { get; set; } = 1;
         public string Currency { get; set; } = "EGP";
         public string Notes { get; set; } = "";
@@ -495,13 +507,16 @@
         background-color: #d9534f;
         color: #ffffff;
         text-align: center;
-        padding: 6px 0;
+        padding: 6px 30px;
         font-weight: bold;
         font-size: 1rem;
         border-radius: 4px;
+        flex: 0 0 auto;
+        min-width: 250px;
     }
 
     .expense-header-row {
+        border-top: solid 1px #D9534F;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -518,8 +533,15 @@
         align-items: center;
         gap: 15px;
         background: transparent;
+        justify-content: space-between;
     }
 
+    .expense-filter-group-root{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+    }
     .expense-filter-group {
         display: flex;
         flex-direction: column;
@@ -527,10 +549,6 @@
     }
 
     .expense-total-display-bar {
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 3px;
-        padding: 8px 15px;
         text-align: center;
     }
 
@@ -549,7 +567,7 @@
     }
 
     .expense-footer-right-side {
-        width: 420px;
+        width: 450px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -561,8 +579,6 @@
         flex-direction: column;
         gap: 10px;
     }
-
-  
 
     .btn-action-custom {
         flex: 1;
@@ -591,7 +607,6 @@
         border-color: #007bff;
     }
 
-    /* Constrained Dropdown Panels anchored properly to their container */
     .custom-dropdown-panel {
         position: absolute;
         top: 34px !important;
@@ -777,19 +792,14 @@
     .item-details-table {
         width: 100%;
         border-collapse: collapse;
-        background: #ffffff;
-        border: 1px solid #dee2e6;
     }
 
         .item-details-table th, .item-details-table td {
-            border: 1px solid #dee2e6;
             padding: 4px 8px;
             font-size: 0.85rem;
         }
 
         .item-details-table th {
-            background-color: #f8f9fa;
-            text-align: center;
             color: #333;
         }
 
