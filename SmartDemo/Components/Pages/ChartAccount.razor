@@ -86,7 +86,7 @@
                                 </div>
                                 <span class="req-star me-1 ms-1">*</span>
 
-                         
+
 
                                 @if (isTranslationPopupOpen)
                                 {
@@ -142,10 +142,10 @@
                 </div>
 
                 <!-- Section 2: النوع -->
-                <div class="section-group-block mt-3">
+                <div class="section-group-block">
                     <div class="section-header-title">النوع</div>
                     <div class="section-grid-content">
-                        <div class="orange-divider-line" style="height: 45px;"></div>
+                        <div class="primary-divider-line" style="height: 45px;"></div>
 
                         <!-- Labels Column -->
                         <div class="labels-column">
@@ -191,19 +191,19 @@
                 </div>
             </div>
 
-            <!-- Save Button restored to original reference position (between Type and Properties sections)[cite: 10, 11] -->
+            <!-- Save Button restored to original reference position (between Type and Properties sections) -->
             <div class="save-cell-middle my-3">
                 <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
             </div>
         </div>
- 
+
 
         <!-- Section 3: الخصائص -->
         <div class="tab-content-seamless">
             <div class="section-group-block">
                 <div class="section-header-title">الخصائص</div>
                 <div class="section-grid-content">
-                    <div class="orange-divider-line" style="height: 200px;"></div>
+                    <div class="primary-divider-line" style="height: 200px;"></div>
 
                     <!-- Labels Column -->
                     <div class="labels-column">
@@ -489,6 +489,7 @@
         <span class="tree-node-code col-code text-left text-muted">
             @node.Code
         </span>
+
     </div>
 
 @if (node.IsExpanded && node.Children.Any())
@@ -551,7 +552,7 @@ public class ChartAccountModel
 
     .section-group-block {
         position: relative;
-        margin-bottom: 5px;
+        margin-bottom: 22px;
     }
 
     .section-header-title {
@@ -578,8 +579,17 @@ public class ChartAccountModel
         position: absolute;
         right: 0;
         top: 2px;
-        width: 3px;
+        width: 2px;
         background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .primary-divider-line {
+        position: absolute;
+        right: 0;
+        top: 2px;
+        width: 2px;
+        background-color: #007bff;
         border-radius: 2px;
     }
 
@@ -994,7 +1004,7 @@ public class ChartAccountModel
 
     .supplier-row {
         display: flex;
-        font-size: 0.82rem;
+        class ="supplier-row active-row" font-size: 0.82rem;
         cursor: pointer;
         border-bottom: 1px solid #f2f2f2;
     }
@@ -1013,10 +1023,10 @@ public class ChartAccountModel
         z-index: 2500;
     }
 
-    .custom-header{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:50px;
+    .custom-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 50px;
     }
 </style>
