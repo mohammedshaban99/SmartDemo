@@ -10,8 +10,8 @@
 
     <div class="main-canvas" @onclick:stopPropagation>
 
-        <!-- 1. Far Right: Avatar/Image Box & Active Status with Orange Bar -->
-        <div class="image-right-block">
+        <!-- 1. Dedicated Right Column: Avatar & Active Status Checkbox -->
+        <aside class="avatar-sidebar">
             <div class="image-square avatar-square">
                 <span class="user-avatar-icon">👤</span>
             </div>
@@ -19,57 +19,55 @@
                 <input type="checkbox" id="chkActive" class="chk-box" @bind="supplierData.IsActive" />
                 <label for="chkActive" class="small-chk-label">نشط</label>
             </div>
-        </div>
-        <!-- Left Side: Image / Photo Box -->
-        <div class="image-left-placeholder">
-            <span class="text-muted fs-6">الصورة</span>
-        </div>
-           
+        </aside>
 
-        <!-- Right / Form Content -->
-        <div class="custom flex-1">
+        <!-- 2. Form & Tabs Workspace Area -->
+        <main class="form-content-area">
 
-         
-            <!-- Top Header Area -->
+            <!-- Top Header Master Bar -->
             <div class="header-master-grid">
-                <div class="orange-divider-line"></div>
-            
 
-                <!-- 2. Section Labels -->
+                <!-- Orange Vertical Divider -->
+                <div class="orange-divider-line"></div>
+
+                <!-- Header Labels -->
                 <div class="labels-column">
                     <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
                     <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
                     <div class="label-row-cell"><span class="hdr-lbl">الرصيد الإفتتاحي</span></div>
                 </div>
 
-                <!-- 3. Form Input Controls -->
-                <div class="controls-column supplier-controls-width">
-                    <!-- Row 1: Number & Verification Check -->
+                <!-- Header Input Controls -->
+                <div class="controls-column">
+                    <!-- Row 1: Code -->
                     <div class="form-row-compact">
-                        <input type="text" class="clean-input barcode-main-input text-center" @bind="supplierData.SupplierCode" />
-                        <span class="req-star me-1">*</span>
-                        <span class="text-success fs-5 ms-2" title="رقم صحيح">✓</span>
+                        <input type="text" class="clean-input supplier-code-input text-center" @bind="supplierData.SupplierCode" />
+                        <span class="req-star">*</span>
+                        <span class="text-success fs-5 ms-1 verification-icon" title="رقم صحيح">✓</span>
                     </div>
 
-                    <!-- Row 2: Name Input -->
-                    <div class="form-row-compact name-field-relative">
-                        <div class="w-100">
-                            <input type="text" class="clean-input w-100" @bind="supplierData.Name" placeholder="" />
-                        </div>
-                        <span class="req-star me-1 ms-1">*</span>
+                    <!-- Row 2: Name -->
+                    <div class="form-row-compact">
+                        <input type="text" class="clean-input flex-1 supplier-name-input" @bind="supplierData.Name" />
+                        <span class="req-star">*</span>
                     </div>
 
-                    <!-- Row 3: Opening Balance Date & Value -->
-                    <div class="form-row-compact pos-relative">
-                        <input type="number" class="clean-input flex-1 text-center" @bind="supplierData.OpeningBalanceAmount" />
-                        <span class="small text-muted ms-1">في</span>
-                        <input type="date" class="clean-input text-center" style="width: 140px;" @bind="supplierData.OpeningBalanceDate" />
+                    <!-- Row 3: Opening Balance -->
+                    <div class="form-row-compact">
+                        <input type="number" class="clean-input text-center balance-amount-input" @bind="supplierData.OpeningBalanceAmount" />
+                        <span class="small text-muted balance-sep-word">في</span>
+                        <input type="date" class="clean-input text-center balance-date-input" @bind="supplierData.OpeningBalanceDate" />
                     </div>
                 </div>
 
-                <!-- 4. Save Button -->
+                <!-- Save Action Button -->
                 <div class="save-cell">
                     <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+                </div>
+
+                <!-- Left Photo Placeholder Box -->
+                <div class="image-left-placeholder">
+                    <span class="text-muted fs-6">الصورة</span>
                 </div>
 
             </div>
@@ -88,8 +86,8 @@
             {
                 <div class="tab-content-seamless">
 
-                    <!-- 1. التصنيف -->
-                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <!-- Section: التصنيف -->
+                    <div class="section-title-header">
                         <span class="fw-bold fs-6 text-dark section-header-title">التصنيف</span>
                     </div>
 
@@ -98,14 +96,14 @@
                             <!-- اسم الفرع -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">اسم الفرع</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
                                         <span class="combo-display-text">@supplierData.Branch</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
                                     </div>
                                     @if (isBranchPopupOpen)
                                     {
-                                        <div class="custom-supplier-grid-panel-advanced" style="width:100% ;left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="custom-supplier-grid-panel-advanced" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
                                             <div class="supplier-grid-header">
                                                 <div class="col-name">الاسم</div>
                                                 <div class="col-code">الكود</div>
@@ -136,7 +134,7 @@
                             <!-- يوجد بداخل -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">يوجد بداخل</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleNestedPopup">
                                         <span class="combo-display-text">@supplierData.NestedWithin</span>
                                         <div class="combo-icons-inside">
@@ -168,8 +166,8 @@
                             <!-- العملة الافتراضية -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">العملة الافتراضية</span>
-                                <div class="d-flex align-items-center gap-2" style="max-width: 620px; width: 100%;">
-                                    <input type="number" class="clean-input text-center" style="width: 80px;" @bind="supplierData.ExchangeRate" />
+                                <div class="d-flex align-items-center gap-2 flex-control-wrap">
+                                    <input type="number" class="clean-input text-center" style="width: 75px;" @bind="supplierData.ExchangeRate" />
                                     <div class="dropdown-anchor flex-1">
                                         <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
                                             <span class="combo-display-text">@supplierData.Currency</span>
@@ -177,7 +175,7 @@
                                         </div>
                                         @if (isCurrencyPopupOpen)
                                         {
-                                            <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="custom-supplier-grid-panel-advanced" style="width: 320px; left: 0; right: auto;" @onclick:stopPropagation>
                                                 <div class="supplier-grid-header">
                                                     <div class="col-code">الكود</div>
                                                     <div class="col-name">الاسم</div>
@@ -206,7 +204,7 @@
                             <!-- حساب الاستاذ -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">حساب الاستاذ</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerPopup">
                                         <span class="combo-display-text">@supplierData.LedgerAccount</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
@@ -235,8 +233,8 @@
                         </div>
                     </div>
 
-                    <!-- 2. سياسة التعامل -->
-                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <!-- Section: سياسة التعامل -->
+                    <div class="section-title-header">
                         <span class="fw-bold fs-6 text-dark section-header-title">سياسة التعامل</span>
                     </div>
 
@@ -245,7 +243,7 @@
                             <!-- التعامل الافتراضي -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">التعامل الافتراضي</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealTypePopup">
                                         <div class="d-flex align-items-center gap-2 flex-1">
                                             <span class="combo-display-text text-start">@supplierData.DefaultDealType</span>
@@ -273,7 +271,7 @@
                             <!-- حد الإئتمان -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">حد الإئتمان</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCreditCalc">
                                         <span class="combo-display-text text-center">@supplierData.CreditLimit</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
@@ -321,7 +319,7 @@
                             <!-- جهة التعامل -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">جهة التعامل</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealSidePopup">
                                         <span class="combo-display-text">@supplierData.DealSide</span>
                                         <div class="combo-icons-inside">
@@ -352,7 +350,7 @@
                             <!-- الحساب المكمل -->
                             <div class="field-entry-line pos-relative">
                                 <span class="field-title">الحساب المكمل</span>
-                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                <div class="dropdown-anchor flex-control-wrap">
                                     <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCompPopup">
                                         <span class="combo-display-text">@supplierData.ComplementaryAccount</span>
                                         <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
@@ -374,16 +372,16 @@
                         </div>
                     </div>
 
-                    <!-- 3. الاضافات (خاص بالموردين: شروط الدفع، شرائح الخصم، مندوب المبيعات، مركز التكلفة بدون تأمين وبدون شريحة أسعار) -->
-                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                    <!-- Section: الاضافات -->
+                    <div class="section-title-header">
                         <span class="fw-bold fs-6 text-dark section-header-title">الاضافات</span>
                     </div>
 
                     <div class="section-with-blue-line">
-                        <div class="full-width-stack" style="max-width: 620px;">
+                        <div class="full-width-stack">
                             <div class="field-entry-line">
                                 <span class="field-title">شروط الدفع</span>
-                                <select class="clean-input flex-1" @bind="supplierData.PaymentTerms">
+                                <select class="clean-input flex-control-wrap" @bind="supplierData.PaymentTerms">
                                     <option value=""></option>
                                     @foreach (var term in mockPaymentTerms)
                                     {
@@ -393,14 +391,14 @@
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title">شرائح الخصم</span>
-                                <select class="clean-input flex-1">
+                                <select class="clean-input flex-control-wrap">
                                     <option value=""></option>
                                     <option>خصم توريدات الفئة أ (5%)</option>
                                 </select>
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title">مندوب المبيعات</span>
-                                <select class="clean-input flex-1" @bind="supplierData.SalesRepresentative">
+                                <select class="clean-input flex-control-wrap" @bind="supplierData.SalesRepresentative">
                                     <option value=""></option>
                                     @foreach (var rep in mockSalesReps)
                                     {
@@ -410,7 +408,7 @@
                             </div>
                             <div class="field-entry-line">
                                 <span class="field-title">مركز التكلفة</span>
-                                <select class="clean-input flex-1">
+                                <select class="clean-input flex-control-wrap">
                                     <option value=""></option>
                                     <option>الفرع الرئيسي - الإدارة العامة</option>
                                 </select>
@@ -445,8 +443,6 @@
                             </select>
                             <span class="req-star me-1">*</span>
                         </div>
-
-                        <!-- حقل الضريبة -->
                         <div class="field-entry-line mb-3 pos-relative">
                             <span class="field-title-wide">الضريبة</span>
                             <div class="dropdown-anchor flex-1">
@@ -482,7 +478,6 @@
                             </div>
                             <span class="req-star me-1">*</span>
                         </div>
-
                         <div class="field-entry-line mb-3">
                             <span class="field-title-wide">رقم التسجيل</span>
                             <input type="text" class="clean-input flex-1" @bind="supplierData.TaxRegistrationNumber" />
@@ -525,7 +520,6 @@
 
                     <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
                     <div class="section-with-blue-line" style="max-width: 750px;">
-                        <!-- البلد -->
                         <div class="field-entry-line mb-2 pos-relative">
                             <span class="field-title">البلد</span>
                             <div class="dropdown-anchor flex-1">
@@ -556,8 +550,6 @@
                             </div>
                             <span class="req-star me-1">*</span>
                         </div>
-
-                        <!-- المنطقة -->
                         <div class="field-entry-line mb-2 pos-relative">
                             <span class="field-title">المنطقة</span>
                             <div class="dropdown-anchor flex-1">
@@ -590,7 +582,6 @@
                                 }
                             </div>
                         </div>
-
                         <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="supplierData.Governorate" /></div>
                         <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="supplierData.City" /></div>
                         <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="supplierData.Street" /></div>
@@ -610,12 +601,10 @@
                 </div>
             }
 
-            <!-- Tab 4: بيانات إضافية (تم تعديل التوزيع ليتطابق تماماً مع صورة Desktop ERP) -->
+            <!-- Tab 4: بيانات إضافية -->
             @if (activeTab == 4)
             {
                 <div class="tab-content-seamless">
-
-                    <!-- المفاتيح العلوية جهة اليسار/الوسط بمحاذاة الشاشة الأصلية -->
                     <div class="d-flex flex-column align-items-end gap-2 mb-4 me-2" style="max-width: 600px; margin-right: auto;">
                         <div class="d-flex align-items-center gap-3">
                             <span class="small text-muted">لا</span>
@@ -625,7 +614,6 @@
                             </label>
                             <span class="field-title text-end" style="width: 110px;">له مسلسل</span>
                         </div>
-
                         <div class="d-flex align-items-center gap-3">
                             <span class="small text-muted">لا</span>
                             <label class="switch-toggle-label">
@@ -634,7 +622,6 @@
                             </label>
                             <span class="field-title text-end" style="width: 110px;">يتعامل ك عميل و</span>
                         </div>
-
                         <div class="d-flex align-items-center gap-3">
                             <span class="small text-muted">لا</span>
                             <label class="switch-toggle-label">
@@ -645,51 +632,23 @@
                         </div>
                     </div>
 
-                    <!-- الأعمدة: عمود "اخري" في اليمين وعمود "حقول اضافية" في اليسار -->
                     <div class="two-column-form-grid" style="column-gap: 50px;">
-
-                        <!-- العمود الأيمن: اخري -->
                         <div>
                             <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
                                 <span class="fw-bold fs-6 text-dark section-header-title">اخري</span>
                             </div>
                             <div class="section-with-blue-line">
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">رقم الهوية</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.NationalId" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">جهة العمل</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Employer" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">الضامن الأول</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor1" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">الضامن الثاني</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor2" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">رقم الحساب البنكي</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.BankAccountNo" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">اسم البنك</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.BankName" />
-                                </div>
-                                <div class="field-entry-line mb-2">
-                                    <span class="field-title">رقم الصفحة</span>
-                                    <input type="text" class="clean-input flex-1" @bind="supplierData.PageNo" />
-                                </div>
-                                <div class="field-entry-line align-items-start mb-2">
-                                    <span class="field-title pt-1">الملاحظات</span>
-                                    <textarea class="clean-input flex-1" rows="4" @bind="supplierData.Notes"></textarea>
-                                </div>
+                                <div class="field-entry-line mb-2"><span class="field-title">رقم الهوية</span><input type="text" class="clean-input flex-1" @bind="supplierData.NationalId" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">جهة العمل</span><input type="text" class="clean-input flex-1" @bind="supplierData.Employer" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">الضامن الأول</span><input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor1" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">الضامن الثاني</span><input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor2" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">رقم الحساب البنكي</span><input type="text" class="clean-input flex-1" @bind="supplierData.BankAccountNo" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">اسم البنك</span><input type="text" class="clean-input flex-1" @bind="supplierData.BankName" /></div>
+                                <div class="field-entry-line mb-2"><span class="field-title">رقم الصفحة</span><input type="text" class="clean-input flex-1" @bind="supplierData.PageNo" /></div>
+                                <div class="field-entry-line align-items-start mb-2"><span class="field-title pt-1">الملاحظات</span><textarea class="clean-input flex-1" rows="4" @bind="supplierData.Notes"></textarea></div>
                             </div>
                         </div>
 
-                        <!-- العمود الأيسر: حقول اضافية -->
                         <div>
                             <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
                                 <span class="fw-bold fs-6 text-dark section-header-title">حقول اضافية</span>
@@ -710,9 +669,7 @@
                                 }
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             }
 
@@ -743,7 +700,6 @@
                             <input type="text" class="clean-input flex-1" @bind="supplierData.InternetDisplayName" disabled="@(!supplierData.EnableInternetAccess)" />
                             <span class="req-star me-1">*</span>
                         </div>
-
                         <div class="field-entry-line mb-2">
                             <div class="d-flex align-items-center gap-2">
                                 <input type="checkbox" class="form-check-input m-0" @bind="supplierData.AccessAvailableStock" />
@@ -791,7 +747,8 @@
                     </div>
                 </div>
             }
-        </div>
+
+        </main>
 
     </div>
 </div>
@@ -1105,7 +1062,8 @@ public class SupplierModel
         width: 100%;
         padding: 30px 40px;
         box-sizing: border-box;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
         position: relative;
     }
 
@@ -1116,178 +1074,199 @@ public class SupplierModel
         z-index: 1500;
     }
 
+    /* Outer Wrapper: Two explicit columns in RTL */
     .main-canvas {
         display: flex;
-        flex-direction: row-reverse;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: 20px;
+        flex-direction: row; /* In RTL, first child is on the far right */
         align-items: flex-start;
-        gap: 30px;
+        gap: 32px;
+        max-width: 1250px;
+        margin: 0 auto 0 auto;
     }
 
-    .image-left-placeholder {
-        width: 100px;
-        height: 100px;
-        background-color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        margin-top: 15px;
-    }
-
-    .header-master-grid {
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 12px;
-        margin-bottom: 25px;
-        position: relative;
-    }
-
-    .image-right-block {
-        position: relative;
+    /* Right Sidebar for Avatar & Active status */
+    .avatar-sidebar {
         display: flex;
         flex-direction: column;
-        padding-left: 15px;
+        align-items: center;
+        width: 80px;
+        flex-shrink: 0;
+        padding-top: 6px;
         user-select: none;
-        margin-bottom: 10px;
     }
 
-    .orange-divider-line {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 3px;
-        height: 100px;
-        background-color: #e67e22;
-        border-radius: 2px;
-    }
-
-    .image-square {
-        width: 75px;
-        height: 75px;
-        border: 1px solid #dee2e6;
+    .image-square.avatar-square {
+        width: 70px;
+        height: 70px;
+        border: 2px solid #007bff;
         background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         overflow: hidden;
     }
 
     .user-avatar-icon {
-        font-size: 2.2rem;
+        font-size: 2.3rem;
         color: #007bff;
+        line-height: 1;
     }
 
     .active-check-group {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
+        justify-content: center;
     }
 
     .small-chk-label {
         font-size: 0.82rem;
-        color: #333;
+        color: #333333;
+        font-weight: 500;
     }
 
     .chk-box {
         cursor: pointer;
     }
 
+    /* Main form container */
+    .form-content-area {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Master Top Header */
+    .header-master-grid {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        position: relative;
+        margin-bottom: 22px;
+        min-height: 110px;
+    }
+
+    .orange-divider-line {
+        width: 3.5px;
+        height: 98px;
+        background-color: #f0821d;
+        border-radius: 2px;
+        flex-shrink: 0;
+        margin-left: 4px;
+    }
+
     .labels-column {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding-top: 2px;
-        margin-right: 10px;
+        gap: 10px;
+        padding-top: 3px;
+        flex-shrink: 0;
     }
 
     .label-row-cell {
-        height: 31px;
+        height: 29px;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
     }
 
     .hdr-lbl {
         font-size: 0.88rem;
         font-weight: 600;
-        color: #333;
+        color: #2b2b2b;
         white-space: nowrap;
     }
 
     .controls-column {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-    }
-
-    .supplier-controls-width {
-        width: 580px !important;
+        gap: 10px;
+        width: 380px;
+        flex-shrink: 0;
     }
 
     .form-row-compact {
         display: flex;
         align-items: center;
         gap: 6px;
-        min-height: 31px;
+        height: 29px;
     }
 
-    .name-field-relative {
-        position: relative;
-        display: flex;
-        align-items: center;
+    .supplier-code-input {
+        width: 210px;
     }
 
-    .barcode-main-input {
-        width: 250px;
+    .supplier-name-input {
+        width: 100%;
     }
 
-    .req-star {
-        color: #dc3545;
-        font-size: 0.9rem;
-        font-weight: bold;
-        user-select: none;
+    .balance-amount-input {
+        width: 125px;
+    }
+
+    .balance-sep-word {
+        padding: 0 4px;
+    }
+
+    .balance-date-input {
+        width: 135px;
     }
 
     .save-cell {
-        margin-right: 40px;
-        padding-top: 40px;
+        display: flex;
+        align-items: center;
+        padding-top: 36px;
+        margin-right: 15px;
+        flex-shrink: 0;
     }
 
     .btn-primary-custom {
         background-color: #007bff;
         border: none;
         color: #ffffff;
-        padding: 6px 36px;
-        border-radius: 10px;
+        padding: 6px 34px;
+        border-radius: 8px;
         font-size: 0.95rem;
         font-weight: 600;
         cursor: pointer;
-        width: 120px;
+        transition: background-color 0.2s ease;
     }
 
+        .btn-primary-custom:hover {
+            background-color: #0069d9;
+        }
+
+    .image-left-placeholder {
+        width: 90px;
+        height: 90px;
+        background-color: #ffffff;
+        border: 1px dashed #d5d9df;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-right: auto; /* Pushes photo box to the far left in RTL */
+    }
+
+    /* Tabs Bar */
     .tab-strip-bar {
         display: flex;
         justify-content: flex-start;
         gap: 6px;
-        padding-bottom: 8px;
+        padding-bottom: 6px;
         margin-bottom: 16px;
     }
 
     .strip-tab-btn {
         border: none;
-        background-color: #e9ecef;
+        background-color: #dce1e7;
         color: #495057;
-        padding: 5px 18px;
+        padding: 6px 20px;
         font-size: 0.85rem;
-        border-radius: 3px;
+        border-radius: 4px;
         cursor: pointer;
         font-weight: 500;
+        transition: all 0.15s ease-in-out;
     }
 
         .strip-tab-btn.active {
@@ -1303,33 +1282,27 @@ public class SupplierModel
         box-sizing: border-box;
     }
 
-    .section-with-blue-line {
-        border-right: 3px solid #007bff;
-        padding-right: 14px;
-    }
-
     .section-title-header {
         font-weight: bold;
-        color: #333333;
-    }
-
-    .section-header-title {
-        width: 100%;
+        color: #2b2b2b;
+        margin-bottom: 8px;
         text-align: right;
     }
 
-    .two-column-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        column-gap: 40px;
-        row-gap: 12px;
+    .section-with-blue-line {
+        border-right: 3.5px solid #007bff;
+        padding-right: 14px;
     }
 
     .full-width-stack {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        max-width: 720px;
+        gap: 10px;
+        max-width: 650px;
+    }
+
+    .flex-control-wrap {
+        width: 340px;
     }
 
     .field-entry-line {
@@ -1337,7 +1310,6 @@ public class SupplierModel
         align-items: center;
         gap: 6px;
         min-width: 0;
-        margin-bottom: 10px;
     }
 
     .field-title {
@@ -1365,7 +1337,7 @@ public class SupplierModel
 
     .clean-input {
         border: 1px solid transparent;
-        border-bottom: 3px solid transparent;
+        border-bottom: 2px solid transparent;
         border-radius: 3px;
         padding: 4px 8px;
         font-size: 0.85rem;
@@ -1376,9 +1348,7 @@ public class SupplierModel
     }
 
     input.clean-input:focus, textarea.clean-input:focus, select.clean-input:focus {
-        border-color: #ced4da;
-        border: 1px solid transparent;
-        border-bottom: 3px solid #007bff !important;
+        border-bottom: 2px solid #007bff !important;
         box-shadow: none;
     }
 
@@ -1389,7 +1359,7 @@ public class SupplierModel
         background-color: #ffffff;
         border-radius: 3px;
         padding: 2px 8px;
-        height: 31px;
+        height: 29px;
         cursor: pointer;
         box-sizing: border-box;
         width: 100%;
@@ -1421,13 +1391,12 @@ public class SupplierModel
         border: none;
         background: transparent;
         color: #495057;
-        font-size: 1rem;
+        font-size: 1.05rem;
         font-weight: bold;
         cursor: pointer;
         padding: 0 4px;
         display: flex;
         align-items: center;
-        justify-content: center;
     }
 
     .combo-arrow {
@@ -1437,13 +1406,11 @@ public class SupplierModel
 
     .dropdown-anchor {
         position: relative;
-        width: 100%;
-        min-width: 0;
     }
 
     .custom-dropdown-panel, .custom-supplier-grid-panel-advanced, .custom-table-popup {
         position: absolute;
-        top: 34px;
+        top: 32px;
         right: 0;
         background: #ffffff;
         border: 1px solid #ced4da;
@@ -1466,6 +1433,7 @@ public class SupplierModel
         font-size: 0.83rem;
         cursor: pointer;
         border-bottom: 1px solid #f2f2f2;
+        padding: 4px 8px;
     }
 
         .panel-checkbox-row:hover, .supplier-row:hover, .table-popup-row:hover {
@@ -1483,7 +1451,7 @@ public class SupplierModel
     }
 
     .col-code {
-        width: 90px;
+        width: 85px;
         padding: 4px;
         text-align: center;
     }
@@ -1520,9 +1488,16 @@ public class SupplierModel
         background-color: #d8e8fc !important;
     }
 
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
     .calc-desktop-popup {
         position: absolute;
-        top: 34px;
+        top: 32px;
         right: 0;
         width: 300px;
         background: #ffffff;
@@ -1625,5 +1600,12 @@ public class SupplierModel
         font-size: 0.9rem;
         margin-right: auto;
         color: #b01078;
+    }
+
+    .two-column-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 40px;
+        row-gap: 12px;
     }
 </style>
