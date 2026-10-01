@@ -52,28 +52,17 @@
                 </div>
             </div>
 
-
-
             <div class="expense-top-field pos-relative flex-column align-items-start gap-1">
                 <span class="hdr-lbl">طريقة العرض</span>
                 <div class="dropdown-anchor dropdown-anchor-width" style="width: 200px;">
                     <div class="custom-combo-trigger" @onclick:stopPropagation>
-                        <span class="combo-display-text" @onclick="ToggleDisplayModePopup">@selectedDisplayMode</span>
+                        <span class="combo-display-text" @onclick="OpenSaveDisplayModeModal">@selectedDisplayMode</span>
                         <div class="combo-icons-inside combo-icons-inside-width">
-                            <span class="combo-arrow" @onclick="ToggleDisplayModePopup">▼</span>
-                            <span class="btn-inside-plus" @onclick="OpenDisplayModeManagerModal" style="cursor: pointer;">...</span>
-                            <span class="combo-arrow" @onclick="ToggleThirdIconPopup" style="cursor: pointer;">▼</span>
+                            <span class="combo-arrow" @onclick="OpenSaveDisplayModeModal" style="cursor: pointer;">▼</span>
+                            <span class="btn-inside-plus" @onclick="OpenDisplayModeManagerModal" @onclick:stopPropagation style="cursor: pointer;">...</span>
+                            <span class="combo-arrow" @onclick="ToggleThirdIconPopup" @onclick:stopPropagation style="cursor: pointer;">▼</span>
                         </div>
                     </div>
-
-                    @if (isDisplayModePopupOpen)
-                    {
-                        <div class="custom-table-popup item-type-popup-size" style="width: 140px;" @onclick:stopPropagation>
-                            <div class="table-popup-list">
-                                <div class="table-popup-row @(selectedDisplayMode == "افتراضي" ? "active-row" : "")" @onclick='() => SelectDisplayMode("افتراضي")'>افتراضي</div>
-                            </div>
-                        </div>
-                    }
 
                     @if (isThirdIconPopupOpen)
                     {
@@ -95,7 +84,6 @@
 
         <!-- Second Row: البيان -> الضريبة -> مركز التكلفة -> الاعتماد -> رقم المرجع # -->
         <div class="expense-filter-row mb-4">
-
             <div class="expense-filter-group flex-1">
                 <span class="hdr-lbl">البيان</span>
                 <input type="text" class="clean-input flex-1" @bind="expenseData.Statement" />
@@ -264,13 +252,9 @@
         <!-- 4. Footer Section -->
         <div class="expense-footer-grid">
             <div class="expense-footer-right-side">
-
-                <!-- طريقة الدفع Field Line -->
                 <div class="field-entry-line pos-relative">
                     <span class="field-title">طريقة الدفع</span>
                     <div class="d-flex align-items-center gap-2 flex-1">
-
-                        <!-- 1. RIGHTMOST: Type Dropdown with Top Label -->
                         <div class="d-flex flex-column gap-1" style="width: 110px;">
                             <span class="sub-field-lbl">النوع</span>
                             <div class="dropdown-anchor pos-relative w-100">
@@ -312,7 +296,6 @@
                             </div>
                         </div>
 
-                        <!-- 2. MIDDLE: Grid Lookup Window Input with Top Label -->
                         <div class="d-flex flex-column gap-1 flex-1">
                             <span class="sub-field-lbl">اسم الحساب</span>
                             <div class="dropdown-anchor pos-relative w-100">
@@ -347,13 +330,11 @@
                             </div>
                         </div>
 
-                        <!-- 3. LEFTMOST: Currency code, number and required star indicator -->
                         <div class="d-flex align-items-center gap-1 mt-3">
                             <span class="req-star">*</span>
                             <span class="small">@expenseData.PaymentTypeCode</span>
                             <span class="small font-weight-bold">EGP</span>
                         </div>
-
                     </div>
                 </div>
 
@@ -398,7 +379,6 @@
                 </div>
             </div>
 
-            <!-- Left Side: Summary and Floating Badge -->
             <div class="expense-footer-left-side">
                 <div class="expense-summary-box">
                     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -411,7 +391,6 @@
                     </div>
                 </div>
 
-                <!-- Floating Total Badge -->
                 <div class="floating-badge-left">
                     <span class="floating-badge-number">0</span>
                 </div>
@@ -432,6 +411,34 @@
                     OnConfirmed="ConfirmDeleteRow"
                     OnCancelled="CancelDeleteRow" />
 
+<!-- EXACT PIXEL-PERFECT CENTER WINDOW FOR "هل تريد حفظ العرض؟" -->
+@if (isSaveDisplayModeModalOpen)
+{
+    <div class="global-dropdown-backdrop" @onclick="CloseSaveDisplayModeModal" @onclick:stopPropagation></div>
+    <div class="exact-center-dialog-overlay" @onclick:stopPropagation>
+        <div class="save-display-mode-card">
+            <!-- Header with top-left close button -->
+            <div class="save-card-header">
+                <button type="button" class="save-card-close-btn" @onclick="CloseSaveDisplayModeModal">✕</button>
+            </div>
+
+            <!-- Body: Question text and blue circular ? badge -->
+            <div class="save-card-body">
+                <div class="save-card-content">
+                    <span class="save-card-question">هل تريد حفظ العرض؟</span>
+                    <div class="save-card-circle-icon">?</div>
+                </div>
+            </div>
+
+            <!-- Footer: Yes & No action buttons -->
+            <div class="save-card-footer">
+                <button type="button" class="btn-card-action btn-card-yes" @onclick="ConfirmSaveDisplayMode">نعم</button>
+                <button type="button" class="btn-card-action btn-card-no" @onclick="CloseSaveDisplayModeModal">لا</button>               
+            </div>
+        </div>
+    </div>
+}
+
 <!-- EXACT CENTER WINDOW FOR DISPLAY MODE MANAGER (...) -->
 @if (isDisplayModeManagerModalOpen)
 {
@@ -448,8 +455,6 @@
                             <th class="text-right">الاسم</th>
                             <th class="text-center" style="width: 70px;">تعديل</th>
                             <th class="text-center" style="width: 70px;">حذف</th>
-               
-                           
                         </tr>
                     </thead>
                 </table>
@@ -457,7 +462,6 @@
             <div class="exact-center-dialog-body">
                 <table class="table w-100 mb-0" style="border-collapse: collapse;">
                     <tbody>
-                        <!-- Example rows for testing scrolling with multiple items -->
                         @for (int i = 1; i <= 15; i++)
                         {
                             <tr>
@@ -468,8 +472,6 @@
                                 <td class="text-center" style="width: 70px;">
                                     <span class="text-danger fw-bold" style="cursor: pointer;">✖</span>
                                 </td>
-                               
-                                
                             </tr>
                         }
                     </tbody>
@@ -484,10 +486,9 @@
 }
 
 @code {
-    private string selectedDisplayMode = "";
+    private string selectedDisplayMode = "افتراضي";
     private string selectedExpenseType = "مصروف عام";
     private bool isExpenseTypePopupOpen = false;
-    private bool isDisplayModePopupOpen = false;
     private bool isThirdIconPopupOpen = false;
     private bool isApprovalPopupOpen = false;
     private bool isCostCenterPopupOpen = false;
@@ -496,6 +497,7 @@
     private bool isPaymentGridPopupOpen = false;
     private bool isCurrencyPopupOpen = false;
     private bool isDisplayModeManagerModalOpen = false;
+    private bool isSaveDisplayModeModalOpen = false;
 
     private int activeRowIndex = 0;
 
@@ -526,7 +528,6 @@
 
     private bool IsAnyPopupOpen() =>
         isExpenseTypePopupOpen ||
-        isDisplayModePopupOpen ||
         isThirdIconPopupOpen ||
         isApprovalPopupOpen ||
         isCostCenterPopupOpen ||
@@ -534,12 +535,12 @@
         isPaymentMethodPopupOpen ||
         isPaymentGridPopupOpen ||
         isCurrencyPopupOpen ||
-        isDisplayModeManagerModalOpen;
+        isDisplayModeManagerModalOpen ||
+        isSaveDisplayModeModalOpen;
 
     private void CloseAllPopups()
     {
         isExpenseTypePopupOpen = false;
-        isDisplayModePopupOpen = false;
         isThirdIconPopupOpen = false;
         isApprovalPopupOpen = false;
         isCostCenterPopupOpen = false;
@@ -548,6 +549,23 @@
         isPaymentGridPopupOpen = false;
         isCurrencyPopupOpen = false;
         isDisplayModeManagerModalOpen = false;
+        isSaveDisplayModeModalOpen = false;
+    }
+
+    private void OpenSaveDisplayModeModal()
+    {
+        CloseAllPopups();
+        isSaveDisplayModeModalOpen = true;
+    }
+
+    private void CloseSaveDisplayModeModal()
+    {
+        isSaveDisplayModeModalOpen = false;
+    }
+
+    private void ConfirmSaveDisplayMode()
+    {
+        isSaveDisplayModeModalOpen = false;
     }
 
     private void OpenDisplayModeManagerModal()
@@ -629,24 +647,11 @@
         isExpenseTypePopupOpen = false;
     }
 
-    private void ToggleDisplayModePopup()
-    {
-        bool wasOpen = isDisplayModePopupOpen;
-        CloseAllPopups();
-        isDisplayModePopupOpen = !wasOpen;
-    }
-
     private void ToggleThirdIconPopup()
     {
         bool wasOpen = isThirdIconPopupOpen;
         CloseAllPopups();
         isThirdIconPopupOpen = !wasOpen;
-    }
-
-    private void SelectDisplayMode(string mode)
-    {
-        selectedDisplayMode = mode;
-        isDisplayModePopupOpen = false;
     }
 
     private void ToggleApprovalPopup() { bool wasOpen = isApprovalPopupOpen; CloseAllPopups(); isApprovalPopupOpen = !wasOpen; }
@@ -987,7 +992,6 @@
         box-shadow: none;
     }
 
-    /* Table Zebra Striping and Active Row Styles */
     .odd-grid-row {
         background-color: #ffffff;
     }
@@ -1089,22 +1093,6 @@
         overflow-y: auto;
     }
 
-    .table-popup-row {
-        padding: 6px 12px;
-        font-size: 0.83rem;
-        cursor: pointer;
-        text-align: right;
-        border-top: solid 1px #ddd;
-    }
-
-        .table-popup-row:hover {
-            background-color: #e9f2ff;
-        }
-
-    .active-row {
-        background-color: #d8e8fc !important;
-    }
-
     .table-popup-footer {
         display: flex;
         justify-content: space-between;
@@ -1169,14 +1157,6 @@
             color: #333;
         }
 
-    .delete-icon-btn {
-        background: transparent;
-        border: none;
-        color: #dc3545;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
     .custom-combo-trigger.custom-combo-trigger-currency {
         width: 350px;
     }
@@ -1200,7 +1180,7 @@
         justify-content: space-between;
     }
 
-    /* Styles for the Exact Center Window Modal */
+    /* Modal Overlay */
     .exact-center-dialog-overlay {
         position: fixed;
         inset: 0;
@@ -1211,6 +1191,112 @@
         background: rgba(0, 0, 0, 0.35);
     }
 
+    /* Pixel-Perfect "هل تريد حفظ العرض؟" Center Card */
+    .save-display-mode-card {
+        background: #f8f9fa;
+        width: 480px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        direction: rtl;
+        overflow: hidden;
+    }
+
+    .save-card-header {
+        padding: 8px 12px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: transparent;
+    }
+
+    .save-card-close-btn {
+        background: transparent;
+        border: none;
+        color: #333333;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .save-card-body {
+        padding: 30px 40px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .save-card-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        width: 100%;
+    }
+
+    .save-card-question {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .save-card-circle-icon {
+        width: 44px;
+        height: 44px;
+        background-color: #85bdfd;
+        color: #0b5ed7;
+        font-size: 1.6rem;
+        font-weight: 900;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+
+    .save-card-footer {
+        background-color: #ffffff;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px solid #eef0f3;
+    }
+
+    .btn-card-action {
+        width: 110px;
+        padding: 8px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        border: 1px solid transparent;
+        transition: opacity 0.15s;
+    }
+
+        .btn-card-action:hover {
+            opacity: 0.9;
+        }
+
+    .btn-card-no {
+        background-color: #007bff;
+        color: #ffffff;
+        border-color: #007bff;
+    }
+
+    .btn-card-yes {
+        background-color: #a6a6a6;
+        color: #ffffff;
+        border-color: #a6a6a6;
+    }
+
+    /* Modal for Manager (...) */
     .exact-center-dialog {
         background: #ffffff;
         width: 480px;
