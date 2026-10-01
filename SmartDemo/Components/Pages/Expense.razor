@@ -190,7 +190,7 @@
                             var isActive = index == activeRowIndex;
                             var isEven = index % 2 == 1;
 
-                            <tr class="@(isActive ? "active-grid-row" : (isEven ? "even-grid-row" : "odd-grid-row"))" @onclick="() => ActivateRow(index)">
+                            <tr  class="@(isActive ? "active-grid-row" : (isEven ? "even-grid-row" : "odd-grid-row"))" @onclick="() => ActivateRow(index)">
                                 <td>
                                     @if (isActive)
                                     {
@@ -406,6 +406,33 @@
 </div>
 
 <!-- ================= MODALS SECTION ================= -->
+<!-- Validation Center Dialog shown on Save / Save and Print -->
+@if (isRequiredFieldsModalOpen)
+{
+    <div class="global-dropdown-backdrop" @onclick="CloseRequiredFieldsModal" @onclick:stopPropagation></div>
+    <div class="exact-center-dialog-overlay" @onclick:stopPropagation>
+        <div class="required-fields-modal-card">
+            <div class="required-fields-header">
+                <button type="button" class="required-fields-close-btn" @onclick="CloseRequiredFieldsModal">✕</button>
+            </div>
+            <div class="required-fields-body">
+                <div class="required-fields-icon-wrapper">
+                    <div class="required-fields-screen-icon">
+                        <span class="screen-exclamation">!</span>
+                    </div>
+                    <div class="required-fields-stand-neck"></div>
+                    <div class="required-fields-stand-base"></div>
+                </div>
+                <span class="required-fields-text">يجب ادخال جميع الحقول التي بجوارها نجمة حمراء</span>
+      
+            </div>
+            <div class="required-fields-footer">
+                <button type="button" class="btn-required-ok" @onclick="CloseRequiredFieldsModal">موافق</button>
+            </div>
+        </div>
+    </div>
+}
+
 <ConfirmDeleteModal @bind-IsOpen="isConfirmDeleteModalOpen"
                     Message="هل تريد الحذف ؟"
                     OnConfirmed="ConfirmDeleteRow"
@@ -433,7 +460,7 @@
             <!-- Footer: Yes & No action buttons -->
             <div class="save-card-footer">
                 <button type="button" class="btn-card-action btn-card-yes" @onclick="ConfirmSaveDisplayMode">نعم</button>
-                <button type="button" class="btn-card-action btn-card-no" @onclick="CloseSaveDisplayModeModal">لا</button>               
+                <button type="button" class="btn-card-action btn-card-no" @onclick="CloseSaveDisplayModeModal">لا</button>
             </div>
         </div>
     </div>
@@ -498,6 +525,7 @@
     private bool isCurrencyPopupOpen = false;
     private bool isDisplayModeManagerModalOpen = false;
     private bool isSaveDisplayModeModalOpen = false;
+    private bool isRequiredFieldsModalOpen = false;
 
     private int activeRowIndex = 0;
 
@@ -536,7 +564,8 @@
         isPaymentGridPopupOpen ||
         isCurrencyPopupOpen ||
         isDisplayModeManagerModalOpen ||
-        isSaveDisplayModeModalOpen;
+        isSaveDisplayModeModalOpen ||
+        isRequiredFieldsModalOpen;
 
     private void CloseAllPopups()
     {
@@ -550,6 +579,7 @@
         isCurrencyPopupOpen = false;
         isDisplayModeManagerModalOpen = false;
         isSaveDisplayModeModalOpen = false;
+        isRequiredFieldsModalOpen = false;
     }
 
     private void OpenSaveDisplayModeModal()
@@ -577,6 +607,11 @@
     private void CloseDisplayModeManagerModal()
     {
         isDisplayModeManagerModalOpen = false;
+    }
+
+    private void CloseRequiredFieldsModal()
+    {
+        isRequiredFieldsModalOpen = false;
     }
 
     private void ActivateRow(int index)
@@ -703,8 +738,18 @@
         isConfirmDeleteModalOpen = false;
     }
 
-    private void SaveData() { }
-    private void OnSaveAndPrint() { }
+    private void SaveData()
+    {
+        CloseAllPopups();
+        isRequiredFieldsModalOpen = true;
+    }
+
+    private void OnSaveAndPrint()
+    {
+        CloseAllPopups();
+        isRequiredFieldsModalOpen = true;
+    }
+
     private void OnClose() { }
 
     public class ExpenseModel
@@ -1000,14 +1045,10 @@
     }
 
     .active-grid-row {
-        background-color: #eef3fb !important;
+      background-color: #dbdee3 !important;
     }
 
-    .active-cell-input {
-        border: 1px solid #80bdff !important;
-        background-color: #ffffff !important;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
+   
 
     .table-static-cell {
         padding: 4px 8px;
@@ -1189,6 +1230,119 @@
         z-index: 2500;
         background: rgba(0, 0, 0, 0.35);
     }
+
+    /* Pixel-Perfect "يجب ادخال جميع الحقول التي بجوارها نجمة حمراء" Modal */
+    .required-fields-modal-card {
+        background: #f6f7f9;
+        width: 530px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+        display: flex;
+        flex-direction: column;
+        direction: rtl;
+        overflow: hidden;
+    }
+
+    .required-fields-header {
+        padding: 8px 12px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: transparent;
+    }
+
+    .required-fields-close-btn {
+        background: transparent;
+        border: none;
+        color: #555555;
+        font-size: 1.05rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .required-fields-body {
+        padding: 25px 35px 25px 45px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+    }
+
+    .required-fields-text {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #212529;
+        flex: 1;
+        text-align: right;
+    }
+
+    .required-fields-icon-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .required-fields-screen-icon {
+        width: 58px;
+        height: 44px;
+        background-color: #82bdfb;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .screen-exclamation {
+        color: #0b5ed7;
+        font-size: 2.1rem;
+        font-weight: 900;
+        font-family: sans-serif;
+        line-height: 1;
+        user-select: none;
+    }
+
+    .required-fields-stand-neck {
+        width: 14px;
+        height: 6px;
+        background-color: #0b5ed7;
+    }
+
+    .required-fields-stand-base {
+        width: 32px;
+        height: 4px;
+        background-color: #0b5ed7;
+        border-radius: 2px;
+    }
+
+    .required-fields-footer {
+        background-color: #ffffff;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn-required-ok {
+        min-width: 110px;
+        padding: 7px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #a4a9ad;
+        color: #ffffff;
+        border: 1px solid #9aa0a6;
+        transition: opacity 0.15s;
+    }
+
+        .btn-required-ok:hover {
+            opacity: 0.9;
+        }
 
     /* Pixel-Perfect "هل تريد حفظ العرض؟" Center Card */
     .save-display-mode-card {
