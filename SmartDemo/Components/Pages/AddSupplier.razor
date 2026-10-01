@@ -1,0 +1,1629 @@
+﻿@page "/AddSupplier"
+@rendermode InteractiveServer
+
+<div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <!-- Global transparent backdrop when any popup is open to catch outside clicks -->
+    @if (IsAnyPopupOpen())
+    {
+        <div class="global-dropdown-backdrop" @onclick="CloseAllPopups" @onclick:stopPropagation></div>
+    }
+
+    <div class="main-canvas" @onclick:stopPropagation>
+
+        <!-- 1. Far Right: Avatar/Image Box & Active Status with Orange Bar -->
+        <div class="image-right-block">
+            <div class="image-square avatar-square">
+                <span class="user-avatar-icon">👤</span>
+            </div>
+            <div class="active-check-group">
+                <input type="checkbox" id="chkActive" class="chk-box" @bind="supplierData.IsActive" />
+                <label for="chkActive" class="small-chk-label">نشط</label>
+            </div>
+        </div>
+        <!-- Left Side: Image / Photo Box -->
+        <div class="image-left-placeholder">
+            <span class="text-muted fs-6">الصورة</span>
+        </div>
+           
+
+        <!-- Right / Form Content -->
+        <div class="custom flex-1">
+
+         
+            <!-- Top Header Area -->
+            <div class="header-master-grid">
+                <div class="orange-divider-line"></div>
+            
+
+                <!-- 2. Section Labels -->
+                <div class="labels-column">
+                    <div class="label-row-cell"><span class="hdr-lbl">الرقم</span></div>
+                    <div class="label-row-cell"><span class="hdr-lbl">الاسم</span></div>
+                    <div class="label-row-cell"><span class="hdr-lbl">الرصيد الإفتتاحي</span></div>
+                </div>
+
+                <!-- 3. Form Input Controls -->
+                <div class="controls-column supplier-controls-width">
+                    <!-- Row 1: Number & Verification Check -->
+                    <div class="form-row-compact">
+                        <input type="text" class="clean-input barcode-main-input text-center" @bind="supplierData.SupplierCode" />
+                        <span class="req-star me-1">*</span>
+                        <span class="text-success fs-5 ms-2" title="رقم صحيح">✓</span>
+                    </div>
+
+                    <!-- Row 2: Name Input -->
+                    <div class="form-row-compact name-field-relative">
+                        <div class="w-100">
+                            <input type="text" class="clean-input w-100" @bind="supplierData.Name" placeholder="" />
+                        </div>
+                        <span class="req-star me-1 ms-1">*</span>
+                    </div>
+
+                    <!-- Row 3: Opening Balance Date & Value -->
+                    <div class="form-row-compact pos-relative">
+                        <input type="number" class="clean-input flex-1 text-center" @bind="supplierData.OpeningBalanceAmount" />
+                        <span class="small text-muted ms-1">في</span>
+                        <input type="date" class="clean-input text-center" style="width: 140px;" @bind="supplierData.OpeningBalanceDate" />
+                    </div>
+                </div>
+
+                <!-- 4. Save Button -->
+                <div class="save-cell">
+                    <button class="btn-primary-custom" @onclick="SaveData" type="button">حفظ</button>
+                </div>
+
+            </div>
+
+            <!-- Navigation Tabs Bar -->
+            <div class="tab-strip-bar">
+                <button class="strip-tab-btn @(activeTab == 1 ? "active" : "")" @onclick="() => activeTab = 1" type="button">بيانات الحساب</button>
+                <button class="strip-tab-btn @(activeTab == 2 ? "active" : "")" @onclick="() => activeTab = 2" type="button">الضرائب</button>
+                <button class="strip-tab-btn @(activeTab == 3 ? "active" : "")" @onclick="() => activeTab = 3" type="button">بيانات الإتصال</button>
+                <button class="strip-tab-btn @(activeTab == 4 ? "active" : "")" @onclick="() => activeTab = 4" type="button">بيانات إضافية</button>
+                <button class="strip-tab-btn @(activeTab == 5 ? "active" : "")" @onclick="() => activeTab = 5" type="button">الانترنت</button>
+            </div>
+
+            <!-- Tab 1: بيانات الحساب -->
+            @if (activeTab == 1)
+            {
+                <div class="tab-content-seamless">
+
+                    <!-- 1. التصنيف -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">التصنيف</span>
+                    </div>
+
+                    <div class="section-with-blue-line mb-4">
+                        <div class="full-width-stack">
+                            <!-- اسم الفرع -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">اسم الفرع</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleBranchPopup">
+                                        <span class="combo-display-text">@supplierData.Branch</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isBranchPopupOpen)
+                                    {
+                                        <div class="custom-supplier-grid-panel-advanced" style="width:100% ;left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                                <div class="col-code">الكود</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var b in mockBranchList)
+                                                {
+                                                    <div class="supplier-row @(supplierData.Branch == b.Name ? "active-row" : "")" @onclick="() => SelectBranch(b.Name)">
+                                                        <div class="col-name">@b.Name</div>
+                                                        <div class="col-code">@b.Code</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isBranchPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                                <div class="d-flex align-items-center gap-1 ms-3">
+                                    <input type="checkbox" id="chkAllBranches" class="chk-box" />
+                                    <label for="chkAllBranches" class="small text-muted" style="white-space: nowrap;">كل الفروع</label>
+                                </div>
+                            </div>
+
+                            <!-- يوجد بداخل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">يوجد بداخل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleNestedPopup">
+                                        <span class="combo-display-text">@supplierData.NestedWithin</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button" @onclick:stopPropagation @onclick="OpenNestedModal">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isNestedPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var node in mockNestedTree)
+                                                {
+                                                    @RenderNestedTreeNode(node, name => { supplierData.NestedWithin = name; isNestedPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isNestedPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- العملة الافتراضية -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">العملة الافتراضية</span>
+                                <div class="d-flex align-items-center gap-2" style="max-width: 620px; width: 100%;">
+                                    <input type="number" class="clean-input text-center" style="width: 80px;" @bind="supplierData.ExchangeRate" />
+                                    <div class="dropdown-anchor flex-1">
+                                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                            <span class="combo-display-text">@supplierData.Currency</span>
+                                            <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                        </div>
+                                        @if (isCurrencyPopupOpen)
+                                        {
+                                            <div class="custom-supplier-grid-panel-advanced" style="width: 380px; left: 0; right: auto;" @onclick:stopPropagation>
+                                                <div class="supplier-grid-header">
+                                                    <div class="col-code">الكود</div>
+                                                    <div class="col-name">الاسم</div>
+                                                    <div class="col-code">المعامل</div>
+                                                </div>
+                                                <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                    @foreach (var c in mockCurrencyList)
+                                                    {
+                                                        <div class="supplier-row @(supplierData.Currency == c.Code ? "active-row" : "")" @onclick="() => SelectCurrency(c)">
+                                                            <div class="col-code">@c.Code</div>
+                                                            <div class="col-name">@c.Name</div>
+                                                            <div class="col-code">@c.Rate</div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="table-popup-footer">
+                                                    <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                                    <span class="resizer-dots">⠿</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- حساب الاستاذ -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">حساب الاستاذ</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleLedgerPopup">
+                                        <span class="combo-display-text">@supplierData.LedgerAccount</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isLedgerPopupOpen)
+                                    {
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-name">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                                @foreach (var node in mockLedgerTree)
+                                                {
+                                                    @RenderLedgerTreeNode(node, name => { supplierData.LedgerAccount = name; isLedgerPopupOpen = false; })
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isLedgerPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. سياسة التعامل -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">سياسة التعامل</span>
+                    </div>
+
+                    <div class="section-with-blue-line mb-4">
+                        <div class="full-width-stack">
+                            <!-- التعامل الافتراضي -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">التعامل الافتراضي</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealTypePopup">
+                                        <div class="d-flex align-items-center gap-2 flex-1">
+                                            <span class="combo-display-text text-start">@supplierData.DefaultDealType</span>
+                                            <span class="badge-signal-bars">📶</span>
+                                        </div>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isDealTypePopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var dt in new[] { "كاش", "أجل", "قسط" })
+                                                {
+                                                    <div class="panel-checkbox-row justify-content-between" @onclick="() => { supplierData.DefaultDealType = dt; isDealTypePopupOpen = false; }">
+                                                        <span>@dt</span>
+                                                        <span>📶</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- حد الإئتمان -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">حد الإئتمان</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCreditCalc">
+                                        <span class="combo-display-text text-center">@supplierData.CreditLimit</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isCreditCalcOpen)
+                                    {
+                                        <div class="calc-popup-box calc-desktop-popup" style="left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="calc-screen">@calcDisplay</div>
+                                            <div class="calc-grid">
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("/")'>/</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("sqrt")'>sqrt</button>
+                                                <button type="button" class="calc-btn calc-op"></button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcBack">Back</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClearEntry">CE</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcClear">C</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("*")'>*</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("%")'>%</button>
+                                                <button type="button" class="calc-btn calc-mem">MC</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("7")'>7</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("8")'>8</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("9")'>9</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("-")'>-</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("x/1")'>x/1</button>
+                                                <button type="button" class="calc-btn calc-mem">MR</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("4")'>4</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("5")'>5</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("6")'>6</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick='() => CalcPress("+")'>+</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcEquals">=</button>
+                                                <button type="button" class="calc-btn calc-mem">MS</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("1")'>1</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("2")'>2</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("3")'>3</button>
+                                                <button type="button" class="calc-btn calc-mem span-col-2"></button>
+                                                <button type="button" class="calc-btn calc-mem">+M</button>
+                                                <button type="button" class="calc-btn calc-op" @onclick="CalcToggleSign">-/+</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress("0")'>0</button>
+                                                <button type="button" class="calc-btn" @onclick='() => CalcPress(".")'>.</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- جهة التعامل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">جهة التعامل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDealSidePopup">
+                                        <span class="combo-display-text">@supplierData.DealSide</span>
+                                        <div class="combo-icons-inside">
+                                            <button class="btn-inside-plus" type="button">+</button>
+                                            <span class="combo-arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    @if (isDealSidePopupOpen)
+                                    {
+                                        <div class="custom-table-popup" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="table-popup-header">الاسم</div>
+                                            <div class="table-popup-list">
+                                                @foreach (var ds in new[] { "موردين بضريبة", "موردين بدون ضريبة", "موردين محليين", "موردين خارجيين" })
+                                                {
+                                                    <div class="table-popup-row @(supplierData.DealSide == ds ? "active-row" : "")" @onclick="() => { supplierData.DealSide = ds; isDealSidePopupOpen = false; }">@ds</div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isDealSidePopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+
+                            <!-- الحساب المكمل -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">الحساب المكمل</span>
+                                <div class="dropdown-anchor" style="max-width: 620px;">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCompPopup">
+                                        <span class="combo-display-text">@supplierData.ComplementaryAccount</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isCompPopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var comp in new[] { "الأرصدة الإفتتاحية", "حساب الأرباح والخسائر" })
+                                                {
+                                                    <div class="panel-checkbox-row" @onclick="() => { supplierData.ComplementaryAccount = comp; isCompPopupOpen = false; }">@comp</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="req-star me-1">*</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. الاضافات (خاص بالموردين: شروط الدفع، شرائح الخصم، مندوب المبيعات، مركز التكلفة بدون تأمين وبدون شريحة أسعار) -->
+                    <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                        <span class="fw-bold fs-6 text-dark section-header-title">الاضافات</span>
+                    </div>
+
+                    <div class="section-with-blue-line">
+                        <div class="full-width-stack" style="max-width: 620px;">
+                            <div class="field-entry-line">
+                                <span class="field-title">شروط الدفع</span>
+                                <select class="clean-input flex-1" @bind="supplierData.PaymentTerms">
+                                    <option value=""></option>
+                                    @foreach (var term in mockPaymentTerms)
+                                    {
+                                        <option value="@term">@term</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">شرائح الخصم</span>
+                                <select class="clean-input flex-1">
+                                    <option value=""></option>
+                                    <option>خصم توريدات الفئة أ (5%)</option>
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">مندوب المبيعات</span>
+                                <select class="clean-input flex-1" @bind="supplierData.SalesRepresentative">
+                                    <option value=""></option>
+                                    @foreach (var rep in mockSalesReps)
+                                    {
+                                        <option value="@rep">@rep</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="field-entry-line">
+                                <span class="field-title">مركز التكلفة</span>
+                                <select class="clean-input flex-1">
+                                    <option value=""></option>
+                                    <option>الفرع الرئيسي - الإدارة العامة</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab 2: الضرائب -->
+            @if (activeTab == 2)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">الضرائب</span></div>
+                    <div class="section-with-blue-line" style="max-width: 600px;">
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">يتعامل بالضريبة</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted fw-bold">@(supplierData.TaxEnabled ? "نعم" : "لا")</span>
+                                <label class="switch-toggle-label">
+                                    <input type="checkbox" class="switch-input" @bind="supplierData.TaxEnabled" />
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">نوع الحساب</span>
+                            <select class="clean-input flex-1" @bind="supplierData.TaxAccountType">
+                                <option value="شركة محلية">شركة محلية</option>
+                                <option value="شركة أجنبية">شركة أجنبية</option>
+                                <option value="شخص طبيعي">شخص طبيعي</option>
+                            </select>
+                            <span class="req-star me-1">*</span>
+                        </div>
+
+                        <!-- حقل الضريبة -->
+                        <div class="field-entry-line mb-3 pos-relative">
+                            <span class="field-title-wide">الضريبة</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxDropdownPopup">
+                                    <span class="combo-display-text">@supplierData.TaxType</span>
+                                    <div class="combo-icons-inside">
+                                        <button class="btn-inside-plus" type="button">+</button>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+                                @if (isTaxDropdownPopupOpen)
+                                {
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-code" style="width: 100px;">النسبة</div>
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 220px;">
+                                            @foreach (var tax in mockTaxList)
+                                            {
+                                                <div class="supplier-row @(supplierData.TaxType == tax.Name ? "active-row" : "")" @onclick="() => SelectTax(tax)">
+                                                    <div class="col-code" style="width: 100px;">@tax.Rate</div>
+                                                    <div class="col-name">@tax.Name</div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isTaxDropdownPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span class="req-star me-1">*</span>
+                        </div>
+
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">رقم التسجيل</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.TaxRegistrationNumber" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">البطاقة الضريبية</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.TaxCard" />
+                        </div>
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title-wide">مأمورية الضرائب</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.TaxAuthorityOffice" />
+                        </div>
+                        <div class="field-entry-line">
+                            <span class="field-title-wide">السجل التجاري</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.CommercialRegister" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab 3: بيانات الإتصال -->
+            @if (activeTab == 3)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">بيانات الاتصال</span></div>
+                    <div class="section-with-blue-line mb-4" style="max-width: 750px;">
+                        <div class="field-entry-line mb-3">
+                            <span class="field-title">التليفون</span>
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="supplierData.Phone1" />
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="supplierData.Phone2" />
+                            <input type="text" class="clean-input" style="width: 190px;" @bind="supplierData.Mobile" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line">
+                            <span class="field-title">البريد الإلكتروني</span>
+                            <input type="email" class="clean-input flex-1" @bind="supplierData.Email" />
+                        </div>
+                    </div>
+
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">العنوان</span></div>
+                    <div class="section-with-blue-line" style="max-width: 750px;">
+                        <!-- البلد -->
+                        <div class="field-entry-line mb-2 pos-relative">
+                            <span class="field-title">البلد</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCountryPopup">
+                                    <span class="combo-display-text">@supplierData.Country</span>
+                                    <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                </div>
+                                @if (isCountryPopupOpen)
+                                {
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 220px;">
+                                            @foreach (var c in mockCountryList)
+                                            {
+                                                <div class="supplier-row @(supplierData.Country == c ? "active-row" : "")" @onclick="() => { supplierData.Country = c; isCountryPopupOpen = false; }">
+                                                    <div class="col-name">@c</div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isCountryPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span class="req-star me-1">*</span>
+                        </div>
+
+                        <!-- المنطقة -->
+                        <div class="field-entry-line mb-2 pos-relative">
+                            <span class="field-title">المنطقة</span>
+                            <div class="dropdown-anchor flex-1">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleRegionPopup">
+                                    <span class="combo-display-text">@supplierData.Region</span>
+                                    <div class="combo-icons-inside">
+                                        <button class="btn-inside-plus" type="button">+</button>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+                                @if (isRegionPopupOpen)
+                                {
+                                    <div class="custom-supplier-grid-panel-advanced" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="supplier-grid-header">
+                                            <div class="col-name">الاسم</div>
+                                        </div>
+                                        <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            @foreach (var r in mockRegionList)
+                                            {
+                                                <div class="supplier-row @(supplierData.Region == r ? "active-row" : "")" @onclick="() => { supplierData.Region = r; isRegionPopupOpen = false; }">
+                                                    <div class="col-name">@r</div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <button type="button" class="btn-table-close" @onclick="() => isRegionPopupOpen = false">✕</button>
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="field-entry-line mb-2"><span class="field-title">المحافظة</span><input type="text" class="clean-input flex-1" @bind="supplierData.Governorate" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">المدينة</span><input type="text" class="clean-input flex-1" @bind="supplierData.City" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">الشارع</span><input type="text" class="clean-input flex-1" @bind="supplierData.Street" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">المعلم الرئيسي</span><input type="text" class="clean-input flex-1" @bind="supplierData.Landmark" /></div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">رقم المبنى</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.BuildingNo" />
+                            <span class="small text-muted ms-2">الدور</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.FloorNo" />
+                            <span class="small text-muted ms-2">الشقة</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.ApartmentNo" />
+                        </div>
+                        <div class="field-entry-line mb-2"><span class="field-title">الرقم المميز</span><input type="text" class="clean-input" style="width: 200px;" @bind="supplierData.UniqueNo" /><span class="small text-muted ms-2 me-2">الرقم البريدي</span><input type="text" class="clean-input flex-1" @bind="supplierData.PostalCode" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">العنوان</span><input type="text" class="clean-input flex-1" @bind="supplierData.FullAddress" /></div>
+                        <div class="field-entry-line mb-2"><span class="field-title">رقم الموقع العالمي</span><input type="text" class="clean-input flex-1" @bind="supplierData.GlobalSiteNo" /></div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab 4: بيانات إضافية (تم تعديل التوزيع ليتطابق تماماً مع صورة Desktop ERP) -->
+            @if (activeTab == 4)
+            {
+                <div class="tab-content-seamless">
+
+                    <!-- المفاتيح العلوية جهة اليسار/الوسط بمحاذاة الشاشة الأصلية -->
+                    <div class="d-flex flex-column align-items-end gap-2 mb-4 me-2" style="max-width: 600px; margin-right: auto;">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="supplierData.HasSerial" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="field-title text-end" style="width: 110px;">له مسلسل</span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="supplierData.IsDualRole" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="field-title text-end" style="width: 110px;">يتعامل ك عميل و</span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small text-muted">لا</span>
+                            <label class="switch-toggle-label">
+                                <input type="checkbox" class="switch-input" @bind="supplierData.UsesPoints" />
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="field-title text-end" style="width: 110px;">يتعامل بنقاط</span>
+                        </div>
+                    </div>
+
+                    <!-- الأعمدة: عمود "اخري" في اليمين وعمود "حقول اضافية" في اليسار -->
+                    <div class="two-column-form-grid" style="column-gap: 50px;">
+
+                        <!-- العمود الأيمن: اخري -->
+                        <div>
+                            <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                                <span class="fw-bold fs-6 text-dark section-header-title">اخري</span>
+                            </div>
+                            <div class="section-with-blue-line">
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">رقم الهوية</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.NationalId" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">جهة العمل</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Employer" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">الضامن الأول</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor1" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">الضامن الثاني</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.Guarantor2" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">رقم الحساب البنكي</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.BankAccountNo" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">اسم البنك</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.BankName" />
+                                </div>
+                                <div class="field-entry-line mb-2">
+                                    <span class="field-title">رقم الصفحة</span>
+                                    <input type="text" class="clean-input flex-1" @bind="supplierData.PageNo" />
+                                </div>
+                                <div class="field-entry-line align-items-start mb-2">
+                                    <span class="field-title pt-1">الملاحظات</span>
+                                    <textarea class="clean-input flex-1" rows="4" @bind="supplierData.Notes"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- العمود الأيسر: حقول اضافية -->
+                        <div>
+                            <div class="section-title-header mb-2 d-flex justify-content-end align-items-center">
+                                <span class="fw-bold fs-6 text-dark section-header-title">حقول اضافية</span>
+                            </div>
+                            <div class="section-with-blue-line">
+                                @for (int i = 1; i <= 8; i++)
+                                {
+                                    int idx = i;
+                                    <div class="field-entry-line mb-2">
+                                        <span class="field-title">الحقل @idx</span>
+                                        <div class="dropdown-anchor flex-1">
+                                            <div class="custom-combo-trigger">
+                                                <span class="combo-display-text"></span>
+                                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+            <!-- Tab 5: الانترنت -->
+            @if (activeTab == 5)
+            {
+                <div class="tab-content-seamless">
+                    <div class="section-title-header mb-3"><span class="fw-bold fs-6 text-dark">خدمة الانترنت</span></div>
+                    <div class="section-with-blue-line" style="max-width: 600px;">
+                        <div class="field-entry-line mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.EnableInternetAccess" />
+                                <span class="fw-bold text-dark">تفعيل الدخول عبر الانترنت</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">اسم المستخدم</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.InternetUsername" disabled="@(!supplierData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <span class="field-title">الرقم السري</span>
+                            <input type="password" class="clean-input flex-1" @bind="supplierData.InternetPassword" disabled="@(!supplierData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+                        <div class="field-entry-line mb-4">
+                            <span class="field-title">اسم العميل</span>
+                            <input type="text" class="clean-input flex-1" @bind="supplierData.InternetDisplayName" disabled="@(!supplierData.EnableInternetAccess)" />
+                            <span class="req-star me-1">*</span>
+                        </div>
+
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.AccessAvailableStock" />
+                                <span class="text-dark small">الاطلاع على أرصدة المخزون المتاحة</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.AccessItemPrices" />
+                                <span class="text-dark small">الاطلاع على أسعار الأصناف الموجودة</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.AccessPendingOrders" />
+                                <span class="text-dark small">الاطلاع على الطلبيات التي قامت بها الشركة ولم تأتي</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.AccessCreditLimit" />
+                                <span class="text-dark small">الاطلاع على حد الإئتمان له</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.SendComplaintsToCompany" />
+                                <span class="text-dark small">إرسال شكوى الى الشركة</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.EditOwnContactInfo" />
+                                <span class="text-dark small">إمكانية تعديل بيانات الاتصال الخاصه به</span>
+                            </div>
+                        </div>
+                        <div class="field-entry-line mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input m-0" @bind="supplierData.LimitDailyPurchaseOrders" />
+                                <span class="text-dark small">عدد طلبيات الشراء التي يقوم بها في اليوم</span>
+                                <input type="number" class="clean-input text-center ms-2" style="width: 60px;" @bind="supplierData.MaxDailyPurchaseOrders" />
+                                <span class="text-muted small">طلبية</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private int activeTab = 1;
+    private bool isBranchPopupOpen = false;
+    private bool isNestedPopupOpen = false;
+    private bool isCurrencyPopupOpen = false;
+    private bool isLedgerPopupOpen = false;
+    private bool isDealTypePopupOpen = false;
+    private bool isDealSidePopupOpen = false;
+    private bool isCompPopupOpen = false;
+    private bool isCreditCalcOpen = false;
+    private bool isTaxDropdownPopupOpen = false;
+    private bool isCountryPopupOpen = false;
+    private bool isRegionPopupOpen = false;
+
+    private string calcDisplay = "0";
+
+    private bool IsAnyPopupOpen() =>
+        isBranchPopupOpen ||
+        isNestedPopupOpen ||
+        isCurrencyPopupOpen ||
+        isLedgerPopupOpen ||
+        isDealTypePopupOpen ||
+        isDealSidePopupOpen ||
+        isCompPopupOpen ||
+        isCreditCalcOpen ||
+        isTaxDropdownPopupOpen ||
+        isCountryPopupOpen ||
+        isRegionPopupOpen;
+
+    private void ToggleBranchPopup() { bool wasOpen = isBranchPopupOpen; CloseAllPopups(); isBranchPopupOpen = !wasOpen; }
+    private void ToggleNestedPopup() { bool wasOpen = isNestedPopupOpen; CloseAllPopups(); isNestedPopupOpen = !wasOpen; }
+    private void ToggleCurrencyPopup() { bool wasOpen = isCurrencyPopupOpen; CloseAllPopups(); isCurrencyPopupOpen = !wasOpen; }
+    private void ToggleLedgerPopup() { bool wasOpen = isLedgerPopupOpen; CloseAllPopups(); isLedgerPopupOpen = !wasOpen; }
+    private void ToggleDealTypePopup() { bool wasOpen = isDealTypePopupOpen; CloseAllPopups(); isDealTypePopupOpen = !wasOpen; }
+    private void ToggleDealSidePopup() { bool wasOpen = isDealSidePopupOpen; CloseAllPopups(); isDealSidePopupOpen = !wasOpen; }
+    private void ToggleCompPopup() { bool wasOpen = isCompPopupOpen; CloseAllPopups(); isCompPopupOpen = !wasOpen; }
+    private void ToggleCreditCalc() { bool wasOpen = isCreditCalcOpen; CloseAllPopups(); isCreditCalcOpen = !wasOpen; }
+    private void ToggleTaxDropdownPopup() { bool wasOpen = isTaxDropdownPopupOpen; CloseAllPopups(); isTaxDropdownPopupOpen = !wasOpen; }
+    private void ToggleCountryPopup() { bool wasOpen = isCountryPopupOpen; CloseAllPopups(); isCountryPopupOpen = !wasOpen; }
+    private void ToggleRegionPopup() { bool wasOpen = isRegionPopupOpen; CloseAllPopups(); isRegionPopupOpen = !wasOpen; }
+
+    private void OpenNestedModal() { }
+    private void CloseAllPopups()
+    {
+        isBranchPopupOpen = false;
+        isNestedPopupOpen = false;
+        isCurrencyPopupOpen = false;
+        isLedgerPopupOpen = false;
+        isDealTypePopupOpen = false;
+        isDealSidePopupOpen = false;
+        isCompPopupOpen = false;
+        isCreditCalcOpen = false;
+        isTaxDropdownPopupOpen = false;
+        isCountryPopupOpen = false;
+        isRegionPopupOpen = false;
+    }
+
+    private void SaveData() { }
+
+    public class BranchItem { public string Name { get; set; } = ""; public string Code { get; set; } = ""; }
+    private List<BranchItem> mockBranchList = new()
+    {
+        new() { Name = "الفرع الرئيسي", Code = "1" },
+        new() { Name = "فرع قويسنا", Code = "2" },
+        new() { Name = "DEXEF", Code = "3" },
+        new() { Name = "فرع الإسكندرية", Code = "4" },
+        new() { Name = "فرع الجيزة", Code = "5" }
+    };
+    private void SelectBranch(string name) { supplierData.Branch = name; isBranchPopupOpen = false; }
+
+    public class CurrencyItem { public string Code { get; set; } = ""; public string Name { get; set; } = ""; public decimal Rate { get; set; } }
+    private List<CurrencyItem> mockCurrencyList = new()
+    {
+        new() { Code = "EGP", Name = "جنيه مصري", Rate = 1 },
+        new() { Code = "SAR", Name = "ريال سعودي", Rate = 13 },
+        new() { Code = "USD", Name = "دولار أمريكي", Rate = 48 },
+        new() { Code = "AED", Name = "درهم إماراتي", Rate = 13.2m },
+        new() { Code = "KWD", Name = "دينار كويتي", Rate = 158 }
+    };
+    private void SelectCurrency(CurrencyItem item) { supplierData.Currency = item.Code; supplierData.ExchangeRate = item.Rate; isCurrencyPopupOpen = false; }
+
+    public class TaxItem { public string Name { get; set; } = ""; public string Rate { get; set; } = ""; }
+    private List<TaxItem> mockTaxList = new()
+    {
+        new() { Name = "ضريبة القيمة المضافة 14%", Rate = "14" },
+        new() { Name = "ضريبة القيمة المضافة 15 %", Rate = "15" },
+        new() { Name = "ضريبة أرباح تجارية وصناعية 1%", Rate = "1" },
+        new() { Name = "ضريبة استقطاع 5%", Rate = "5" },
+        new() { Name = "ضريبة المقاولات والتوريد .5%", Rate = "0.5" }
+    };
+    private void SelectTax(TaxItem item) { supplierData.TaxType = item.Name; isTaxDropdownPopupOpen = false; }
+
+    private List<string> mockCountryList = new() { "مصر", "السعودية", "الإمارات", "الكويت", "الأردن", "الصين", "ألمانيا" };
+    private List<string> mockRegionList = new() { "القاهرة 1", "بنها", "قويسنا - شبين", "العاشر من رمضان" };
+
+    public class TreeNodeModel
+    {
+        public string Name { get; set; } = "";
+        public bool IsExpanded { get; set; } = true;
+        public List<TreeNodeModel> Children { get; set; } = new();
+    }
+
+    private List<TreeNodeModel> mockNestedTree = new()
+    {
+        new() { Name = "القسم التجاري الأول", Children = new() { new() { Name = "الموردين الرئيسيين" } } }
+    };
+
+    private List<TreeNodeModel> mockLedgerTree = new()
+    {
+        new() {
+            Name = "الخصوم المتداولة",
+            IsExpanded = true,
+            Children = new() {
+                new() { Name = "موردون" },
+                new() { Name = "أوراق الدفع" },
+                new() { Name = "مصروفات مستحقة" },
+                new() { Name = "دائنون مختلفون" }
+            }
+        }
+    };
+
+    private RenderFragment RenderNestedTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
+        <span class="col-name text-right">@node.Name</span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+    {
+@foreach (var child in node.Children)
+    {
+@RenderNestedTreeNode(child, onSelected)
+    }
+    }
+</text>;
+
+private RenderFragment RenderLedgerTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
+        <span class="col-name text-right">@node.Name</span>
+    </div>
+@if (node.IsExpanded && node.Children.Any())
+{
+    @foreach (var child in node.Children)
+    {
+        @RenderLedgerTreeNode(child, onSelected)
+    }
+}
+</text>;
+
+private List<string> mockPaymentTerms = new() { "نقدي فوراً", "أجل 15 يوم", "أجل 30 يوم", "أجل 60 يوم" };
+private List<string> mockSalesReps = new() { "أحمد محمد", "محمود إبراهيم", "عمرو دياب" };
+
+private void CalcPress(string val) { if (calcDisplay == "0" && val != ".") calcDisplay = val; else calcDisplay += val; }
+private void CalcClear() { calcDisplay = "0"; }
+private void CalcClearEntry() { calcDisplay = "0"; }
+private void CalcBack() { if (calcDisplay.Length > 1) calcDisplay = calcDisplay.Substring(0, calcDisplay.Length - 1); else calcDisplay = "0"; }
+private void CalcToggleSign() { if (calcDisplay.StartsWith("-")) calcDisplay = calcDisplay.Substring(1); else if (calcDisplay != "0") calcDisplay = "-" + calcDisplay; }
+private void CalcEquals()
+{
+    try
+    {
+        var dt = new System.Data.DataTable();
+        var res = dt.Compute(calcDisplay.Replace("x", "*"), "");
+        calcDisplay = res?.ToString() ?? "0";
+        if (decimal.TryParse(calcDisplay, out var d)) supplierData.CreditLimit = d;
+    }
+    catch { }
+}
+
+private SupplierModel supplierData = new()
+{
+    SupplierCode = "3",
+    Name = "",
+    IsActive = true,
+    OpeningBalanceDate = new DateTime(2026, 10, 1),
+    OpeningBalanceAmount = 0m,
+    Branch = "الفرع الرئيسي",
+    NestedWithin = "",
+    Currency = "EGP",
+    ExchangeRate = 0,
+    LedgerAccount = "موردون",
+    DefaultDealType = "كاش",
+    CreditLimit = 0m,
+    DealSide = "",
+    ComplementaryAccount = "الأرصدة الإفتتاحية",
+    PaymentTerms = "",
+    SalesRepresentative = "",
+    TaxEnabled = false,
+    TaxAccountType = "شركة محلية",
+    TaxType = "",
+    TaxRegistrationNumber = "",
+    TaxCard = "",
+    TaxAuthorityOffice = "",
+    CommercialRegister = "",
+    Phone1 = "",
+    Phone2 = "",
+    Mobile = "",
+    Email = "",
+    Country = "مصر",
+    Region = "",
+    Governorate = "",
+    City = "",
+    Street = "",
+    Landmark = "",
+    BuildingNo = "",
+    FloorNo = "",
+    ApartmentNo = "",
+    UniqueNo = "",
+    PostalCode = "",
+    FullAddress = "",
+    GlobalSiteNo = "",
+    HasSerial = false,
+    IsDualRole = false,
+    UsesPoints = false,
+    NationalId = "",
+    Employer = "",
+    Guarantor1 = "",
+    Guarantor2 = "",
+    BankAccountNo = "",
+    BankName = "",
+    PageNo = "",
+    Notes = "",
+    EnableInternetAccess = false,
+    InternetUsername = "",
+    InternetPassword = "",
+    InternetDisplayName = "",
+    AccessAvailableStock = false,
+    AccessItemPrices = false,
+    AccessPendingOrders = false,
+    AccessCreditLimit = false,
+    SendComplaintsToCompany = false,
+    EditOwnContactInfo = false,
+    LimitDailyPurchaseOrders = false,
+    MaxDailyPurchaseOrders = 0
+};
+
+public class SupplierModel
+{
+    public string SupplierCode { get; set; } = "";
+    public string Name { get; set; } = "";
+    public bool IsActive { get; set; }
+    public DateTime OpeningBalanceDate { get; set; } = DateTime.Today;
+    public decimal OpeningBalanceAmount { get; set; }
+    public string Branch { get; set; } = "";
+    public string NestedWithin { get; set; } = "";
+    public string Currency { get; set; } = "";
+    public decimal ExchangeRate { get; set; }
+    public string LedgerAccount { get; set; } = "";
+    public string DefaultDealType { get; set; } = "";
+    public decimal CreditLimit { get; set; }
+    public string DealSide { get; set; } = "";
+    public string ComplementaryAccount { get; set; } = "";
+    public string PaymentTerms { get; set; } = "";
+    public string SalesRepresentative { get; set; } = "";
+    public bool TaxEnabled { get; set; }
+    public string TaxAccountType { get; set; } = "";
+    public string TaxType { get; set; } = "";
+    public string TaxRegistrationNumber { get; set; } = "";
+    public string TaxCard { get; set; } = "";
+    public string TaxAuthorityOffice { get; set; } = "";
+    public string CommercialRegister { get; set; } = "";
+    public string Phone1 { get; set; } = "";
+    public string Phone2 { get; set; } = "";
+    public string Mobile { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Country { get; set; } = "";
+    public string Region { get; set; } = "";
+    public string Governorate { get; set; } = "";
+    public string City { get; set; } = "";
+    public string Street { get; set; } = "";
+    public string Landmark { get; set; } = "";
+    public string BuildingNo { get; set; } = "";
+    public string FloorNo { get; set; } = "";
+    public string ApartmentNo { get; set; } = "";
+    public string UniqueNo { get; set; } = "";
+    public string PostalCode { get; set; } = "";
+    public string FullAddress { get; set; } = "";
+    public string GlobalSiteNo { get; set; } = "";
+    public bool HasSerial { get; set; }
+    public bool IsDualRole { get; set; }
+    public bool UsesPoints { get; set; }
+    public string NationalId { get; set; } = "";
+    public string Employer { get; set; } = "";
+    public string Guarantor1 { get; set; } = "";
+    public string Guarantor2 { get; set; } = "";
+    public string BankAccountNo { get; set; } = "";
+    public string BankName { get; set; } = "";
+    public string PageNo { get; set; } = "";
+    public string Notes { get; set; } = "";
+    public bool EnableInternetAccess { get; set; }
+    public string InternetUsername { get; set; } = "";
+    public string InternetPassword { get; set; } = "";
+    public string InternetDisplayName { get; set; } = "";
+    public bool AccessAvailableStock { get; set; }
+    public bool AccessItemPrices { get; set; }
+    public bool AccessPendingOrders { get; set; }
+    public bool AccessCreditLimit { get; set; }
+    public bool SendComplaintsToCompany { get; set; }
+    public bool EditOwnContactInfo { get; set; }
+    public bool LimitDailyPurchaseOrders { get; set; }
+    public int MaxDailyPurchaseOrders { get; set; }
+}
+}
+
+<style>
+    .page-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 30px 40px;
+        box-sizing: border-box;
+        overflow: auto;
+        position: relative;
+    }
+
+    .global-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 1500;
+    }
+
+    .main-canvas {
+        display: flex;
+        flex-direction: row-reverse;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: 20px;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    .image-left-placeholder {
+        width: 100px;
+        height: 100px;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 15px;
+    }
+
+    .header-master-grid {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .image-right-block {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding-left: 15px;
+        user-select: none;
+        margin-bottom: 10px;
+    }
+
+    .orange-divider-line {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 3px;
+        height: 100px;
+        background-color: #e67e22;
+        border-radius: 2px;
+    }
+
+    .image-square {
+        width: 75px;
+        height: 75px;
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 6px;
+        overflow: hidden;
+    }
+
+    .user-avatar-icon {
+        font-size: 2.2rem;
+        color: #007bff;
+    }
+
+    .active-check-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .small-chk-label {
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .chk-box {
+        cursor: pointer;
+    }
+
+    .labels-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 2px;
+        margin-right: 10px;
+    }
+
+    .label-row-cell {
+        height: 31px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .hdr-lbl {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .controls-column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .supplier-controls-width {
+        width: 580px !important;
+    }
+
+    .form-row-compact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 31px;
+    }
+
+    .name-field-relative {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .barcode-main-input {
+        width: 250px;
+    }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .save-cell {
+        margin-right: 40px;
+        padding-top: 40px;
+    }
+
+    .btn-primary-custom {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 120px;
+    }
+
+    .tab-strip-bar {
+        display: flex;
+        justify-content: flex-start;
+        gap: 6px;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+
+    .strip-tab-btn {
+        border: none;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 5px 18px;
+        font-size: 0.85rem;
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .strip-tab-btn.active {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+    .tab-content-seamless {
+        background-color: transparent;
+        padding: 10px 0;
+        min-height: 480px;
+        box-sizing: border-box;
+    }
+
+    .section-with-blue-line {
+        border-right: 3px solid #007bff;
+        padding-right: 14px;
+    }
+
+    .section-title-header {
+        font-weight: bold;
+        color: #333333;
+    }
+
+    .section-header-title {
+        width: 100%;
+        text-align: right;
+    }
+
+    .two-column-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 40px;
+        row-gap: 12px;
+    }
+
+    .full-width-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 720px;
+    }
+
+    .field-entry-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        margin-bottom: 10px;
+    }
+
+    .field-title {
+        width: 125px;
+        min-width: 125px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .field-title-wide {
+        width: 140px;
+        min-width: 140px;
+        font-size: 0.85rem;
+        color: #333333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .flex-1 {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .clean-input {
+        border: 1px solid transparent;
+        border-bottom: 3px solid transparent;
+        border-radius: 3px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-bottom 0.15s ease-in-out;
+    }
+
+    input.clean-input:focus, textarea.clean-input:focus, select.clean-input:focus {
+        border-color: #ced4da;
+        border: 1px solid transparent;
+        border-bottom: 3px solid #007bff !important;
+        box-shadow: none;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+        user-select: none;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        flex: 1;
+        text-align: right;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: auto;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .btn-inside-plus {
+        border: none;
+        background: transparent;
+        color: #495057;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+    }
+
+    .dropdown-anchor {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .custom-dropdown-panel, .custom-supplier-grid-panel-advanced, .custom-table-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        border-radius: 4px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .panel-scroll-content, .supplier-grid-rows, .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .panel-checkbox-row, .supplier-row, .table-popup-row {
+        display: flex;
+        align-items: center;
+        font-size: 0.83rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .panel-checkbox-row:hover, .supplier-row:hover, .table-popup-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .supplier-grid-header, .table-popup-header {
+        display: flex;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.82rem;
+        color: #333;
+        padding: 4px;
+    }
+
+    .col-code {
+        width: 90px;
+        padding: 4px;
+        text-align: center;
+    }
+
+    .col-name {
+        flex: 1;
+        padding: 4px;
+        text-align: right;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 4px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .active-row {
+        background-color: #d8e8fc !important;
+    }
+
+    .calc-desktop-popup {
+        position: absolute;
+        top: 34px;
+        right: 0;
+        width: 300px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        border-radius: 6px;
+        z-index: 4000;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        direction: ltr;
+    }
+
+    .calc-screen {
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: left;
+        color: #333;
+    }
+
+    .calc-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+    }
+
+    .calc-btn {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        .calc-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .calc-op, .calc-mem {
+        background-color: #007bff;
+    }
+
+    .span-col-2 {
+        grid-column: span 2;
+    }
+
+    .switch-toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+        margin: 0;
+    }
+
+    .switch-input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .2s;
+        border-radius: 20px;
+    }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+    .switch-input:checked + .switch-slider {
+        background-color: #007bff;
+    }
+
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(16px);
+        }
+
+    .badge-signal-bars {
+        font-size: 0.9rem;
+        margin-right: auto;
+        color: #b01078;
+    }
+</style>
