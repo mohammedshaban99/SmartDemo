@@ -679,7 +679,6 @@
     }
 
     .main-canvas {
-        max-width: 1200px;
         width: 100%;
         margin: 0 auto;
         border-top: solid 2px #2ea466;
@@ -886,19 +885,22 @@
             }
 
     .clean-input {
-        border: 1px solid #ced4da;
+        border: 1px solid transparent;
+        border-bottom: 3px solid transparent;
         border-radius: 3px;
         padding: 4px 8px;
         font-size: 0.85rem;
         background-color: #ffffff;
         outline: none;
         box-sizing: border-box;
-        transition: border 0.15s ease-in-out;
+        transition: border-bottom 0.15s ease-in-out;
     }
 
     input.clean-input:focus {
-        border-color: #2ea466 !important;
-        box-shadow: 0 0 0 0.15rem rgba(46, 164, 102, 0.25);
+        border-color: #ced4da;
+        border: 1px solid transparent;
+        border-bottom: 3px solid #007bff !important;
+        box-shadow: none;
     }
 
     .odd-grid-row {
