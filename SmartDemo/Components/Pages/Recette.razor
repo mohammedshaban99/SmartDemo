@@ -1,0 +1,1280 @@
+﻿@page "/Recette"
+@using SmartDemo.Components.Shared
+@rendermode InteractiveServer
+
+<div class="page-viewport" dir="rtl" @onclick="CloseAllPopups">
+    <!-- Global transparent backdrop when any popup is open to catch outside clicks -->
+    @if (IsAnyPopupOpen())
+    {
+        <div class="global-dropdown-backdrop" @onclick="CloseAllPopups" @onclick:stopPropagation></div>
+    }
+
+    <!-- Main Canvas -->
+    <div class="main-canvas" @onclick:stopPropagation>
+        <!-- Green Banner Title in Center -->
+        <div class="recette-title-banner-root">
+            <div class="recette-title-banner">
+                <span>الإيرادات</span>
+            </div>
+        </div>
+
+        <!-- Top Header Area: Display Mode (Left) & Statement (Right) -->
+        <div class="recette-header-row mb-3">
+            <!-- Statement (البيان) -->
+            <div class="recette-top-field flex-column align-items-start gap-1" style="width: 320px;">
+                <div class="d-flex align-items-center gap-1">
+                    <span class="hdr-lbl">البيان</span>
+                    <span class="req-star">*</span>
+                </div>
+                <input type="text" class="clean-input w-100" @bind="recetteData.Statement" />
+            </div>
+            <div class="recette-top-field pos-relative flex-column align-items-start gap-1">
+                <span class="hdr-lbl">طريقة العرض</span>
+                <div class="dropdown-anchor dropdown-anchor-width" style="width: 200px;">
+                    <div class="custom-combo-trigger" @onclick:stopPropagation>
+                        <span class="combo-display-text" @onclick="OpenSaveDisplayModeModal">@selectedDisplayMode</span>
+                        <div class="combo-icons-inside combo-icons-inside-width">
+                            <span class="combo-arrow" @onclick="OpenSaveDisplayModeModal" style="cursor: pointer;">▼</span>
+                            <span class="btn-inside-plus" @onclick="OpenDisplayModeManagerModal" @onclick:stopPropagation style="cursor: pointer;">...</span>
+                            <span class="combo-arrow" @onclick="ToggleThirdIconPopup" @onclick:stopPropagation style="cursor: pointer;">▼</span>
+                        </div>
+                    </div>
+
+                    @if (isThirdIconPopupOpen)
+                    {
+                        <div class="custom-table-popup custom-accounts-dropdown" style="width: 280px; right: auto; left: 0;" @onclick:stopPropagation>
+                            <div class="table-popup-header d-flex justify-content-between align-items-center">
+                                <span class="col-name text-right">الاسم</span>
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
+                            </div>
+                            <div class="table-popup-list" style="height: 180px;"></div>
+                            <div class="table-popup-footer">
+                                <button type="button" class="btn-table-close" @onclick="() => isThirdIconPopupOpen = false">✕</button>
+                                <span class="resizer-dots">⠿</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Second Row: الضريبة -> رقم المرجع # -> مركز التكلفة -->
+        <div class="recette-filter-row mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <!-- الضريبة -->
+                <div class="recette-filter-group pos-relative">
+                    <span class="hdr-lbl">الضريبة</span>
+                    <div class="dropdown-anchor" style="width: 170px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleTaxPopup">
+                            <span class="combo-display-text">@recetteData.Tax</span>
+                            <div class="combo-icons-inside">
+                                @if (!string.IsNullOrEmpty(recetteData.Tax))
+                                {
+                                    <span class="clear-icon" @onclick="ClearTax" @onclick:stopPropagation>✕</span>
+                                }
+                                <span class="combo-arrow">▼</span>
+                            </div>
+                        </div>
+                        @if (isTaxPopupOpen)
+                        {
+                            <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                <div class="table-popup-header d-flex justify-content-between">
+                                    <span class="col-name text-right">الاسم</span>
+                                    <span class="col-code text-left">النسبة</span>
+                                </div>
+                                <div class="table-popup-list" style="height: 180px;"></div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isTaxPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- رقم المرجع # -->
+                <div class="recette-filter-group">
+                    <span class="hdr-lbl">رقم المرجع #</span>
+                    <input type="text" class="clean-input text-center" style="width: 130px;" @bind="recetteData.ReferenceNumber" />
+                </div>
+
+                <!-- مركز التكلفة -->
+                <div class="recette-filter-group pos-relative">
+                    <span class="hdr-lbl">مركز التكلفة</span>
+                    <div class="dropdown-anchor" style="width: 170px;">
+                        <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCostCenterPopup">
+                            <span class="combo-display-text">@recetteData.CostCenter</span>
+                            <div class="combo-icons-inside">
+                                @if (!string.IsNullOrEmpty(recetteData.CostCenter))
+                                {
+                                    <span class="clear-icon" @onclick="ClearCostCenter" @onclick:stopPropagation>✕</span>
+                                }
+                                <span class="combo-arrow">▼</span>
+                            </div>
+                        </div>
+                        @if (isCostCenterPopupOpen)
+                        {
+                            <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                <div class="table-popup-header d-flex justify-content-between">
+                                    <span class="col-name text-right">الاسم</span>
+                                    <span class="col-code text-left">الكود</span>
+                                </div>
+                                <div class="table-popup-list" style="height: 180px;"></div>
+                                <div class="table-popup-footer">
+                                    <button type="button" class="btn-table-close" @onclick="() => isCostCenterPopupOpen = false">✕</button>
+                                    <span class="resizer-dots">⠿</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Table Section with Clean Inactive Rows -->
+        <div class="section-with-green-line mb-4">
+            <div class="table-scroll-wrapper">
+                <table class="item-details-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;" >الرقم</th>
+                            <th style="width: 250px;">نوع الايراد</th>
+                            <th style="width: 180px;">المبلغ</th>
+                            <th>الشرح</th>
+                            <th style="width: 32px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < recetteData.RecetteRows.Count; i++)
+                        {
+                            var index = i;
+                            var row = recetteData.RecetteRows[i];
+                            var isActive = index == activeRowIndex;
+                            var isEven = index % 2 == 1;
+
+                            <tr class="@(isActive ? "active-grid-row" : (isEven ? "even-grid-row" : "odd-grid-row"))" @onclick="() => ActivateRow(index)">
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 text-center active-cell-input" @value="row.Number" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateNumber(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@(!string.IsNullOrEmpty(row.Number) ? row.Number : "")</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 text-center active-cell-input" @value="row.RevenueType" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateRevenueType(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@row.RevenueType</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="number" class="clean-input w-100 text-center active-cell-input" @value="row.Amount" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateAmount(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell text-center">@(row.Amount != 0 ? row.Amount.ToString() : "")</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <input type="text" class="clean-input w-100 active-cell-input" @value="row.Description" @value:after="() => OnRowInput(index)" @oninput="@(e => UpdateDescription(row, e.Value?.ToString()))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="table-static-cell">@row.Description</div>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (isActive)
+                                    {
+                                        <span class="text-danger fw-bold" style="cursor: pointer;" @onclick="() => PromptDeleteRow(row)">✕</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bottom Total Row Banner -->
+        <div class="recette-total-display-bar mb-4">
+            <span class="total-number-display">0</span>
+        </div>
+
+        <!-- 4. Footer Section -->
+        <div class="recette-footer-grid">
+            <div class="recette-footer-right-side">
+                <!-- طريقة الدفع -->
+                <div class="field-entry-line pos-relative">
+                    <span class="field-title">طريقة الدفع</span>
+                    <div class="d-flex align-items-center gap-2 flex-1">
+                        <!-- نوع الدفع -->
+                        <div class="d-flex flex-column gap-1" style="width: 110px;">
+                            <span class="sub-field-lbl">النوع</span>
+                            <div class="dropdown-anchor pos-relative w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentMethodPopup">
+                                    <div class="combo-icons-inside w-100 d-flex justify-content-between">
+                                        <span class="ico-swap">@GetSelectedPaymentIcon()</span>
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isPaymentMethodPopupOpen)
+                                {
+                                    <div class="custom-dropdown-panel payment-method-dropdown-panel custom-payment-dropdown-styled" @onclick:stopPropagation>
+                                        <div class="panel-scroll-content">
+                                            <div class="panel-checkbox-row custom-payment-row @(recetteData.PaymentMethod == "خزينة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("خزينة")'>
+                                                <span class="checkbox-label">خزينة</span>
+                                                <span class="payment-icon-slot">🛒</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(recetteData.PaymentMethod == "بنك" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("بنك")'>
+                                                <span class="checkbox-label">بنك</span>
+                                                <span class="payment-icon-slot">🏠</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(recetteData.PaymentMethod == "ماكينة نقاط البيع" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("ماكينة نقاط البيع")'>
+                                                <span class="checkbox-label">ماكينة نقاط البيع</span>
+                                                <span class="payment-icon-slot">💳</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(recetteData.PaymentMethod == "عهدَة" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("عهدَة")'>
+                                                <span class="checkbox-label">عهدَة</span>
+                                                <span class="payment-icon-slot">🚶‍♂️</span>
+                                            </div>
+                                            <div class="panel-checkbox-row custom-payment-row @(recetteData.PaymentMethod == "حساب استاذ" ? "active-row" : "")" @onclick='() => SelectPaymentMethod("حساب استاذ")'>
+                                                <span class="checkbox-label">حساب استاذ</span>
+                                                <span class="payment-icon-slot">🏷️</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- اسم الحساب -->
+                        <div class="d-flex flex-column gap-1 flex-1">
+                            <span class="sub-field-lbl">اسم الحساب</span>
+                            <div class="dropdown-anchor pos-relative w-100">
+                                <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePaymentGridPopup">
+                                    <span class="combo-display-text">@recetteData.PaymentMethodName</span>
+                                    <div class="combo-icons-inside">
+                                        <span class="combo-arrow">▼</span>
+                                    </div>
+                                </div>
+
+                                @if (isPaymentGridPopupOpen)
+                                {
+                                    <div class="custom-table-popup custom-accounts-dropdown payment-grid-popup-box" @onclick:stopPropagation>
+                                        <div class="table-popup-header d-flex justify-content-between align-items-center">
+                                            <button type="button" class="btn-table-close" @onclick="() => isPaymentGridPopupOpen = false">✕</button>
+                                            <div class="d-flex gap-3">
+                                                <span class="col-code text-center" style="width: 70px;">النوع</span>
+                                                <span class="col-name text-right" style="width: 140px;">اسم الحساب</span>
+                                            </div>
+                                        </div>
+                                        <div class="table-popup-list" style="height: 150px;">
+                                            <div class="supplier-row active-row d-flex justify-content-between align-items-center p-2 cursor-pointer" @onclick='() => SelectPaymentGridItem("0", "الخزينة الرئيسية", "EGP")'>
+                                                <span class="col-code text-center" style="width: 70px;">EGP</span>
+                                                <span class="col-name text-right" style="width: 140px;">الخزينة الرئيسية</span>
+                                            </div>
+                                        </div>
+                                        <div class="table-popup-footer">
+                                            <span class="resizer-dots">⠿</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-1 mt-3">
+                            <span class="req-star">*</span>
+                            <span class="small font-weight-bold">@recetteData.PaymentTypeCode</span>
+                            <span class="small font-weight-bold">EGP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العملة -->
+                <div class="field-entry-line">
+                    <span class="field-title">العمله</span>
+                    <div class="d-flex align-items-center gap-2 flex-1">
+                        <div class="dropdown-anchor flex-1 pos-relative">
+                            <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleCurrencyPopup">
+                                <span class="combo-display-text">@recetteData.Currency</span>
+                                <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                            </div>
+                            @if (isCurrencyPopupOpen)
+                            {
+                                <div class="custom-table-popup custom-accounts-dropdown" @onclick:stopPropagation>
+                                    <div class="supplier-grid-header d-flex justify-content-between">
+                                        <div class="col-code text-center" style="width: 80px;">الكود</div>
+                                        <div class="col-name text-right flex-1">الاسم</div>
+                                        <div class="col-action text-center" style="width: 80px;">المعامل</div>
+                                    </div>
+                                    <div class="supplier-grid-rows" style="max-height: 150px;">
+                                        <div class="supplier-row active-row d-flex justify-content-between align-items-center" @onclick='() => SelectCurrency("EGP", "جنيه مصري", 1)'>
+                                            <div class="col-code text-center" style="width: 80px;">EGP</div>
+                                            <div class="col-name text-right flex-1">جنيه مصري</div>
+                                            <div class="col-action text-center" style="width: 80px;">1</div>
+                                        </div>
+                                    </div>
+                                    <div class="table-popup-footer">
+                                        <button type="button" class="btn-table-close" @onclick="() => isCurrencyPopupOpen = false">✕</button>
+                                        <span class="resizer-dots">⠿</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <input type="number" class="clean-input text-center" style="width: 90px;" @bind="recetteData.CurrencyRate" />
+                        <span class="req-star">*</span>
+                    </div>
+                </div>
+
+                <!-- الملاحظات -->
+                <div class="field-entry-line">
+                    <span class="field-title">الملاحظات</span>
+                    <input type="text" class="clean-input flex-1" @bind="recetteData.Notes" />
+                </div>
+
+                <!-- Buttons Area -->
+                <div class="d-flex align-items-center gap-2 mt-3 justify-content-end">
+                    <button type="button" class="btn-action-custom btn-save-custom" @onclick="SaveData">حفظ</button>
+                    <button type="button" class="btn-action-custom btn-print-custom" @onclick="OnSaveAndPrint">حفظ و طباعة</button>
+                    <button type="button" class="btn-action-custom btn-close-custom" @onclick="OnClose">إغلاق</button>
+                </div>
+            </div>
+            <div class="recette-footer-left-side">
+                <div class="recette-summary-box">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span>الاجمالي قبل الضريبة:</span>
+                        <span class="summary-val">0</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>الضرائب :</span>
+                        <span class="summary-val">0</span>
+                    </div>
+                </div>
+
+                <div class="floating-badge-left">
+                    <span class="floating-badge-number">0</span>
+                </div>
+            </div>
+
+           
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODALS SECTION ================= -->
+<ConfirmDeleteModal @bind-IsOpen="isConfirmDeleteModalOpen"
+                    Message="هل تريد الحذف ؟"
+                    OnConfirmed="ConfirmDeleteRow"
+                    OnCancelled="CancelDeleteRow" />
+
+@if (isSaveDisplayModeModalOpen)
+{
+    <div class="global-dropdown-backdrop" @onclick="CloseSaveDisplayModeModal" @onclick:stopPropagation></div>
+    <div class="exact-center-dialog-overlay" @onclick:stopPropagation>
+        <div class="save-display-mode-card">
+            <div class="save-card-header">
+                <button type="button" class="save-card-close-btn" @onclick="CloseSaveDisplayModeModal">✕</button>
+            </div>
+            <div class="save-card-body">
+                <div class="save-card-content">
+                    <span class="save-card-question">هل تريد حفظ العرض؟</span>
+                    <div class="save-card-circle-icon">?</div>
+                </div>
+            </div>
+            <div class="save-card-footer">
+                <button type="button" class="btn-card-action btn-card-yes" @onclick="ConfirmSaveDisplayMode">نعم</button>
+                <button type="button" class="btn-card-action btn-card-no" @onclick="CloseSaveDisplayModeModal">لا</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDisplayModeManagerModalOpen)
+{
+    <div class="global-dropdown-backdrop" @onclick="CloseDisplayModeManagerModal" @onclick:stopPropagation></div>
+    <div class="exact-center-dialog-overlay" @onclick:stopPropagation>
+        <div class="exact-center-dialog">
+            <div class="exact-center-dialog-header">
+                <button type="button" class="exact-center-close-btn" @onclick="CloseDisplayModeManagerModal">✕</button>
+            </div>
+            <div class="exact-center-dialog-table-header">
+                <table class="w-100 mb-0" style="border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th class="text-right">الاسم</th>
+                            <th class="text-center" style="width: 70px;">تعديل</th>
+                            <th class="text-center" style="width: 70px;">حذف</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="exact-center-dialog-body">
+                <table class="table w-100 mb-0" style="border-collapse: collapse;">
+                    <tbody>
+                        @for (int i = 1; i <= 15; i++)
+                        {
+                            <tr>
+                                <td class="text-right">طريقة عرض رقم @i</td>
+                                <td class="text-center" style="width: 70px;">
+                                    <span class="text-primary fw-bold" style="cursor: pointer;">✏</span>
+                                </td>
+                                <td class="text-center" style="width: 70px;">
+                                    <span class="text-danger fw-bold" style="cursor: pointer;">✖</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="exact-center-dialog-footer">
+                <button type="button" class="btn-center-action btn-center-close" @onclick="CloseDisplayModeManagerModal">إغلاق</button>
+                <button type="button" class="btn-center-action btn-center-add">إضافة</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string selectedDisplayMode = "افتراضي";
+    private bool isThirdIconPopupOpen = false;
+    private bool isCostCenterPopupOpen = false;
+    private bool isTaxPopupOpen = false;
+    private bool isPaymentMethodPopupOpen = false;
+    private bool isPaymentGridPopupOpen = false;
+    private bool isCurrencyPopupOpen = false;
+    private bool isDisplayModeManagerModalOpen = false;
+    private bool isSaveDisplayModeModalOpen = false;
+
+    private int activeRowIndex = 0;
+    private bool isConfirmDeleteModalOpen = false;
+    private RecetteRowModel? rowPendingDelete;
+
+    private RecetteModel recetteData = new()
+    {
+        ReferenceNumber = "",
+        CostCenter = "",
+        Tax = "",
+        Statement = "",
+        PaymentMethod = "خزينة",
+        PaymentMethodName = "الخزينة الرئيسية",
+        PaymentTypeCode = "0",
+        CurrencyRate = 1,
+        Currency = "EGP",
+        Notes = "",
+        RecetteRows = Enumerable.Range(1, 12).Select(i => new RecetteRowModel
+        {
+            Number = i == 1 ? "1" : "",
+            RevenueType = "",
+            Amount = 0,
+            Description = ""
+        }).ToList()
+    };
+
+    private bool IsAnyPopupOpen() =>
+        isThirdIconPopupOpen ||
+        isCostCenterPopupOpen ||
+        isTaxPopupOpen ||
+        isPaymentMethodPopupOpen ||
+        isPaymentGridPopupOpen ||
+        isCurrencyPopupOpen ||
+        isDisplayModeManagerModalOpen ||
+        isSaveDisplayModeModalOpen;
+
+    private void CloseAllPopups()
+    {
+        isThirdIconPopupOpen = false;
+        isCostCenterPopupOpen = false;
+        isTaxPopupOpen = false;
+        isPaymentMethodPopupOpen = false;
+        isPaymentGridPopupOpen = false;
+        isCurrencyPopupOpen = false;
+        isDisplayModeManagerModalOpen = false;
+        isSaveDisplayModeModalOpen = false;
+    }
+
+    private void OpenSaveDisplayModeModal()
+    {
+        CloseAllPopups();
+        isSaveDisplayModeModalOpen = true;
+    }
+
+    private void CloseSaveDisplayModeModal() => isSaveDisplayModeModalOpen = false;
+    private void ConfirmSaveDisplayMode() => isSaveDisplayModeModalOpen = false;
+
+    private void OpenDisplayModeManagerModal()
+    {
+        CloseAllPopups();
+        isDisplayModeManagerModalOpen = true;
+    }
+
+    private void CloseDisplayModeManagerModal() => isDisplayModeManagerModalOpen = false;
+
+    private void ActivateRow(int index)
+    {
+        if (index <= activeRowIndex || IsRowFilled(recetteData.RecetteRows[index - 1]))
+        {
+            activeRowIndex = index;
+        }
+    }
+
+    private void UpdateNumber(RecetteRowModel row, string? val) => row.Number = val ?? "";
+    private void UpdateRevenueType(RecetteRowModel row, string? val) => row.RevenueType = val ?? "";
+    private void UpdateAmount(RecetteRowModel row, string? val)
+    {
+        if (decimal.TryParse(val, out var result))
+            row.Amount = result;
+        else
+            row.Amount = 0;
+    }
+    private void UpdateDescription(RecetteRowModel row, string? val) => row.Description = val ?? "";
+
+    private void OnRowInput(int index)
+    {
+        var row = recetteData.RecetteRows[index];
+        if (IsRowFilled(row) && index == activeRowIndex && index < recetteData.RecetteRows.Count - 1)
+        {
+            activeRowIndex = index + 1;
+            if (string.IsNullOrEmpty(recetteData.RecetteRows[activeRowIndex].Number))
+            {
+                recetteData.RecetteRows[activeRowIndex].Number = (activeRowIndex + 1).ToString();
+            }
+        }
+    }
+
+    private bool IsRowFilled(RecetteRowModel row) =>
+        !string.IsNullOrWhiteSpace(row.RevenueType) || row.Amount > 0 || !string.IsNullOrWhiteSpace(row.Description);
+
+    private string GetSelectedPaymentIcon() => recetteData.PaymentMethod switch
+    {
+        "خزينة" => "🛒",
+        "بنك" => "🏠",
+        "ماكينة نقاط البيع" => "💳",
+        "عهدَة" => "🚶‍♂️",
+        "حساب استاذ" => "🏷️",
+        _ => "🛒"
+    };
+
+    private void ToggleThirdIconPopup()
+    {
+        bool wasOpen = isThirdIconPopupOpen;
+        CloseAllPopups();
+        isThirdIconPopupOpen = !wasOpen;
+    }
+
+    private void ToggleCostCenterPopup() { bool wasOpen = isCostCenterPopupOpen; CloseAllPopups(); isCostCenterPopupOpen = !wasOpen; }
+    private void ToggleTaxPopup() { bool wasOpen = isTaxPopupOpen; CloseAllPopups(); isTaxPopupOpen = !wasOpen; }
+    private void TogglePaymentMethodPopup() { bool wasOpen = isPaymentMethodPopupOpen; CloseAllPopups(); isPaymentMethodPopupOpen = !wasOpen; }
+    private void TogglePaymentGridPopup() { bool wasOpen = isPaymentGridPopupOpen; CloseAllPopups(); isPaymentGridPopupOpen = !wasOpen; }
+    private void ToggleCurrencyPopup() { bool wasOpen = isCurrencyPopupOpen; CloseAllPopups(); isCurrencyPopupOpen = !wasOpen; }
+
+    private void ClearTax() => recetteData.Tax = "";
+    private void ClearCostCenter() => recetteData.CostCenter = "";
+
+    private void SelectPaymentMethod(string method)
+    {
+        recetteData.PaymentMethod = method;
+        isPaymentMethodPopupOpen = false;
+    }
+
+    private void SelectPaymentGridItem(string code, string name, string account)
+    {
+        recetteData.PaymentTypeCode = code;
+        recetteData.PaymentMethodName = name;
+        isPaymentGridPopupOpen = false;
+    }
+
+    private void SelectCurrency(string code, string name, decimal rate)
+    {
+        recetteData.Currency = code;
+        recetteData.CurrencyRate = rate;
+        isCurrencyPopupOpen = false;
+    }
+
+    private void PromptDeleteRow(RecetteRowModel row)
+    {
+        rowPendingDelete = row;
+        isConfirmDeleteModalOpen = true;
+    }
+
+    private void ConfirmDeleteRow()
+    {
+        if (rowPendingDelete != null && recetteData.RecetteRows.Count > 1)
+        {
+            recetteData.RecetteRows.Remove(rowPendingDelete);
+        }
+        rowPendingDelete = null;
+        isConfirmDeleteModalOpen = false;
+    }
+
+    private void CancelDeleteRow()
+    {
+        rowPendingDelete = null;
+        isConfirmDeleteModalOpen = false;
+    }
+
+    private void SaveData() { }
+    private void OnSaveAndPrint() { }
+    private void OnClose() { }
+
+    public class RecetteModel
+    {
+        public string ReferenceNumber { get; set; } = "";
+        public string CostCenter { get; set; } = "";
+        public string Tax { get; set; } = "";
+        public string Statement { get; set; } = "";
+        public string PaymentMethod { get; set; } = "خزينة";
+        public string PaymentMethodName { get; set; } = "الخزينة الرئيسية";
+        public string PaymentTypeCode { get; set; } = "0";
+        public decimal CurrencyRate { get; set; } = 1;
+        public string Currency { get; set; } = "EGP";
+        public string Notes { get; set; } = "";
+        public List<RecetteRowModel> RecetteRows { get; set; } = new();
+    }
+
+    public class RecetteRowModel
+    {
+        public string Number { get; set; } = "";
+        public string RevenueType { get; set; } = "";
+        public decimal Amount { get; set; }
+        public string Description { get; set; } = "";
+    }
+}
+
+<style>
+    .page-viewport {
+        background-color: #f1f3f6;
+        min-height: 100vh;
+        width: 100%;
+        padding: 30px 40px;
+        box-sizing: border-box;
+        overflow: auto;
+        display: flex;
+        position: relative;
+        direction: rtl;
+    }
+
+    .pos-relative {
+        position: relative;
+    }
+
+    .global-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 1500;
+    }
+
+    .main-canvas {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        border-top: solid 2px #2ea466;
+    }
+
+    .recette-title-banner-root {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .recette-title-banner {
+        background: #2ea466;
+        color: white;
+        width: 200px;
+        text-align: center;
+        padding: 8px 16px;
+        font-weight: bold;
+        font-size: 1.05rem;
+    }
+
+    .recette-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-top: 10px;
+    }
+
+    .recette-top-field {
+        display: flex;
+    }
+
+        .recette-top-field .hdr-lbl,
+        .recette-filter-group .hdr-lbl {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+
+    .recette-filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 15px;
+    }
+
+    .recette-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .recette-total-display-bar {
+        text-align: center;
+    }
+
+    .total-number-display {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .recette-footer-grid {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .recette-footer-right-side {
+        width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .recette-footer-left-side {
+        width: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .recette-summary-box {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .summary-val {
+        font-weight: bold;
+        color: #222;
+    }
+
+    .floating-badge-left {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #111;
+        padding-top: 10px;
+    }
+
+    .btn-action-custom {
+        padding: 7px 18px;
+        font-size: 0.9rem;
+        min-width: 110px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid #ced4da;
+        background-color: #ffffff;
+        color: #333;
+        border-radius: 2px;
+        text-align: center;
+    }
+
+        .btn-action-custom:hover {
+            background-color: #f8f9fa;
+        }
+
+    .custom-dropdown-panel {
+        position: absolute;
+        top: 34px !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        box-sizing: border-box;
+    }
+
+    .panel-scroll-content {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .panel-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        font-size: 0.83rem;
+        cursor: pointer;
+        text-align: right;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+        .panel-checkbox-row:hover {
+            background-color: #e9f2ff;
+        }
+
+    .custom-payment-dropdown-styled {
+        top: 34px !important;
+        right: auto !important;
+        left: 0 !important;
+        width: 190px !important;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .custom-payment-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        position: relative;
+        border-bottom: none;
+        border-top: 1px solid #f0f0f0;
+    }
+
+        .custom-payment-row:first-child {
+            border-top: none;
+        }
+
+        .custom-payment-row .checkbox-label {
+            order: 1;
+            flex: 1;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #222;
+        }
+
+        .custom-payment-row .payment-icon-slot {
+            order: 2;
+            margin-left: 0;
+            font-size: 0.95rem;
+        }
+
+        .custom-payment-row.active-row {
+            background-color: #eef3fb !important;
+        }
+
+            .custom-payment-row.active-row::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background-color: #2ea466;
+            }
+
+    .clean-input {
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border 0.15s ease-in-out;
+    }
+
+    input.clean-input:focus {
+        border-color: #2ea466 !important;
+        box-shadow: 0 0 0 0.15rem rgba(46, 164, 102, 0.25);
+    }
+
+    .odd-grid-row {
+        background-color: #ffffff;
+    }
+
+    .even-grid-row {
+        background-color: #f7f9fc;
+    }
+
+    .active-grid-row {
+        background-color: #dbe2e6 !important;
+    }
+
+    .active-cell-input {
+        border: 1px solid #80bdff !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .table-static-cell {
+        padding: 4px 8px;
+        min-height: 28px;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+    .custom-combo-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 2px 8px;
+        height: 31px;
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+        user-select: none;
+    }
+
+    .combo-display-text {
+        font-size: 0.84rem;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        flex: 1;
+        text-align: right;
+    }
+
+    .combo-icons-inside {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 2;
+    }
+
+    .combo-arrow {
+        font-size: 0.6rem;
+        color: #6c757d;
+    }
+
+    .clear-icon {
+        font-size: 0.75rem;
+        color: #777;
+        cursor: pointer;
+        padding: 0 2px;
+    }
+
+        .clear-icon:hover {
+            color: #000;
+        }
+
+    .custom-table-popup {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        direction: rtl;
+        top: 34px;
+    }
+
+    .payment-grid-popup-box {
+        width: 280px !important;
+        right: auto !important;
+        left: 0 !important;
+    }
+
+    .table-popup-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.83rem;
+        color: #333;
+        padding: 5px 8px;
+    }
+
+    .table-popup-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .table-popup-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #dee2e6;
+        padding: 3px 8px;
+        background-color: #fdfdfd;
+    }
+
+    .btn-table-close {
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .resizer-dots {
+        color: #aaa;
+        font-size: 0.80rem;
+    }
+
+    .field-entry-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 31px;
+    }
+
+    .field-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #333;
+        width: 75px;
+        white-space: nowrap;
+    }
+
+    .sub-field-lbl {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #555;
+        text-align: right;
+    }
+
+    .req-star {
+        color: #dc3545;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    .item-details-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .item-details-table th, .item-details-table td {
+            padding: 6px 8px;
+            font-size: 0.85rem;
+        }
+
+        .item-details-table th {
+            color: #333;
+            background: transparent;
+            font-weight: 700;
+        }
+
+    .combo-icons-inside.combo-icons-inside-width {
+        width: 60px;
+        justify-content: space-between;
+    }
+
+    .exact-center-dialog-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2500;
+        background: rgba(0, 0, 0, 0.35);
+    }
+
+    .save-display-mode-card {
+        background: #f8f9fa;
+        width: 480px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        direction: rtl;
+        overflow: hidden;
+    }
+
+    .save-card-header {
+        padding: 8px 12px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: transparent;
+    }
+
+    .save-card-close-btn {
+        background: transparent;
+        border: none;
+        color: #333333;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .save-card-body {
+        padding: 30px 40px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .save-card-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        width: 100%;
+    }
+
+    .save-card-question {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .save-card-circle-icon {
+        width: 44px;
+        height: 44px;
+        background-color: #85bdfd;
+        color: #0b5ed7;
+        font-size: 1.6rem;
+        font-weight: 900;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+
+    .save-card-footer {
+        background-color: #ffffff;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px solid #eef0f3;
+    }
+
+    .btn-card-action {
+        width: 110px;
+        padding: 8px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        border: 1px solid transparent;
+        transition: opacity 0.15s;
+    }
+
+        .btn-card-action:hover {
+            opacity: 0.9;
+        }
+
+    .btn-card-no {
+        background-color: #007bff;
+        color: #ffffff;
+        border-color: #007bff;
+    }
+
+    .btn-card-yes {
+        background-color: #a6a6a6;
+        color: #ffffff;
+        border-color: #a6a6a6;
+    }
+
+    .exact-center-dialog {
+        background: #ffffff;
+        width: 480px;
+        height: 400px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        direction: rtl;
+        overflow: hidden;
+    }
+
+    .exact-center-dialog-header {
+        padding: 8px 12px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .exact-center-close-btn {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .exact-center-dialog-table-header {
+        background-color: #f1f3f5;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+        .exact-center-dialog-table-header th,
+        .exact-center-dialog-body td {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+    .exact-center-dialog-body {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .exact-center-dialog-footer {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-center-action {
+        padding: 6px 24px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 1px solid #ced4da;
+    }
+
+    .btn-center-close {
+        background-color: #0d6efd;
+        color: #ffffff;
+        border-color: #0d6efd;
+    }
+
+    .btn-center-add {
+        background-color: #adb5bd;
+        color: #ffffff;
+        border-color: #adb5bd;
+    }
+</style>
