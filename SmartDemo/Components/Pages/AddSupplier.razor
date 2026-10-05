@@ -948,7 +948,7 @@
 
             <!-- Main Modal Body Layout -->
             <div class="nested-dialog-body">
-                <!-- 1. Far Right side Column: Image Box & Active Checkbox -->
+                <!-- 2. Far Right side Column: Image Box & Active Checkbox -->
                 <div class="nested-avatar-column">
                     <div class="nested-avatar-card">
                         <svg class="nested-avatar-svg" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -962,7 +962,7 @@
                         <label for="chkModalActive" class="nested-active-text">نشط</label>
                     </div>
                 </div>
-                <!-- 2. Left  Side Column: Inputs & Content -->
+                <!-- 1. Left Side Column: Inputs & Content -->
                 <div class="nested-content-main">
 
                     <!-- Section 1: بيانات أساسية -->
@@ -972,7 +972,6 @@
                         <!-- Row 1: الكود -->
                         <div class="nested-field-row">
                             <span class="nested-field-label">الكود</span>
-                       
                             <div class="nested-control-box">
                                 <input type="text" class="nested-clean-input nested-code-input" @bind="newNestedModel.Code" />
                             </div>
@@ -982,7 +981,6 @@
                         <!-- Row 2: الاسم -->
                         <div class="nested-field-row">
                             <span class="nested-field-label">الاسم</span>
-                         
                             <div class="nested-control-box">
                                 <input type="text" class="nested-clean-input nested-full-input" @bind="newNestedModel.Name" />
                             </div>
@@ -992,21 +990,16 @@
                         <!-- Row 3: اسم الفرع -->
                         <div class="nested-field-row">
                             <span class="nested-field-label">اسم الفرع</span>
-                        
-                            <div class="nested-control-box pos-relative d-flex align-items-center">
-                                <div class="nested-combo-input-shell nested-full-input" @onclick="ToggleModalBranchPopup">
+
+                            <!-- Anchor Wraps Combo and its Dropdown directly -->
+                            <div class="nested-anchor-box">
+                                <div class="nested-combo-input-shell nested-full-input" @onclick:stopPropagation @onclick="ToggleModalBranchPopup">
                                     <span class="nested-combo-text">@newNestedModel.Branch</span>
                                     <div class="nested-combo-btn-square">
                                         <span class="nested-arrow-glyph">▼</span>
                                     </div>
                                 </div>
-                                <span class="nested-req-star">*</span>
-                                <div class="nested-all-branches-inline">
-                                    <input type="checkbox" id="chkModalAllBranches" class="chk-box" @bind="newNestedModel.AllBranches" />
-                                    <label for="chkModalAllBranches" class="nested-all-branches-lbl">كل الفروع</label>
-                                </div>
 
-                                <!-- Branch Dropdown Table Popup -->
                                 @if (isModalBranchPopupOpen)
                                 {
                                     <div class="nested-branch-dropdown-table" @onclick:stopPropagation>
@@ -1031,7 +1024,13 @@
                                     </div>
                                 }
                             </div>
-                            
+
+                            <span class="nested-req-star">*</span>
+
+                            <div class="nested-all-branches-inline">
+                                <input type="checkbox" id="chkModalAllBranches" class="chk-box" @bind="newNestedModel.AllBranches" />
+                                <label for="chkModalAllBranches" class="nested-all-branches-lbl">كل الفروع</label>
+                            </div>
                         </div>
 
                     </div>
@@ -1043,16 +1042,15 @@
                         <!-- Row 1: يوجد بداخل -->
                         <div class="nested-field-row">
                             <span class="nested-field-label">يوجد بداخل</span>
-                          
-                            <div class="nested-control-box pos-relative">
-                                <div class="nested-combo-input-shell nested-full-input" @onclick="ToggleModalParentGroupPopup">
+
+                            <div class="nested-anchor-box">
+                                <div class="nested-combo-input-shell nested-full-input" @onclick:stopPropagation @onclick="ToggleModalParentGroupPopup">
                                     <span class="nested-combo-text">@newNestedModel.ParentGroup</span>
                                     <div class="nested-combo-btn-square">
                                         <span class="nested-arrow-glyph">▼</span>
                                     </div>
                                 </div>
 
-                                <!-- Parent Group Dropdown Table Popup -->
                                 @if (isModalParentGroupPopupOpen)
                                 {
                                     <div class="nested-group-dropdown-table" @onclick:stopPropagation>
@@ -1079,15 +1077,15 @@
                         <div class="nested-field-row">
                             <span class="nested-field-label">تظهر مع</span>
                             <span class="nested-req-spacer"></span>
-                            <div class="nested-control-box pos-relative">
-                                <div class="nested-combo-input-shell nested-compact-combo" @onclick="ToggleModalShowWithPopup">
+
+                            <div class="nested-anchor-box">
+                                <div class="nested-combo-input-shell nested-compact-combo" @onclick:stopPropagation @onclick="ToggleModalShowWithPopup">
                                     <span class="nested-combo-text">@newNestedModel.ShowWith</span>
                                     <div class="nested-combo-btn-square">
                                         <span class="nested-arrow-glyph">▼</span>
                                     </div>
                                 </div>
 
-                                <!-- Show With Options Popup -->
                                 @if (isModalShowWithPopupOpen)
                                 {
                                     <div class="nested-showwith-dropdown" @onclick:stopPropagation>
@@ -1230,25 +1228,29 @@
     private void ToggleModalBranchPopup()
     {
         bool wasOpen = isModalBranchPopupOpen;
+        CloseModalPopups();
         isModalBranchPopupOpen = !wasOpen;
-        isModalParentGroupPopupOpen = false;
-        isModalShowWithPopupOpen = false;
     }
 
     private void ToggleModalParentGroupPopup()
     {
         bool wasOpen = isModalParentGroupPopupOpen;
+        CloseModalPopups();
         isModalParentGroupPopupOpen = !wasOpen;
-        isModalBranchPopupOpen = false;
-        isModalShowWithPopupOpen = false;
     }
 
     private void ToggleModalShowWithPopup()
     {
         bool wasOpen = isModalShowWithPopupOpen;
+        CloseModalPopups();
         isModalShowWithPopupOpen = !wasOpen;
+    }
+
+    private void CloseModalPopups()
+    {
         isModalBranchPopupOpen = false;
         isModalParentGroupPopupOpen = false;
+        isModalShowWithPopupOpen = false;
     }
 
     private void SaveNestedModal()
@@ -1318,7 +1320,10 @@
         isCreditCalcOpen ||
         isTaxDropdownPopupOpen ||
         isCountryPopupOpen ||
-        isRegionPopupOpen;
+        isRegionPopupOpen ||
+        isModalBranchPopupOpen ||
+        isModalParentGroupPopupOpen ||
+        isModalShowWithPopupOpen;
 
     private void ToggleBranchPopup() { bool wasOpen = isBranchPopupOpen; CloseAllPopups(); isBranchPopupOpen = !wasOpen; }
     private void ToggleNestedPopup() { bool wasOpen = isNestedPopupOpen; CloseAllPopups(); isNestedPopupOpen = !wasOpen; }
@@ -1349,6 +1354,7 @@
         isTaxDropdownPopupOpen = false;
         isCountryPopupOpen = false;
         isRegionPopupOpen = false;
+        CloseModalPopups();
         CloseAllTierCalcs();
     }
 
@@ -2727,7 +2733,12 @@ public class SupplierModel
         align-items: center;
     }
 
-    /* Modal Field Clean Styles matching exact design */
+    /* Modal Anchor wrapper ensures exact positioning */
+    .nested-anchor-box {
+        position: relative;
+        display: inline-block;
+    }
+
     .nested-clean-input {
         border: 1px solid transparent;
         border-bottom: 2px solid transparent;
@@ -2766,7 +2777,6 @@ public class SupplierModel
         padding: 6px 8px;
     }
 
-    /* Modal Custom Combo Box */
     .nested-combo-input-shell {
         display: flex;
         align-items: center;
@@ -2780,7 +2790,6 @@ public class SupplierModel
         box-sizing: border-box;
         user-select: none;
         transition: border-bottom 0.15s ease-in-out;
-        position: relative;
     }
 
         .nested-combo-input-shell:focus-within {
@@ -2826,7 +2835,6 @@ public class SupplierModel
         white-space: nowrap;
     }
 
-    /* Modal Far-Left Sidebar: Avatar Card & Active Checkbox */
     .nested-avatar-column {
         display: flex;
         flex-direction: column;
@@ -2840,7 +2848,6 @@ public class SupplierModel
         width: 60px;
         height: 60px;
         background-color: #ffffff;
-        border: 1px solid #dcdfe3;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -2868,7 +2875,6 @@ public class SupplierModel
         cursor: pointer;
     }
 
-    /* Modal Action Buttons: حفظ & إغلاق */
     .nested-modal-footer-buttons {
         display: flex;
         align-items: center;
@@ -2887,10 +2893,10 @@ public class SupplierModel
         justify-content: center;
     }
 
-    /* Modal Dropdown Panels */
+    /* Modal Dropdown Panels - anchored firmly below trigger */
     .nested-branch-dropdown-table, .nested-group-dropdown-table {
         position: absolute;
-        top: 32px;
+        top: calc(100% + 2px);
         right: 0;
         width: 340px;
         background: #ffffff;
@@ -2900,6 +2906,19 @@ public class SupplierModel
         z-index: 6000;
         display: flex;
         flex-direction: column;
+    }
+
+    .nested-showwith-dropdown {
+        position: absolute;
+        top: calc(100% + 2px);
+        right: 0;
+        width: 150px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        border-radius: 4px;
+        z-index: 6000;
+        padding: 3px 0;
     }
 
     .nested-table-header {
@@ -2937,19 +2956,6 @@ public class SupplierModel
         border-top: 1px solid #dee2e6;
         padding: 4px 8px;
         background-color: #fdfdfd;
-    }
-
-    .nested-showwith-dropdown {
-        position: absolute;
-        top: 32px;
-        right: 0;
-        width: 150px;
-        background: #ffffff;
-        border: 1px solid #ced4da;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-        border-radius: 4px;
-        z-index: 6000;
-        padding: 3px 0;
     }
 
     .nested-showwith-option {
