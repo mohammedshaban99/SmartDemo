@@ -113,7 +113,7 @@
                                                 {
                                                     <div class="supplier-row @(supplierData.Branch == b.Name ? "active-row" : "")" @onclick="() => SelectBranch(b.Name)">
                                                         <div class="col-code">@b.Code</div>
-                                                        <div class="col-name">@b.Name</div>                                             
+                                                        <div class="col-name">@b.Name</div>
                                                     </div>
                                                 }
                                             </div>
@@ -144,11 +144,11 @@
                                     </div>
                                     @if (isNestedPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="custom-supplier-grid-panel-advanced" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
                                             <div class="supplier-grid-header">
-                                                <div class="col-name">الاسم</div>
+                                                <div class="col-name w-100">الاسم</div>
                                             </div>
-                                            <div class="supplier-grid-rows" style="max-height: 200px;">
+                                            <div class="supplier-grid-rows" style="max-height: 220px;">
                                                 @foreach (var node in mockNestedTree)
                                                 {
                                                     @RenderNestedTreeNode(node, name => { supplierData.NestedWithin = name; isNestedPopupOpen = false; })
@@ -211,14 +211,15 @@
                                     </div>
                                     @if (isLedgerPopupOpen)
                                     {
-                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 480px; left: 0; right: auto;" @onclick:stopPropagation>
                                             <div class="supplier-grid-header">
-                                                <div class="col-name">الاسم</div>
+                                                <div class="col-code text-center" style="width: 90px;">الكود</div>
+                                                <div class="col-name text-right">الاسم</div>
                                             </div>
-                                            <div class="supplier-grid-rows" style="max-height: 200px;">
-                                                @foreach (var node in mockLedgerTree)
+                                            <div class="supplier-grid-rows" style="max-height: 240px;">
+                                                @foreach (var node in accountsTreeList)
                                                 {
-                                                    @RenderLedgerTreeNode(node, name => { supplierData.LedgerAccount = name; isLedgerPopupOpen = false; })
+                                                    @RenderAccountsTreeNode(node, supplierData.LedgerAccount, name => { supplierData.LedgerAccount = name; isLedgerPopupOpen = false; })
                                                 }
                                             </div>
                                             <div class="table-popup-footer">
@@ -357,12 +358,20 @@
                                     </div>
                                     @if (isCompPopupOpen)
                                     {
-                                        <div class="custom-dropdown-panel" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
-                                            <div class="panel-scroll-content">
-                                                @foreach (var comp in new[] { "الأرصدة الإفتتاحية", "حساب الأرباح والخسائر" })
+                                        <div class="custom-table-popup accounts-tree-dropdown-panel" style="width: 480px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-code text-center" style="width: 90px;">الكود</div>
+                                                <div class="col-name text-right">الاسم</div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 240px;">
+                                                @foreach (var node in accountsTreeList)
                                                 {
-                                                    <div class="panel-checkbox-row" @onclick="() => { supplierData.ComplementaryAccount = comp; isCompPopupOpen = false; }">@comp</div>
+                                                    @RenderAccountsTreeNode(node, supplierData.ComplementaryAccount, name => { supplierData.ComplementaryAccount = name; isCompPopupOpen = false; })
                                                 }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isCompPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
                                             </div>
                                         </div>
                                     }
@@ -379,6 +388,33 @@
 
                     <div class="section-with-blue-line">
                         <div class="full-width-stack">
+                            <!-- شريحة الاسعار -->
+                            <div class="field-entry-line pos-relative">
+                                <span class="field-title">شريحة الاسعار</span>
+                                <div class="dropdown-anchor flex-control-wrap">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="TogglePriceTierPopup">
+                                        <span class="combo-display-text">@supplierData.PriceTier</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isPriceTierPopupOpen)
+                                    {
+                                        <div class="custom-dropdown-panel price-tier-dropdown" style="width: 100%; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="panel-scroll-content">
+                                                @foreach (var pt in priceTierList)
+                                                {
+                                                    <div class="price-tier-row @(supplierData.PriceTier == pt ? "active-price-tier" : "")"
+                                                         @onclick="() => { supplierData.PriceTier = pt; isPriceTierPopupOpen = false; }">
+                                                        <span class="tier-indicator-bar"></span>
+                                                        <span class="tier-label">@pt</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- شروط الدفع -->
                             <div class="field-entry-line">
                                 <span class="field-title">شروط الدفع</span>
                                 <select class="clean-input flex-control-wrap" @bind="supplierData.PaymentTerms">
@@ -389,13 +425,102 @@
                                     }
                                 </select>
                             </div>
-                            <div class="field-entry-line">
+
+                            <!-- شرائح الخصم (Popup with Discount Table, Delete & Inline Calculator) -->
+                            <div class="field-entry-line pos-relative">
                                 <span class="field-title">شرائح الخصم</span>
-                                <select class="clean-input flex-control-wrap">
-                                    <option value=""></option>
-                                    <option>خصم توريدات الفئة أ (5%)</option>
-                                </select>
+                                <div class="dropdown-anchor flex-control-wrap">
+                                    <div class="custom-combo-trigger" @onclick:stopPropagation @onclick="ToggleDiscountTiersPopup">
+                                        <span class="combo-display-text">@supplierData.DiscountTier</span>
+                                        <div class="combo-icons-inside"><span class="combo-arrow">▼</span></div>
+                                    </div>
+                                    @if (isDiscountTiersPopupOpen)
+                                    {
+                                        <div class="custom-supplier-grid-panel-advanced discount-tiers-popup-box" style="width: 440px; left: 0; right: auto;" @onclick:stopPropagation>
+                                            <div class="supplier-grid-header">
+                                                <div class="col-act" style="width: 35px;"></div>
+                                                <div class="col-name text-right">الاسم</div>
+                                                <div class="col-code text-center" style="width: 100px;">النسبة</div>
+                                              
+                                                <div class="col-act" style="width: 30px;"></div>
+                                            </div>
+                                            <div class="supplier-grid-rows" style="max-height: 220px;">
+                                                @foreach (var dt in discountTiersList)
+                                                {
+                                                    <div class="supplier-row align-items-center @(supplierData.DiscountTier == dt.Name ? "active-row" : "")"
+                                                         @onclick="() => SelectDiscountTier(dt.Name)">
+
+                                                        <!-- Name Column -->
+                                                        <div class="col-name text-right pe-2">
+                                                            @dt.Name
+                                                        </div>
+                                                        <!-- Rate Input with Calc Trigger Dropdown -->
+                                                        <div class="col-code pos-relative" style="width: 100px;" @onclick:stopPropagation>
+                                                            <div class="rate-combo-wrapper" @onclick="() => ToggleTierCalc(dt)">
+                                                                <span class="combo-arrow me-1">▼</span>
+                                                                <input type="number" class="clean-input text-center p-0 flex-1 border-0"
+                                                                       @bind="dt.Rate" @onclick:stopPropagation @onfocus="() => OpenTierCalc(dt)" />
+                                                            </div>
+
+                                                            @if (activeCalcTier == dt && dt.IsCalcOpen)
+                                                            {
+                                                                <div class="calc-popup-box calc-desktop-popup tier-calc-pos" @onclick:stopPropagation>
+                                                                    <div class="calc-screen">@tierCalcDisplay</div>
+                                                                    <div class="calc-grid">
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcAction("C")'>C</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcAction("CE")'>CE</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcAction("Back")'>Back</button>
+                                                                        <button type="button" class="calc-btn calc-op"></button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("sqrt")'>sqrt</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("/")'>/</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("9")'>9</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("8")'>8</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("7")'>7</button>
+                                                                        <button type="button" class="calc-btn calc-mem">MC</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("%")'>%</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("*")'>*</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("6")'>6</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("5")'>5</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("4")'>4</button>
+                                                                        <button type="button" class="calc-btn calc-mem">MR</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("x/1")'>x/1</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("-")'>-</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("3")'>3</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("2")'>2</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("1")'>1</button>
+                                                                        <button type="button" class="calc-btn calc-mem">MS</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcAction("=")'>=</button>
+                                                                        <button type="button" class="calc-btn calc-op" @onclick='() => TierCalcPress("+")'>+</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress(".")'>.</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcAction("-/+")'>-/+</button>
+                                                                        <button type="button" class="calc-btn" @onclick='() => TierCalcPress("0")'>0</button>
+                                                                        <button type="button" class="calc-btn calc-mem">+M</button>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+
+                                                     
+
+                                                        <div class="col-act text-muted small text-center" style="width: 30px;">✎</div>
+
+                                                        <!-- Delete Trigger Column -->
+                                                        <div class="col-act text-center" style="width: 35px;" @onclick:stopPropagation @onclick="() => RequestDeleteDiscountTier(dt)">
+                                                            <span class="delete-icon-cross">✕</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="table-popup-footer">
+                                                <button type="button" class="btn-table-close" @onclick="() => isDiscountTiersPopupOpen = false">✕</button>
+                                                <span class="resizer-dots">⠿</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
+
+                            <!-- مندوب المبيعات -->
                             <div class="field-entry-line">
                                 <span class="field-title">مندوب المبيعات</span>
                                 <select class="clean-input flex-control-wrap" @bind="supplierData.SalesRepresentative">
@@ -406,6 +531,8 @@
                                     }
                                 </select>
                             </div>
+
+                            <!-- مركز التكلفة -->
                             <div class="field-entry-line">
                                 <span class="field-title">مركز التكلفة</span>
                                 <select class="clean-input flex-control-wrap">
@@ -753,6 +880,35 @@
     </div>
 </div>
 
+<!-- ================= DELETE CONFIRMATION MODAL ================= -->
+@if (isConfirmDeleteModalOpen)
+{
+    <div class="modal-backdrop-blur" @onclick="CancelDeleteTier">
+        <div class="confirm-delete-dialog" dir="rtl" @onclick:stopPropagation>
+            <div class="confirm-delete-header">
+                <button type="button" class="btn-dialog-close" @onclick="CancelDeleteTier">✕</button>
+            </div>
+            <div class="confirm-delete-body">
+                <div class="confirm-delete-icon-wrap">
+                    <div class="trash-icon-art">
+                        🗑️<span class="trash-cross">✕</span>
+                    </div>
+                </div>
+                <div class="confirm-delete-content">
+                    <span class="confirm-delete-title">هل تريد الحذف ؟</span>
+                </div>
+            
+
+
+            </div>
+            <div class="confirm-delete-footer">
+                <button type="button" class="btn-confirm-delete-yes" @onclick="ConfirmDeleteTier">نعم</button>
+                <button type="button" class="btn-confirm-delete-no" @onclick="CancelDeleteTier">لا</button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private int activeTab = 1;
     private bool isBranchPopupOpen = false;
@@ -762,12 +918,22 @@
     private bool isDealTypePopupOpen = false;
     private bool isDealSidePopupOpen = false;
     private bool isCompPopupOpen = false;
+    private bool isPriceTierPopupOpen = false;
+    private bool isDiscountTiersPopupOpen = false;
     private bool isCreditCalcOpen = false;
     private bool isTaxDropdownPopupOpen = false;
     private bool isCountryPopupOpen = false;
     private bool isRegionPopupOpen = false;
 
     private string calcDisplay = "0";
+
+    /* Confirmation Modal States */
+    private bool isConfirmDeleteModalOpen = false;
+    private DiscountTierItem? tierPendingDelete = null;
+
+    /* Calculator for Discount Tier row */
+    private DiscountTierItem? activeCalcTier = null;
+    private string tierCalcDisplay = "0";
 
     private bool IsAnyPopupOpen() =>
         isBranchPopupOpen ||
@@ -777,6 +943,8 @@
         isDealTypePopupOpen ||
         isDealSidePopupOpen ||
         isCompPopupOpen ||
+        isPriceTierPopupOpen ||
+        isDiscountTiersPopupOpen ||
         isCreditCalcOpen ||
         isTaxDropdownPopupOpen ||
         isCountryPopupOpen ||
@@ -789,6 +957,8 @@
     private void ToggleDealTypePopup() { bool wasOpen = isDealTypePopupOpen; CloseAllPopups(); isDealTypePopupOpen = !wasOpen; }
     private void ToggleDealSidePopup() { bool wasOpen = isDealSidePopupOpen; CloseAllPopups(); isDealSidePopupOpen = !wasOpen; }
     private void ToggleCompPopup() { bool wasOpen = isCompPopupOpen; CloseAllPopups(); isCompPopupOpen = !wasOpen; }
+    private void TogglePriceTierPopup() { bool wasOpen = isPriceTierPopupOpen; CloseAllPopups(); isPriceTierPopupOpen = !wasOpen; }
+    private void ToggleDiscountTiersPopup() { bool wasOpen = isDiscountTiersPopupOpen; CloseAllPopups(); isDiscountTiersPopupOpen = !wasOpen; }
     private void ToggleCreditCalc() { bool wasOpen = isCreditCalcOpen; CloseAllPopups(); isCreditCalcOpen = !wasOpen; }
     private void ToggleTaxDropdownPopup() { bool wasOpen = isTaxDropdownPopupOpen; CloseAllPopups(); isTaxDropdownPopupOpen = !wasOpen; }
     private void ToggleCountryPopup() { bool wasOpen = isCountryPopupOpen; CloseAllPopups(); isCountryPopupOpen = !wasOpen; }
@@ -804,13 +974,145 @@
         isDealTypePopupOpen = false;
         isDealSidePopupOpen = false;
         isCompPopupOpen = false;
+        isPriceTierPopupOpen = false;
+        isDiscountTiersPopupOpen = false;
         isCreditCalcOpen = false;
         isTaxDropdownPopupOpen = false;
         isCountryPopupOpen = false;
         isRegionPopupOpen = false;
+        CloseAllTierCalcs();
     }
 
     private void SaveData() { }
+
+    private List<string> priceTierList = new()
+    {
+        "سعر اخر تعامل",
+        "سعر البيع",
+        "التكلفة",
+        "سعر العملاء المميزين"
+    };
+
+    /* Discount Tier Model & List */
+    public class DiscountTierItem
+    {
+        public string Name { get; set; } = "";
+        public decimal Rate { get; set; } = 0;
+        public bool IsCalcOpen { get; set; } = false;
+    }
+
+    private List<DiscountTierItem> discountTiersList = new()
+    {
+        new() { Name = "خصم توريدات الفئة أ (5%)", Rate = 5 },
+        new() { Name = "خصم نقدي تجاري (2%)", Rate = 2 },
+        new() { Name = "خصم تعجيل الدفع (3%)", Rate = 3 },
+        new() { Name = "خصم كميات خاص", Rate = 0 }
+    };
+
+    private void SelectDiscountTier(string tierName)
+    {
+        supplierData.DiscountTier = tierName;
+        isDiscountTiersPopupOpen = false;
+    }
+
+    private void RequestDeleteDiscountTier(DiscountTierItem tier)
+    {
+        tierPendingDelete = tier;
+        isConfirmDeleteModalOpen = true;
+    }
+
+    private void ConfirmDeleteTier()
+    {
+        if (tierPendingDelete != null)
+        {
+            if (supplierData.DiscountTier == tierPendingDelete.Name)
+            {
+                supplierData.DiscountTier = "";
+            }
+            discountTiersList.Remove(tierPendingDelete);
+            tierPendingDelete = null;
+        }
+        isConfirmDeleteModalOpen = false;
+    }
+
+    private void CancelDeleteTier()
+    {
+        tierPendingDelete = null;
+        isConfirmDeleteModalOpen = false;
+    }
+
+    private void CloseAllTierCalcs()
+    {
+        foreach (var t in discountTiersList)
+        {
+            t.IsCalcOpen = false;
+        }
+        activeCalcTier = null;
+    }
+
+    private void ToggleTierCalc(DiscountTierItem tier)
+    {
+        bool wasOpen = tier.IsCalcOpen;
+        CloseAllTierCalcs();
+        tier.IsCalcOpen = !wasOpen;
+        if (tier.IsCalcOpen)
+        {
+            activeCalcTier = tier;
+            tierCalcDisplay = tier.Rate.ToString();
+        }
+    }
+
+    private void OpenTierCalc(DiscountTierItem tier)
+    {
+        CloseAllTierCalcs();
+        tier.IsCalcOpen = true;
+        activeCalcTier = tier;
+        tierCalcDisplay = tier.Rate.ToString();
+    }
+
+    private void TierCalcPress(string val)
+    {
+        if (tierCalcDisplay == "0" && val != ".") tierCalcDisplay = val;
+        else tierCalcDisplay += val;
+        ApplyTierCalcResult();
+    }
+
+    private void TierCalcAction(string action)
+    {
+        switch (action)
+        {
+            case "C":
+            case "CE":
+                tierCalcDisplay = "0";
+                break;
+            case "Back":
+                if (tierCalcDisplay.Length > 1) tierCalcDisplay = tierCalcDisplay.Substring(0, tierCalcDisplay.Length - 1);
+                else tierCalcDisplay = "0";
+                break;
+            case "-/+":
+                if (tierCalcDisplay.StartsWith("-")) tierCalcDisplay = tierCalcDisplay.Substring(1);
+                else if (tierCalcDisplay != "0") tierCalcDisplay = "-" + tierCalcDisplay;
+                break;
+            case "=":
+                try
+                {
+                    var dt = new System.Data.DataTable();
+                    var res = dt.Compute(tierCalcDisplay.Replace("x", "*"), "");
+                    tierCalcDisplay = res?.ToString() ?? "0";
+                }
+                catch { }
+                break;
+        }
+        ApplyTierCalcResult();
+    }
+
+    private void ApplyTierCalcResult()
+    {
+        if (activeCalcTier != null && decimal.TryParse(tierCalcDisplay, out var val))
+        {
+            activeCalcTier.Rate = val;
+        }
+    }
 
     public class BranchItem { public string Name { get; set; } = ""; public string Code { get; set; } = ""; }
     private List<BranchItem> mockBranchList = new()
@@ -848,35 +1150,50 @@
     private List<string> mockCountryList = new() { "مصر", "السعودية", "الإمارات", "الكويت", "الأردن", "الصين", "ألمانيا" };
     private List<string> mockRegionList = new() { "القاهرة 1", "بنها", "قويسنا - شبين", "العاشر من رمضان" };
 
-    public class TreeNodeModel
+    /* Nested within Tree Models */
+    public class NestedTreeNodeModel
     {
         public string Name { get; set; } = "";
+        public int Level { get; set; } = 0;
         public bool IsExpanded { get; set; } = true;
-        public List<TreeNodeModel> Children { get; set; } = new();
+        public List<NestedTreeNodeModel> Children { get; set; } = new();
     }
 
-    private List<TreeNodeModel> mockNestedTree = new()
+    private List<NestedTreeNodeModel> mockNestedTree = new()
     {
-        new() { Name = "القسم التجاري الأول", Children = new() { new() { Name = "الموردين الرئيسيين" } } }
-    };
-
-    private List<TreeNodeModel> mockLedgerTree = new()
-    {
-        new() {
-            Name = "الخصوم المتداولة",
+        new()
+        {
+            Name = "القسم التجاري الأول",
+            Level = 0,
             IsExpanded = true,
-            Children = new() {
-                new() { Name = "موردون" },
-                new() { Name = "أوراق الدفع" },
-                new() { Name = "مصروفات مستحقة" },
-                new() { Name = "دائنون مختلفون" }
-            }
+            Children = new() { new() { Name = "الموردين الرئيسيين", Level = 1 } }
+        },
+        new()
+        {
+            Name = "القسم التجاري الثاني",
+            Level = 0,
+            IsExpanded = false,
+            Children = new() { new() { Name = "موردي الأغذية", Level = 1 }, new() { Name = "موردي الأجهزة", Level = 1 } }
         }
     };
 
-    private RenderFragment RenderNestedTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
-    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
-        <span class="col-name text-right">@node.Name</span>
+    private RenderFragment RenderNestedTreeNode(NestedTreeNodeModel node, Action<string> onSelected) => @<text>
+    <div class="supplier-row @(supplierData.NestedWithin == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 18 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <div class="col-name d-flex align-items-center">
+            @if (node.Children.Any())
+                        {
+            <span class="toggle-arrow-btn me-2" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                @(node.IsExpanded ? "▼" : "◀")
+            </span>
+                        }
+                        else
+                        {
+            <span class="leaf-dot me-2">•</span>
+                        }
+            <span>@node.Name</span>
+        </div>
     </div>
 @if (node.IsExpanded && node.Children.Any())
     {
@@ -887,15 +1204,100 @@
     }
 </text>;
 
-private RenderFragment RenderLedgerTreeNode(TreeNodeModel node, Action<string> onSelected) => @<text>
-    <div class="tree-grid-row" @onclick="() => onSelected(node.Name)">
-        <span class="col-name text-right">@node.Name</span>
+/* General Ledger & Complementary Accounts Hierarchy Models */
+public class AccountsTreeNode
+{
+    public string Name { get; set; } = "";
+    public string Code { get; set; } = "";
+    public int Level { get; set; } = 0;
+    public bool IsExpanded { get; set; } = true;
+    public List<AccountsTreeNode> Children { get; set; } = new();
+    }
+
+    private List<AccountsTreeNode> accountsTreeList = new()
+    {
+        new()
+        {
+            Name = "الخصوم المتداولة",
+            Code = "EGP",
+            Level = 0,
+            IsExpanded = true,
+            Children = new()
+            {
+                new() { Name = "موردون", Code = "EGP", Level = 1 },
+                new() { Name = "أوراق الدفع", Code = "EGP", Level = 1 },
+                new() { Name = "مصروفات مستحقة", Code = "EGP", Level = 1 },
+                new() { Name = "دائنون مختلفون", Code = "EGP", Level = 1 }
+            }
+        },
+        new()
+        {
+            Name = "الأصول المتداولة",
+            Code = "EGP",
+            Level = 0,
+            IsExpanded = true,
+            Children = new()
+            {
+                new()
+                {
+                    Name = "نقدية بالخزينة و البنوك",
+                    Code = "EGP",
+                    Level = 1,
+                    IsExpanded = true,
+                    Children =
+                    new()
+                    {
+                        new() { Name = "ودائع بالبنوك لأجل أو بإخطار ساب", Code = "EGP", Level = 2 },
+                        new() { Name = "غطاء حسابات ضمان", Code = "EGP", Level = 2 }
+                    }
+                },
+                new()
+                {
+                    Name = "الأرصدة الإفتتاحية",
+                    Code = "EGP",
+                    Level = 1
+                }
+            }
+        },
+        new()
+        {
+            Name = "المصروفات و الخسائر",
+            Code = "EGP",
+            Level = 0,
+            IsExpanded = false,
+            Children = new()
+            {
+                new() { Name = "حساب الأرباح والخسائر", Code = "EGP", Level = 1 }
+            }
+        }
+    };
+
+    private RenderFragment RenderAccountsTreeNode(AccountsTreeNode node, string currentValue, Action<string> onSelected) => @<text>
+    <div class="tree-grid-row supplier-row @(currentValue == node.Name ? "active-row" : "") @(node.Level > 0 ? "tree-child-row" : "")"
+         style="padding-right: @(node.Level * 18 + 12)px;"
+         @onclick="() => onSelected(node.Name)">
+        <span class="col-code text-center text-muted" style="width: 90px; border-left: 1px solid #dee2e6;">
+            @node.Code
+        </span>
+        <span class="col-name text-right d-flex align-items-center flex-1" style="padding-right: 8px;">
+            @if (node.Children.Any())
+            {
+                <span class="toggle-arrow-btn me-2" @onclick:stopPropagation @onclick="() => node.IsExpanded = !node.IsExpanded">
+                    @(node.IsExpanded ? "▼" : "◀")
+                </span>
+            }
+            else
+            {
+                <span class="leaf-dot me-2">•</span>
+            }
+            <span>@node.Name</span>
+        </span>
     </div>
 @if (node.IsExpanded && node.Children.Any())
 {
     @foreach (var child in node.Children)
     {
-        @RenderLedgerTreeNode(child, onSelected)
+        @RenderAccountsTreeNode(child, currentValue, onSelected)
     }
 }
 </text>;
@@ -928,14 +1330,16 @@ private SupplierModel supplierData = new()
     OpeningBalanceDate = new DateTime(2026, 10, 1),
     OpeningBalanceAmount = 0m,
     Branch = "الفرع الرئيسي",
-    NestedWithin = "",
+    NestedWithin = "القسم التجاري الأول",
     Currency = "EGP",
-    ExchangeRate = 0,
+    ExchangeRate = 1,
     LedgerAccount = "موردون",
     DefaultDealType = "كاش",
     CreditLimit = 0m,
-    DealSide = "",
+    DealSide = "موردين بضريبة",
     ComplementaryAccount = "الأرصدة الإفتتاحية",
+    PriceTier = "سعر البيع",
+    DiscountTier = "خصم توريدات الفئة أ (5%)",
     PaymentTerms = "",
     SalesRepresentative = "",
     TaxEnabled = false,
@@ -1003,6 +1407,8 @@ public class SupplierModel
     public decimal CreditLimit { get; set; }
     public string DealSide { get; set; } = "";
     public string ComplementaryAccount { get; set; } = "";
+    public string PriceTier { get; set; } = "";
+    public string DiscountTier { get; set; } = "";
     public string PaymentTerms { get; set; } = "";
     public string SalesRepresentative { get; set; } = "";
     public bool TaxEnabled { get; set; }
@@ -1074,17 +1480,15 @@ public class SupplierModel
         z-index: 1500;
     }
 
-    /* Outer Wrapper: Two explicit columns in RTL */
     .main-canvas {
         display: flex;
-        flex-direction: row; /* In RTL, first child is on the far right */
+        flex-direction: row;
         align-items: flex-start;
         gap: 32px;
         max-width: 1250px;
-        margin: 0 auto 0 auto;
+        margin: 0 auto;
     }
 
-    /* Right Sidebar for Avatar & Active status */
     .avatar-sidebar {
         display: flex;
         flex-direction: column;
@@ -1130,13 +1534,11 @@ public class SupplierModel
         cursor: pointer;
     }
 
-    /* Main form container */
     .form-content-area {
         flex: 1;
         min-width: 0;
     }
 
-    /* Master Top Header */
     .header-master-grid {
         display: flex;
         align-items: flex-start;
@@ -1243,10 +1645,9 @@ public class SupplierModel
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        margin-right: auto; /* Pushes photo box to the far left in RTL */
+        margin-right: auto;
     }
 
-    /* Tabs Bar */
     .tab-strip-bar {
         display: flex;
         justify-content: flex-start;
@@ -1420,8 +1821,79 @@ public class SupplierModel
         box-sizing: border-box;
     }
 
+    .price-tier-dropdown {
+        padding: 4px 0;
+        border: 1px solid #c9d2de;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .price-tier-row {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        font-size: 0.84rem;
+        color: #333;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.15s ease-in-out;
+    }
+
+        .price-tier-row:hover {
+            background-color: #f1f4f9;
+        }
+
+    .tier-indicator-bar {
+        width: 3.5px;
+        height: 18px;
+        background: transparent;
+        border-radius: 2px;
+        margin-left: 10px;
+        flex-shrink: 0;
+    }
+
+    .tier-label {
+        flex: 1;
+        text-align: right;
+    }
+
+    .active-price-tier {
+        background-color: #edf2fa !important;
+        font-weight: 600;
+        color: #1a73e8;
+    }
+
+        .active-price-tier .tier-indicator-bar {
+            background-color: #007bff;
+        }
+
+    /* Discount Tiers Styles */
+    .delete-icon-cross {
+        color: #dc3545;
+        font-weight: bold;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    .rate-combo-wrapper {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid #007bff;
+        border-radius: 2px;
+        background: #fff;
+        height: 25px;
+        padding: 0 3px;
+        cursor: pointer;
+    }
+
+    .tier-calc-pos {
+        top: 28px !important;
+        right: 0 !important;
+        width: 260px !important;
+        z-index: 5000 !important;
+    }
+
     .panel-scroll-content, .supplier-grid-rows, .table-popup-list {
-        max-height: 220px;
+        max-height: 240px;
         overflow-y: auto;
     }
 
@@ -1432,11 +1904,33 @@ public class SupplierModel
         cursor: pointer;
         border-bottom: 1px solid #f2f2f2;
         padding: 4px 8px;
+        transition: background-color 0.1s ease;
     }
 
         .panel-checkbox-row:hover, .supplier-row:hover, .table-popup-row:hover {
-            background-color: #e9f2ff;
+            background-color: #e9f2ff !important;
         }
+
+    .tree-child-row {
+        background-color: #fafbfc;
+    }
+
+    .toggle-arrow-btn {
+        font-size: 0.65rem;
+        color: #777;
+        cursor: pointer;
+        display: inline-block;
+        width: 14px;
+        text-align: center;
+    }
+
+    .leaf-dot {
+        font-size: 0.85rem;
+        color: #aaa;
+        width: 14px;
+        display: inline-block;
+        text-align: center;
+    }
 
     .supplier-grid-header, .table-popup-header {
         display: flex;
@@ -1445,7 +1939,7 @@ public class SupplierModel
         font-weight: bold;
         font-size: 0.82rem;
         color: #333;
-        padding: 4px;
+        padding: 5px 8px;
     }
 
     .col-code {
@@ -1458,6 +1952,12 @@ public class SupplierModel
         flex: 1;
         padding: 4px;
         text-align: right;
+    }
+
+    .col-act {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .table-popup-footer {
@@ -1497,7 +1997,7 @@ public class SupplierModel
         position: absolute;
         top: 32px;
         right: 0;
-        width: 300px;
+        width: 280px;
         background: #ffffff;
         border: 1px solid #ced4da;
         box-shadow: 0 6px 20px rgba(0,0,0,0.25);
@@ -1606,4 +2106,111 @@ public class SupplierModel
         column-gap: 40px;
         row-gap: 12px;
     }
+
+    /* Modal Backdrop & Confirm Delete Dialog */
+    .modal-backdrop-blur {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 6000;
+    }
+
+    .confirm-delete-dialog {
+        background: #f1f3f6;
+        border-radius: 8px;
+        width: 480px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ced4da;
+        overflow: hidden;
+    }
+
+    .confirm-delete-header {
+        display: flex;
+        justify-content: flex-start;
+        padding: 8px 12px;
+    }
+
+    .btn-dialog-close {
+        border: none;
+        background: transparent;
+        color: #495057;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
+
+    .confirm-delete-body {
+        display: flex;
+        align-items: center;
+        padding: 10px 36px 20px 36px;
+        justify-content: flex-start;
+        gap: 15px;
+    }
+
+    .confirm-delete-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #2b2b2b;
+    }
+
+    .trash-icon-art {
+        position: relative;
+        font-size: 3.5rem;
+        user-select: none;
+        line-height: 1;
+    }
+
+    .trash-cross {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .confirm-delete-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 16px 24px;
+        background-color: transparent;
+    }
+
+    .btn-confirm-delete-yes {
+        background-color: #a4abb3;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-confirm-delete-yes:hover {
+            background-color: #8c939b;
+        }
+
+    .btn-confirm-delete-no {
+        background-color: #007bff;
+        border: none;
+        color: #ffffff;
+        padding: 6px 36px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-confirm-delete-no:hover {
+            background-color: #0069d9;
+        }
 </style>
